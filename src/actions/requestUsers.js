@@ -3,7 +3,7 @@ import { receivedUsers } from './'
 
 export function requestUsers() {
 	return( dispatch, getState ) => {
-		const prefix = `http://localhost:3001`
+		const prefix = ''	// `http://localhost:3001`
 		const url = `${prefix}/apiv1/users`
 		const method = 'GET'
 

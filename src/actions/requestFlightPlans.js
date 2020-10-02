@@ -3,7 +3,7 @@ import { receivedFlightPlans } from './'
 
 export function requestFlightPlans() {
 	return( dispatch, getState ) => {
-		const prefix = `http://localhost:3001`
+		const prefix = ''	// `http://localhost:3001`
 		const url = `${prefix}/apiv1/flightplans`
 		const method = 'GET'
 

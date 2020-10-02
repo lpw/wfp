@@ -4,7 +4,7 @@ import { addedNewFlightPlan } from './'
 
 export function addFlightPlan( name, userId ) {
 	return( dispatch, getState ) => {
-		const prefix = `http://localhost:3001`
+		const prefix = ''	// `http://localhost:3001`
 		const url = `${prefix}/apiv1/flightplans`
 		const method = 'POST'
 		const payload = { name, userId }
