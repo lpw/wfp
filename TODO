@@ -1,0 +1,41 @@
+editing functionality:
+explicit ordering of stages for rearranging
+1) if explicit ordering, support parallel/peer-level stages within plan (same order number)?
+2) if explicit ordering, if sharing stages between test plans, then ordering is a property of the stage-plan relationship (not a field in stages)
+removal as well as adding new stages, adding new stage to another plan, adding and removing test plans, users, managing relationships, perhaps risks, statuses
+
+data integrity and validation:
+deleting functionality - logic backed-up with foreign key triggers, error handling (long strings, cycles like in managing, etc), actions
+authentication and security (users, api calls, etc)
+
+performance:
+improved SQL queries like when getting points for a route
+server-side rendering
+more client-side ops, optimistic but temporary reaction
+service workers (launch, cache, offline, lighthouse)
+go back to seperate FE and BE servers
+memoize selectors
+
+testing:
+error detection and handling (react boundaries, etc)
+cleanup (consistency, naming, fragment shorthand, case, css, etc)
+documentation (code, architecture, README)
+lint/style (code, SQL caps, singularize tables, typescript or at least prop validation)
+build, versioning, packaging, locks, deployment, runtime, startup, ui/api/db monitoring
+
+misc:
+migrate promises to async/await
+policy on refetching stale content (perhaps background for performance and smoothness)
+ui design and improvements
+mobile presentation and performance
+batch API
+websockets for async updates from external database operations
+manifest
+SSL
+search
+React.StrictMode?
+allow or dedup routes (same route, altitude?)
+POST, PUT
+/plan/id vs /plans/id
+optimize DISTINCT for dups
+

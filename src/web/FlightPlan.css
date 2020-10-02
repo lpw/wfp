@@ -1,0 +1,41 @@
+.flightPlan {
+  margin: 2%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.flightPlan-header {
+  margin-bottom: 2%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.flightPlan-body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.flightPlan-buttons {
+  width: 30px;
+  height: 30px;
+  font-size: xx-large;
+  border-style: solid;
+  border-radius: 50%;
+}
+
+.flightPlan-description {
+  font-weight: bold;
+  width: 50%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flightPlan-mapContainer {
+  position: relative;
+  height: 400px;
+  width: 100%;
+}
