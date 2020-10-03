@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import mapboxgl from 'mapbox-gl'
 import {
     requestFlightPlan,
+    deleteFlightPlan,
+    // deleteRoute,
 } from '../actions'
 import {
     nameFromFlightPlanId,
@@ -57,6 +59,20 @@ class FlightPlan extends Component {
         }
     }
 
+    deleteFlightPlan = () => {
+        const { props } = this
+        const { id, deleteFlightPlan } = props
+        deleteFlightPlan( id )
+    }
+
+    // deleteRoute = () => {
+    //     const { props, state } = this
+    //     const { deleteRoute, routeIds, id } = props
+    //     const { routeIndex } = state
+    //     const routeId = routeIds[ routeIndex ]
+    //     deleteFlightPlan( id, routeId )
+    // }
+
     previous = () => {
         const { props, state } = this
         const { routeIds } = props
@@ -73,9 +89,13 @@ class FlightPlan extends Component {
         this.setState( { routeIndex: ( routeIndex + 1 ) % numRoutes } )
     }
 
-    updateMap = ( points ) => {
-        const { _map: map } = this
-        const coordinates = points && points.filter( p => p.lat && p.lon ).map( p => [ p.lon, p.lat ] )
+    updateMap = () => {
+        const { _map: map, props, state } = this
+        const { routeIndex } = state
+        const { routeIds, routePointsFromRouteIdSelector } = props
+        const routeId = routeIds[ routeIndex ]
+        const points = routeId ? routePointsFromRouteIdSelector( routeId ) : []
+        const coordinates = points.filter( p => p.lat && p.lon ).map( p => [ p.lon, p.lat ] )
 
         if( map && map.loaded() && map.isStyleLoaded() && coordinates && coordinates.length ) {
             if( map.getLayer( 'route' ) ) {
@@ -116,8 +136,8 @@ class FlightPlan extends Component {
         }
     }
 
-    renderRoute = ( points ) => {
-        this.updateMap( points )
+    renderRoute = () => {
+        this.updateMap()
 
         // return (
         //     <React.Fragment>
@@ -136,18 +156,15 @@ class FlightPlan extends Component {
     }
 
     render() {
-        const { props, state, renderRoute, previous, next } = this
+        const { props, state, renderRoute, previous, next, deleteFlightPlan } = this
         const { routeIndex } = state
-        const { id, name, routeIds, routeDescriptionFromRouteIdSelector, routePointsFromRouteIdSelector } = props
+        const { id, name, routeIds, routeDescriptionFromRouteIdSelector, userId } = props
         const routeId = routeIds[ routeIndex ]
         const numRoutes = routeIds.length
-
         let description = 'none'
-        let points = []
         let routeIndexDisplay = -1
         if( routeId ) {
             description = routeDescriptionFromRouteIdSelector( routeId )
-            points = routePointsFromRouteIdSelector( routeId )
             routeIndexDisplay = routeIndex
         }
         return (
@@ -159,10 +176,11 @@ class FlightPlan extends Component {
                     <button onClick={next}>&rsaquo;</button>
                 </div>
                 <div className="flightPlan-body">
-                    { renderRoute( points ) }
+                    { renderRoute() }
                 </div>
                 <div id="mapbox" className="flightPlan-mapContainer" ref={this.mapRef}></div>
                 <AddRoute id={id} />
+                { userId === 1 && <button className="flightPlan-delete" onClick={deleteFlightPlan}>Delete this flight plan</button> }
             </div>
         )
     }
@@ -176,9 +194,12 @@ const mapStateToProps = ( state, props ) => {
     const routeIds = routeIdsFromFlightPlanId( state, flightPlanId )
     const routeDescriptionFromRouteIdSelector = id => routeDescriptionFromRouteId( state, id )
     const routePointsFromRouteIdSelector = id => routePointsFromRouteId( state, id )
+    const { userId: userIdKey } = state
+    const userId = +userIdKey
 
     return {
         id: flightPlanId,
+        userId,
         name,
         routeIds,
         routeDescriptionFromRouteIdSelector,
@@ -191,6 +212,12 @@ const mapDispatchToProps = ( dispatch, /* ownProps */ ) => {
         requestFlightPlan: id => {
             dispatch( requestFlightPlan( id ) )
         },
+        deleteFlightPlan: id => {
+            dispatch( deleteFlightPlan( id ) )
+        },
+        // deleteRoute: ( fpid, rid ) => {
+        //     dispatch( deleteRoute( fpid, rid ) )
+        // }
     }
 }
 

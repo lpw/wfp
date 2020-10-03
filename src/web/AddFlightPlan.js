@@ -15,11 +15,6 @@ class AddFlightPlan extends Component {
         this._mostRecentlyAddedFlightPlan = mostRecentlyAddedFlightPlan
 	}
 
-    componentDidMount() {
-        const { props } = this
-        const { mostRecentlyAddedFlightPlan } = props
-    }
-
     addFlightPlan = () => {
         const { props, nameRef } = this
         const { addFlightPlan, userId } = props

@@ -39,3 +39,10 @@
   height: 400px;
   width: 100%;
 }
+
+.flightPlan-delete {
+  display: flex;
+  align-self: flex-end;
+  margin-top: 400px;
+  width: 90px;
+}

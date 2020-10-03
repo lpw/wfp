@@ -20,5 +20,5 @@ export const getLastInsertIdQuery = ( f ) => connectionQuery( `SELECT LAST_INSER
 export const addPointToPointsQuery = ( name, type = 1, lat = 0, lon = 0, elevation = 0, f ) => connectionQuery( `INSERT INTO points (\`name\`, \`type\`, \`lat\`, \`lon\`, \`elevation\`) VALUES ('${escape(name)}', '${type}', '${lat}', '${lon}', '${elevation}'); SELECT LAST_INSERT_ID() as id`, f )
 export const addPointToRouteQuery = ( routeId, pointId, f ) => connectionQuery( `INSERT INTO routes_points (\`route\`, \`point\`) VALUES ('${routeId}', ${pointId})`, f )
 export const pointTypesQuery = f => connectionQuery( `SELECT * from point_types`, f )
-
-
+export const deleteFlightPlanQuery = ( id, f ) => connectionQuery( `DELETE FROM flightplans_routes where flightplan=${id}; DELETE FROM flightplans where id=${id}`, f )
+// export const deleteRouteQuery = ( id, f ) => connectionQuery( `DELETE FROM flightplans where id=${id}`, f )

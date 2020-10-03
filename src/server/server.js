@@ -12,6 +12,7 @@ import handleRender from './handleRender';
 
 import {
 	addFlightPlan,
+	deleteFlightPlan,
 	addRoute,
 	promiseFlightPlans,
 	promiseFlightPlan,
@@ -266,7 +267,7 @@ function routeApi( server ) {
 
 function routeArgApi( server ) {
 	server.route({
-		method: ['GET', 'PUT', 'POST'], 
+		method: ['GET', 'PUT', 'POST', 'DELETE'], 
 		path: `/${version}/{op}/{id}`,
 		handler: function( request, reply ) {
 			const { params: { op, id }, method, payload } = request  // query also available
@@ -288,6 +289,27 @@ function routeArgApi( server ) {
 								console.warn( 'routeArgApi post flightplan error', error.message ) 
 								return {
 									error: `routeArgApi post flightplan/${id} error ${error.message}`
+								}
+							})
+						}
+					}
+				}
+				case 'delete': {
+					switch( op ) {
+						case 'flightplan': {
+							debug( 'routeArgApi post flightplan description, altitude' )
+							return deleteFlightPlan( id ).then( result => {
+								const replyResult = {
+									status: 'ok', 
+									result, 
+								}
+								debug( 'routeArgApi delete flightplan then replyResult', replyResult )
+								return replyResult
+							}).catch( error => {
+								debug( 'routeArgApi delete flightplan error', error.message )
+								console.warn( 'routeArgApi delete flightplan error', error.message ) 
+								return {
+									error: `routeArgApi delete flightplan/${id} error ${error.message}`
 								}
 							})
 						}
