@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { addFlightPlan } from '../actions'
+import { addFlightPlanWithRoute } from '../actions'
 import './AddFlightPlan.css'
 
 class AddFlightPlan extends Component {
@@ -10,25 +10,30 @@ class AddFlightPlan extends Component {
 
         const { mostRecentlyAddedFlightPlan } = props
 
-		this.nameRef = React.createRef()
+        this.nameRef = React.createRef()
+        this.pathRed = React.createRef()
+        this.altitudeRef = React.createRef()
+        this.speedRef = React.createRef()
 
         this._mostRecentlyAddedFlightPlan = mostRecentlyAddedFlightPlan
 	}
 
-    addFlightPlan = () => {
-        const { props, nameRef } = this
-        const { addFlightPlan, userId } = props
+    addFlightPlanWithRoute = () => {
+        const { props, nameRef, pathRed, altitudeRef, speedRef } = this
+        const { addFlightPlanWithRoute, userId } = props
 
         const name = nameRef.current.value
-        // const route = routeRef.current.value
+        const path = pathRed.current.value
+        const altitude = altitudeRef.current.value
+        const speed = speedRef.current.value
 
-        if( name ) {
-	        addFlightPlan( name, userId )
+        if( name && path && altitude && speed ) {
+	        addFlightPlanWithRoute( name, path, altitude, speed, userId )
         }
     }
 
     render() {
-        const { addFlightPlan, props, _mostRecentlyAddedFlightPlan } = this
+        const { addFlightPlanWithRoute, props, _mostRecentlyAddedFlightPlan } = this
         const { mostRecentlyAddedFlightPlan } = props
 
         if( mostRecentlyAddedFlightPlan !== _mostRecentlyAddedFlightPlan ) {
@@ -37,8 +42,11 @@ class AddFlightPlan extends Component {
 
         return (
             <div className="AddFlightPlan">
-                <input type="text" placeholder="Flightplan name..." className="AddFlightPlanName" ref={this.nameRef} />
-            	<button onClick={addFlightPlan}>Add</button>
+                <input type="text" placeholder="Name..." className="AddName" ref={this.nameRef} />
+                <input type="text" placeholder="Route (for now, airports like 'KSJC KSFO KSAC')..." className="AddPath" ref={this.pathRed} />
+                <input type="number" placeholder="Altitude..." className="AddAltitude" ref={this.altitudeRef} />
+                <input type="number" placeholder="Speed..." className="AddSpeed" ref={this.speedRef} />
+            	<button onClick={addFlightPlanWithRoute}>Add</button>
             </div>
         )
     }
@@ -55,8 +63,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = ( dispatch, /* ownProps */ ) => {
     return {
-        addFlightPlan: ( name, userId ) => {
-            dispatch( addFlightPlan( name, userId ) )
+        addFlightPlanWithRoute: ( name, path, altitude, speed, userId ) => {
+            dispatch( addFlightPlanWithRoute( name, path, altitude, speed, userId ) )
         }
     }
 }

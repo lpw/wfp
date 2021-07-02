@@ -28,14 +28,14 @@ export function promiseFlightPlan( id ) {
 
 	return queryPromise.then( ( [ flightPlan = {}, routesAndPoints = [] ] ) => {
 		const routesWithPointIds = routesAndPoints.reduce( ( rps, rp ) => {
-			const { route: id, description, altitude, distance, point } = rp
+			const { route: id, path, altitude, distance, point } = rp
 			const existingRouteWithPoints = rps[ id ]
 			return {
 				...rps,
 				[ id ]: {
 					...existingRouteWithPoints,
 					id,
-					description,
+					path,
 					altitude,
 					distance,
 					pointIds: ( existingRouteWithPoints && existingRouteWithPoints.pointIds || [] ).concat( point )

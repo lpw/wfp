@@ -2,7 +2,8 @@ import {
 	LOGIN_USER,
 } from '../actions'
 
-const userId = ( state = 0, action ) => {
+// const userId = ( state = 0, action ) => {
+const userId = ( state = '', action ) => {
 	const { type } = action
 
 	switch ( type ) {

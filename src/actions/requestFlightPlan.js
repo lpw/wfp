@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch'
+import { getPrefix } from '../utils'
 import {
 	receivedFlightPlan,
 	receivedRoutes,
@@ -10,7 +11,7 @@ export function requestFlightPlan( id ) {
 		// Could decompose the flight plan api down into separate requests for routes and points
 		// which could be helpful if route and point data become heavy and there's significant shared usage
 		// const url = 'http://localhost:3001/apiv1/plans'
-		const prefix = ''	// `http://localhost:3001`
+        const prefix = getPrefix()
 		const url = `${prefix}/apiv1/flightplan/${id}`
 		const method = 'GET'
 

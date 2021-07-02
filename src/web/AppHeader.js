@@ -1,9 +1,12 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
-import { requestUsers, loginUser } from '../actions'
-import { userNameFromId } from '../selectors'
+import { loginUser } from '../actions'
+// import { userNameFromId } from '../selectors'
+import { setLocalStorage, getLocalStorage } from '../utils'
 import './AppHeader.css'
+
+const storedUser = getLocalStorage( 'user' )
 
 class AppHeader extends Component {
 	constructor(props) {
@@ -12,10 +15,25 @@ class AppHeader extends Component {
 	}
 
     componentDidMount() {
-        const { users, requestUsers } = this.props
+        const { props } = this
+        const { userId, loginUser } = props
 
-        if( users.length <= 0 ) {
-            requestUsers()
+        // if( users.length <= 0 ) {
+        //     requestUsers()
+        // }
+
+        if( !userId && userId !== storedUser ) {
+            loginUser( storedUser )
+        }
+    }
+
+    typeUser = event => {
+        const { userRef, loginUser } = this
+
+        const userId = userRef.current.value.trim()
+
+        if( event.key === 'Enter' && userId ) {
+            loginUser()
         }
     }
 
@@ -25,29 +43,34 @@ class AppHeader extends Component {
 
         const userId = userRef.current.value
 
-        loginUser( userId )
+        if( userId ) {
+            loginUser( userId )
+            setLocalStorage( 'user', userId )
+            userRef.current.blur()
+        }
     }
 
     renderLogin = () => {
-        const { props, loginUser } = this
-        const { loggedInUserName, users } = props
+        const { props, loginUser, typeUser } = this
+        const { userId } = props
 
+            // <select onChange={loginUser} className="login" id="login" ref={this.userRef}>
+            //     <option value="">{ loggedInUserName ? `Logout ${loggedInUserName}` : 'Login' }</option>
+            //     { users.map( u => <option key={u.id} value={u.id}>{u.name}</option> ) }
+            // </select>
         return (
-            <select onChange={loginUser} className="login" id="login" ref={this.userRef}>
-                <option value="">{ loggedInUserName ? `Logout ${loggedInUserName}` : 'Login' }</option>
-                { users.map( u => <option key={u.id} value={u.id}>{u.name}</option> ) }
-            </select>
+            <input type="text" onKeyUp={typeUser} onBlur={loginUser} className="login" id="login" ref={this.userRef} placeholder="user.name (@wisk.aero) enables add..." defaultValue={userId} />
         )
     }
 
     render() {
-        const { renderLogin, props } = this
-        const { loggedInUserName } = props
+        const { renderLogin } = this
+        // const { loggedInUserName } = props
 
+                // { loggedInUserName && <NavLink to="/add" className="buttonClassName">Add a Flight Plan</NavLink> }
         return (
             <div className="AppHeader">
                 <NavLink to="/" className="buttonClassName">List Flight Plans</NavLink>
-                { loggedInUserName && <NavLink to="/add" className="buttonClassName">Add a Flight Plan</NavLink> }
                 {renderLogin()}
             </div>
         )
@@ -55,20 +78,20 @@ class AppHeader extends Component {
 }
 
 const mapStateToProps = state => {
-    const { userId, users } = state
-    const loggedInUserName = userNameFromId( state, userId )
+    const { userId } = state
+    // const loggedInUserName = userNameFromId( state, userId )
 
     return {
-        loggedInUserName,
-        users,
+        // loggedInUserName,
+        userId,
     }
 }
 
 const mapDispatchToProps = ( dispatch, /* ownProps */ ) => {
     return {
-        requestUsers: () => {
-            dispatch( requestUsers() )
-        },
+        // requestUsers: () => {
+        //     dispatch( requestUsers() )
+        // },
         loginUser: userId => {
             dispatch( loginUser( userId ) )
         },

@@ -275,9 +275,9 @@ function routeArgApi( server ) {
 				case 'post': {
 					switch( op ) {
 						case 'flightplan': {
-							const { description, altitude } = typeof payload === 'string' ? JSON.parse( payload ) : payload
-							debug( 'routeArgApi post flightplan description, altitude', description, altitude )
-							return addRoute( id, description, altitude ).then( result => {
+							const { path, altitude, speed } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							debug( 'routeArgApi post flightplan path, altitude, speed', id, path, altitude, speed )
+							return addRoute( id, path, altitude, speed ).then( result => {
 								const replyResult = {
 									status: 'ok', 
 									result, 
@@ -297,7 +297,7 @@ function routeArgApi( server ) {
 				case 'delete': {
 					switch( op ) {
 						case 'flightplan': {
-							debug( 'routeArgApi post flightplan description, altitude' )
+							debug( 'routeArgApi post flightplan', id )
 							return deleteFlightPlan( id ).then( result => {
 								const replyResult = {
 									status: 'ok', 

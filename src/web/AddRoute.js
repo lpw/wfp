@@ -4,6 +4,8 @@ import { connect } from 'react-redux'
 import { addRoute } from '../actions'
 import './AddRoute.css'
 
+// obsolete, or have to change description to path and add speed
+
 class AddRoute extends Component {
 	constructor(props) {
 		super(props);

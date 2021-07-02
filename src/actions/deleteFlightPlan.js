@@ -1,8 +1,9 @@
 import fetch from 'isomorphic-fetch'
+import { getPrefix } from '../utils'
 
 export function deleteFlightPlan( id ) {
 	return( dispatch, getState ) => {
-		const prefix = ''	// `http://localhost:3001`
+        const prefix = getPrefix()
 		const url = `${prefix}/apiv1/flightplan/${id}`
 		const method = 'DELETE'
 

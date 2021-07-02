@@ -41,7 +41,7 @@ export function receivedUsers( users = [] ) {
     }
 }
 
-export function loginUser( userId = null ) {
+export function loginUser( userId = '' ) {
     return {
         type: LOGIN_USER,
         userId,

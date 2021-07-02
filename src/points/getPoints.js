@@ -72,37 +72,37 @@ function findAirport( code ) {
 }
 
 
-function fetchAirportFromDescription( pt ) {
-	// const url = `https://raw.githubusercontent.com/epranka/airports-db/master/icao/${pt}.json`
+// function fetchAirportFromDescription( pt ) {
+// 	// const url = `https://raw.githubusercontent.com/epranka/airports-db/master/icao/${pt}.json`
 
-	return fetch( url, {
-		// method: 'GET'
-		// headers,
-	})
-	.then( response => {
-		if( response.status === 200 ) {
-			return response.json()
-		} else {
-			// throw new Error( `fetchPointFromDescription not 200 ${response.status}` )
-			console.warn( `fetchPointFromDescription not 200 ${response.status}` )
-			return unknownPoint
-		}
-	})
-	.then( data => {
-		// const { ident, type, name } = data
-		const { elevation_ft: elevation, latitude_deg: lat, longitude_deg: lon } = data
-		const point = {
-			name: pt,
-			type: aptPointType,
-			lat,
-			lon,
-			elevation,
-		}
-		return point
-	})
-}
+// 	return fetch( url, {
+// 		// method: 'GET'
+// 		// headers,
+// 	})
+// 	.then( response => {
+// 		if( response.status === 200 ) {
+// 			return response.json()
+// 		} else {
+// 			// throw new Error( `fetchPointFromDescription not 200 ${response.status}` )
+// 			console.warn( `fetchPointFromDescription not 200 ${response.status}` )
+// 			return unknownPoint
+// 		}
+// 	})
+// 	.then( data => {
+// 		// const { ident, type, name } = data
+// 		const { elevation_ft: elevation, latitude_deg: lat, longitude_deg: lon } = data
+// 		const point = {
+// 			name: pt,
+// 			type: aptPointType,
+// 			lat,
+// 			lon,
+// 			elevation,
+// 		}
+// 		return point
+// 	})
+// }
 
-function getPointFromDescription( pt ) {
+function getPointFromPath( pt ) {
 	if( pt.startsWith( 'APT@' ) ) {
 		const ptSplit = pt.split( '@' )
 		const apt = ptSplit.length > 1 && ptSplit[ 1 ]
@@ -149,11 +149,11 @@ function getPointFromDescription( pt ) {
 	return unknownPoint( pt )
 }
 
-export function getPointsFromDescription( description ) {
-	description = description.replace( /^.*q=/, '' ).toUpperCase()
-	const points = description.split( /[+ ]/ )
+export function getPointsFromPath( path ) {
+	path = path.replace( /^.*q=/, '' ).toUpperCase()
+	const points = path.split( /[+ ]/ )
 	const pointsWithTypes = points.reduce( ( s, p ) => {
-		const point = getPointFromDescription( p )
+		const point = getPointFromPath( p )
 		// return point.type === unkPointType ? s : { ...s, [ p ]: point }
 		return point === unknownPointPromise ? s : { ...s, [ p ]: point }
 	}, {} )

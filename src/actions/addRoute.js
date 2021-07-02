@@ -1,13 +1,14 @@
 // import assert from 'assert'
 import fetch from 'isomorphic-fetch'
+import { getPrefix } from '../utils'
 import { requestFlightPlan } from './'
 
-export function addRoute( id, description, altitude ) {
+export function addRoute( id, path, altitude, speed ) {
 	return( dispatch, getState ) => {
-		const prefix = ''	// `http://localhost:3001`
+        const prefix = getPrefix()
 		const url = `${prefix}/apiv1/flightplan/${id}`
 		const method = 'POST'
-		const payload = { description, altitude }
+		const payload = { path, altitude, speed }
 
 		return fetch( url, {
 			method,

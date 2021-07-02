@@ -7,14 +7,14 @@ import {
 	pointTypesQuery,
 } from './queries'
 import {
-	getPointsFromDescription
+	getPointsFromPath
 } from '../points'
 
-export function addRoute( flightPlanId, description, altitude ) {
-	const getPointsPromise = Promise.all( Object.values( getPointsFromDescription( description ) ) )  // no longer a promise
+export function addRoute( flightPlanId, path, altitude, speed ) {
+	const getPointsPromise = Promise.all( Object.values( getPointsFromPath( path ) ) )  // no longer a promise
 
 	const addRoutePromise = new Promise( function( resolve, reject ) {
-		addRouteToRoutesQuery( description, altitude, function ( error ) {
+		addRouteToRoutesQuery( path, altitude, speed, function ( error ) {
 			if ( error ) {
 				return reject( error ) // throw
 			}

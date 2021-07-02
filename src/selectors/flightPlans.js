@@ -41,9 +41,19 @@ export const routeIdsFromFlightPlanId = ( state, id ) => {
 	return flightPlan && flightPlan.routeIds || []
 }
 
-export const routeDescriptionFromRouteId = ( state, id ) => {
+export const routePathFromRouteId = ( state, id ) => {
     const route = routeFromId( state, id )
-	return route && route.description || ''
+    return route && route.path || ''
+}
+
+export const routeAltitudeFromRouteId = ( state, id ) => {
+    const route = routeFromId( state, id )
+    return route && route.altitude || 0
+}
+
+export const routeSpeedFromRouteId = ( state, id ) => {
+    const route = routeFromId( state, id )
+    return route && route.speed || 0
 }
 
 export const routePointsFromRouteId = ( state, id ) => {

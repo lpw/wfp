@@ -1,9 +1,10 @@
 import fetch from 'isomorphic-fetch'
+import { getPrefix } from '../utils'
 import { receivedFlightPlans } from './'
 
 export function requestFlightPlans() {
 	return( dispatch, getState ) => {
-		const prefix = ''	// `http://localhost:3001`
+        const prefix = getPrefix()
 		const url = `${prefix}/apiv1/flightplans`
 		const method = 'GET'
 

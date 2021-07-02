@@ -10,10 +10,12 @@ import {
 import {
     nameFromFlightPlanId,
     routeIdsFromFlightPlanId,
-    routeDescriptionFromRouteId,
+    routePathFromRouteId,
+    routeAltitudeFromRouteId,
+    routeSpeedFromRouteId,
     routePointsFromRouteId,
 } from '../selectors'
-import AddRoute from './AddRoute'
+// import AddRoute from './AddRoute'
 import './FlightPlan.css'
 
 const stale = () => true // TBD what determines when to refetch stages and status of flight plan - always for now
@@ -96,8 +98,6 @@ class FlightPlan extends Component {
         const routeId = routeIds[ routeIndex ]
         const points = routeId ? routePointsFromRouteIdSelector( routeId ) : []
         const coordinates = points.filter( p => p.lat && p.lon ).map( p => [ p.lon, p.lat ] )
-console.log( 'LANCE points', points )
-console.log( 'LANCE coordinates', coordinates )
 
         if( map && map.loaded() && map.isStyleLoaded() && coordinates && coordinates.length ) {
             if( map.getLayer( 'route' ) ) {
@@ -158,30 +158,39 @@ console.log( 'LANCE coordinates', coordinates )
     }
 
     render() {
-        const { props, state, renderRoute, previous, next, deleteFlightPlan } = this
+        // const { props, state, renderRoute, previous, next, deleteFlightPlan } = this
+        const { props, state, renderRoute, deleteFlightPlan } = this
         const { routeIndex } = state
-        const { id, name, routeIds, routeDescriptionFromRouteIdSelector, userId } = props
+        // const { id, name, routeIds, routePathFromRouteIdSelector, routeAltitudeFromRouteIdSelector, routeSpeedFromRouteIdSelector, userId } = props
+        const { name, routeIds, routePathFromRouteIdSelector, routeAltitudeFromRouteIdSelector, routeSpeedFromRouteIdSelector, userId } = props
         const routeId = routeIds[ routeIndex ]
-        const numRoutes = routeIds.length
-        let description = 'none'
-        let routeIndexDisplay = -1
+        // const numRoutes = routeIds.length
+        let path = 'none'
+        let altitude = 0
+        let speed = 0
+        // let routeIndexDisplay = -1
         if( routeId ) {
-            description = routeDescriptionFromRouteIdSelector( routeId )
-            routeIndexDisplay = routeIndex
+            path = routePathFromRouteIdSelector( routeId )
+            altitude = routeAltitudeFromRouteIdSelector( routeId )
+            speed = routeSpeedFromRouteIdSelector( routeId )
+            // routeIndexDisplay = routeIndex
         }
+                    // Route: <div className="flightPlan-path">{path}</div> ({ routeIndexDisplay + 1 } / { numRoutes })
+                    // <button onClick={previous}>&lsaquo;</button>
+                    // <button onClick={next}>&rsaquo;</button>
+                    // <AddRoute id={id} />
         return (
             <div className="flightPlan">
                 <div className="flightPlan-header">
                     Flight Plan: <b>{name}</b>
-                    Route: <div className="flightPlan-description">{description}</div> ({ routeIndexDisplay + 1 } / { numRoutes })
-                    <button onClick={previous}>&lsaquo;</button>
-                    <button onClick={next}>&rsaquo;</button>
+                    Path: <div className="flightPlan-path">{path}</div> 
+                    Altitude: <div className="flightPlan-path">{altitude}</div> 
+                    Speed: <div className="flightPlan-path">{speed}</div> 
                 </div>
                 <div className="flightPlan-body">
                     { renderRoute() }
                 </div>
                 <div id="mapbox" className="flightPlan-mapContainer" ref={this.mapRef}></div>
-                <AddRoute id={id} />
                 { userId === 1 && <button className="flightPlan-delete" onClick={deleteFlightPlan}>Delete this flight plan</button> }
             </div>
         )
@@ -194,8 +203,10 @@ const mapStateToProps = ( state, props ) => {
     const flightPlanId = +id
     const name = nameFromFlightPlanId( state, flightPlanId ) || flightPlanId
     const routeIds = routeIdsFromFlightPlanId( state, flightPlanId )
-    const routeDescriptionFromRouteIdSelector = id => routeDescriptionFromRouteId( state, id )
+    const routePathFromRouteIdSelector = id => routePathFromRouteId( state, id )
     const routePointsFromRouteIdSelector = id => routePointsFromRouteId( state, id )
+    const routeAltitudeFromRouteIdSelector = id => routeAltitudeFromRouteId( state, id )
+    const routeSpeedFromRouteIdSelector = id => routeSpeedFromRouteId( state, id )
     const { userId: userIdKey } = state
     const userId = +userIdKey
 
@@ -204,8 +215,10 @@ const mapStateToProps = ( state, props ) => {
         userId,
         name,
         routeIds,
-        routeDescriptionFromRouteIdSelector,
-        routePointsFromRouteIdSelector
+        routePathFromRouteIdSelector,
+        routePointsFromRouteIdSelector,
+        routeAltitudeFromRouteIdSelector,
+        routeSpeedFromRouteIdSelector,
     }
 }
 
