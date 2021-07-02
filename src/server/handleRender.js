@@ -10,7 +10,7 @@ import rootReducer from '../reducers'
 import { renderToString } from 'react-dom/server'
 import fs from 'fs';
 import { StaticRouter as Router } from 'react-router-dom';
-import { requestTestPlans } from '../actions'
+import { requestFlightPlans } from '../actions'
                        
 const middleware = [ thunk ]
 const composeEnhancers = compose;
@@ -49,7 +49,7 @@ function handleRender({
     let responsePromise = new Promise( ( resolve, /*reject*/ ) => {
 
         try {
-            store.dispatch( requestTestPlans( ) ) 
+            store.dispatch( requestFlightPlans( ) ) 
 
             const unsubscribe = store.subscribe( () => {
 

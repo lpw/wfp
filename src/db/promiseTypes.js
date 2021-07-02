@@ -1,6 +1,6 @@
 import {
 	typesQuery,
-} from './'
+} from './queries'
 
 export function promiseTypes() {
 	const typesPromise = new Promise( function( resolve, reject ) {

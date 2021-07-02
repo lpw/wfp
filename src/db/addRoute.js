@@ -11,7 +11,7 @@ import {
 } from '../points'
 
 export function addRoute( flightPlanId, description, altitude ) {
-	const getPointsPromise = Promise.all( Object.values( getPointsFromDescription( description ) ) )
+	const getPointsPromise = Promise.all( Object.values( getPointsFromDescription( description ) ) )  // no longer a promise
 
 	const addRoutePromise = new Promise( function( resolve, reject ) {
 		addRouteToRoutesQuery( description, altitude, function ( error ) {

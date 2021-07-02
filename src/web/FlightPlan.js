@@ -96,6 +96,8 @@ class FlightPlan extends Component {
         const routeId = routeIds[ routeIndex ]
         const points = routeId ? routePointsFromRouteIdSelector( routeId ) : []
         const coordinates = points.filter( p => p.lat && p.lon ).map( p => [ p.lon, p.lat ] )
+console.log( 'LANCE points', points )
+console.log( 'LANCE coordinates', coordinates )
 
         if( map && map.loaded() && map.isStyleLoaded() && coordinates && coordinates.length ) {
             if( map.getLayer( 'route' ) ) {
