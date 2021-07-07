@@ -1,10 +1,10 @@
 import {
-	deleteFlightPlanQuery,
+	deleteFlightQuery,
 } from './queries';
 
-export function deleteFlightPlan( id ) {
+export function deleteFlight( id ) {
 	return new Promise( function( resolve, reject ) {
-		deleteFlightPlanQuery( id, function ( error ) {
+		deleteFlightQuery( id, function ( error ) {
 			if ( error ) {
 				return reject( error ) // throw
 			}

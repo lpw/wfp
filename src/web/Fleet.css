@@ -1,24 +1,31 @@
-.flightPlan {
+.fleet {
   margin: 2%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  /*display: flex;*/
+  /*flex-direction: column;*/
+  /*justify-content: space-between;*/
+  /*align-items: xxx;*/
 }
 
-.flightPlan-header {
+.fleet >div:nth-of-type(odd) {
+  background-color: #e8e8e8;
+}
+
+
+/*
+.fleet-header {
   margin-bottom: 2%;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
 }
 
-.flightPlan-body {
+.fleet-body {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
 }
 
-.flightPlan-buttons {
+.fleet-buttons {
   width: 30px;
   height: 30px;
   font-size: xx-large;
@@ -26,7 +33,7 @@
   border-radius: 50%;
 }
 
-.flightPlan-path {
+.fleet-path {
   font-weight: bold;
   width: 50%;
   white-space: nowrap;
@@ -34,15 +41,16 @@
   text-overflow: ellipsis;
 }
 
-.flightPlan-mapContainer {
+.fleet-mapContainer {
   position: relative;
   height: 400px;
   width: 100%;
 }
 
-.flightPlan-delete {
+.fleet-delete {
   display: flex;
   align-self: flex-end;
   margin-top: 400px;
   width: 90px;
 }
+*/

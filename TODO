@@ -1,3 +1,17 @@
+fleet /fleet /flms /fms /foc /aircraft /vehicles 
+map /flights /flights?a=123&a=456 (commas, array, etc) /supervise /mvs /map
+instruments /flights/123 /flight/123 (show map? nah, above)
+
+launch chages fleet point to destination
+back to fleet from supervise?
+convert array into map?  And if so, on server response or in reducer?
+
+convert to async/await from promises
+airctaft status/location
+distance
+
+andd new points/locations
+
 editing functionality:
 explicit ordering of stages for rearranging
 1) if explicit ordering, support parallel/peer-level stages within plan (same order number)?

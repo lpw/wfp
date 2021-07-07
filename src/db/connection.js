@@ -23,6 +23,6 @@ const connection = mysql.createConnection( config )
 connection.connect()
 
 export const connectionQuery = ( q, f ) => {
-    debug( 'connectionQuery q', q )
+    debug( 'connectionQuery q', q, f )
 	connection.query( q, f )
 }

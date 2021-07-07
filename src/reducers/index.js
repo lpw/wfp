@@ -1,19 +1,21 @@
 import { combineReducers } from 'redux'
 import { connectRouter } from 'connected-react-router'
-import flightPlans from './flightPlans'
+import flights from './flights'
 import routes from './routes'
 import points from './points'
+import fleet from './fleet'
 import users from './users'
 import userId from './userId'
-import mostRecentlyAddedFlightPlan from './mostRecentlyAddedFlightPlan'
+import mostRecentlyAddedFlight from './mostRecentlyAddedFlight'
 
 const reducers = {
-	flightPlans,
+	flights,
 	routes,
 	points,
+	fleet,
 	users,
 	userId,
-	mostRecentlyAddedFlightPlan,
+	mostRecentlyAddedFlight,
 }
 
 const createRootReducer = (history) => combineReducers({

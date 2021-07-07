@@ -1,12 +1,12 @@
 import {
-	flightPlanQuery,
-	routesAndPointsOfFlightPlanQuery,
-	pointsOfFlightPlanQuery,
+	flightQuery,
+	routesAndPointsOfFlightQuery,
+	pointsOfFlightQuery,
 } from './queries'
 
-export function promiseFlightPlan( id ) {
-	const flightPlanPromise = new Promise( function( resolve, reject ) {
-		flightPlanQuery( id, function ( error, rows ) {
+export function promiseFlight( id ) {
+	const flightPromise = new Promise( function( resolve, reject ) {
+		flightQuery( id, function ( error, rows ) {
 			if ( error ) {
 				return reject( error ) // throw
 			}
@@ -14,8 +14,8 @@ export function promiseFlightPlan( id ) {
 		})
 	})
 
-	const routesAndPointsOfFlightPlanPromise = new Promise( function( resolve, reject ) {
-		routesAndPointsOfFlightPlanQuery( id, function ( error, rows ) {
+	const routesAndPointsOfFlightPromise = new Promise( function( resolve, reject ) {
+		routesAndPointsOfFlightQuery( id, function ( error, rows ) {
 			if ( error ) {
 				return reject( error ) // throw
 			}
@@ -24,9 +24,9 @@ export function promiseFlightPlan( id ) {
 		})
 	})
 
-	const queryPromise = Promise.all( [ flightPlanPromise, routesAndPointsOfFlightPlanPromise ] )
+	const queryPromise = Promise.all( [ flightPromise, routesAndPointsOfFlightPromise ] )
 
-	return queryPromise.then( ( [ flightPlan = {}, routesAndPoints = [] ] ) => {
+	return queryPromise.then( ( [ flight = {}, routesAndPoints = [] ] ) => {
 		const routesWithPointIds = routesAndPoints.reduce( ( rps, rp ) => {
 			const { route: id, path, altitude, distance, point } = rp
 			const existingRouteWithPoints = rps[ id ]
@@ -60,8 +60,8 @@ export function promiseFlightPlan( id ) {
 		}, {} )	
 		const routeIds = Object.keys( routesWithPointIds )
 		return {
-			flightPlan: {
-				...flightPlan,
+			flight: {
+				...flight,
 				routeIds
 			},
 			routes: routesWithPointIds,

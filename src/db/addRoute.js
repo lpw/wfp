@@ -1,17 +1,23 @@
 import {
 	addRouteToRoutesQuery,
-	addRouteToFlightPlansQuery,
+	addRouteToFlightsQuery,
 	addPointToPointsQuery,
 	addPointToRouteQuery,
 	getLastInsertIdQuery,
 	pointTypesQuery,
 } from './queries'
-import {
-	getPointsFromPath
-} from '../points'
 
-export function addRoute( flightPlanId, path, altitude, speed ) {
-	const getPointsPromise = Promise.all( Object.values( getPointsFromPath( path ) ) )  // no longer a promise
+export function addRoute( flightId, path, altitude, speed ) {
+	// const getPointsPromise = Promise.all( Object.values( getPointsFromPath( path ) ) )  // no longer a promise
+	const getPointsPromise = new Promise( function( resolve, reject ) {
+		pointsQuery( function ( error, rows ) {
+			if ( error ) {
+				return reject( error ) // throw
+			}
+
+			resolve( rows )
+		})
+	})
 
 	const addRoutePromise = new Promise( function( resolve, reject ) {
 		addRouteToRoutesQuery( path, altitude, speed, function ( error ) {
@@ -32,7 +38,7 @@ export function addRoute( flightPlanId, path, altitude, speed ) {
 		})
 	}).then( routeId => {
 		return new Promise( function( resolve, reject ) {
-			addRouteToFlightPlansQuery( flightPlanId, routeId, function ( error ) {
+			addRouteToFlightsQuery( flightId, routeId, function ( error ) {
 				if ( error ) {
 					return reject( error ) // throw
 				}
@@ -44,22 +50,22 @@ export function addRoute( flightPlanId, path, altitude, speed ) {
 
 	const queryPromise = Promise.all( [ getPointsPromise, addRoutePromise ] )
 
-	return queryPromise.then( ( [ pointsWithTypes, routeId ] ) => {
-		const addPointToPointsPromises = Object.values( pointsWithTypes ).map( pointWithType => {
-			const { name, type, lat, lon, elevation } = pointWithType
-			return new Promise( function( resolve, reject ) {
-				addPointToPointsQuery( name, type, lat, lon, elevation, function ( error, compoundRows ) {
-					if ( error ) {
-						return reject( error ) // throw
-					}
-					resolve({
-						...pointWithType,
-						id: compoundRows[ 1 ][ 0 ].id
-					})
-				})
-			})
-		})
-		return Promise.all( addPointToPointsPromises ).then( pointsWithTypesAndId => {
+	return queryPromise.then( ( [ pointsWithTypesAndId, routeId ] ) => {
+		// const addPointToPointsPromises = Object.values( pointsWithTypes ).map( pointWithType => {
+		// 	const { name, code, type, lat, lon, elevation } = pointWithType
+		// 	return new Promise( function( resolve, reject ) {
+		// 		addPointToPointsQuery( name, code, type, lat, lon, elevation, function ( error, compoundRows ) {
+		// 			if ( error ) {
+		// 				return reject( error ) // throw
+		// 			}
+		// 			resolve({
+		// 				...pointWithType,
+		// 				id: compoundRows[ 1 ][ 0 ].id
+		// 			})
+		// 		})
+		// 	})
+		// })
+		// return Promise.all( addPointToPointsPromises ).then( pointsWithTypesAndId => {
 			const addPointToRoutePromises = Object.values( pointsWithTypesAndId ).map( ( { id: pointId } ) => {
 				return new Promise( function( resolve, reject ) {
 					addPointToRouteQuery( routeId, pointId, function ( error ) {
@@ -71,6 +77,6 @@ export function addRoute( flightPlanId, path, altitude, speed ) {
 				})
 			return Promise.all( addPointToRoutePromises )
 			})
-		})
+		// })
 	})
 }

@@ -4,7 +4,7 @@ import { getPrefix } from '../utils'
 export function deleteRoute( fpid, rid ) {
 	return( dispatch, getState ) => {
         const prefix = getPrefix()
-		const url = `${prefix}/apiv1/flightplan/${fpid}/route/${rid}`
+		const url = `${prefix}/apiv1/flight/${fpid}/route/${rid}`
 		const method = 'DELETE'
 
 		return fetch( url, {

@@ -1,12 +1,12 @@
 import {
-	addFlightPlanQuery,
-	addFlightPlanQueryText,
+	addFlightQuery,
+	addFlightQueryText,
 	getLastInsertIdQuery
 } from './queries';
 
-export function addFlightPlan( name, userId ) {
+export function addFlight( aircraftId ) {
 	return new Promise( function( resolve, reject ) {
-		addFlightPlanQuery( name, userId, function ( error ) {
+		addFlightQuery( aircraftId, function ( error ) {
 			if ( error ) {
 				return reject( error ) // throw
 			}

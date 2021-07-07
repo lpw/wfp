@@ -1,0 +1,48 @@
+.flight {
+  margin: 2%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.flight-header {
+  margin-bottom: 2%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.flight-body {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.flight-buttons {
+  width: 30px;
+  height: 30px;
+  font-size: xx-large;
+  border-style: solid;
+  border-radius: 50%;
+}
+
+.flight-path {
+  font-weight: bold;
+  width: 50%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flight-mapContainer {
+  position: relative;
+  height: 400px;
+  width: 100%;
+}
+
+.flight-delete {
+  display: flex;
+  align-self: flex-end;
+  margin-top: 400px;
+  width: 90px;
+}

@@ -62,6 +62,7 @@ function findAirport( code ) {
 		const airport = airports[ code ]
 		const point = {
 			name: airport.name,
+			code: airport.icao,
 			type: aptPointType,
 			lat: airport.latitude,
 			lon: airport.longitude,
@@ -124,6 +125,7 @@ function getPointFromPath( pt ) {
 			lon = +ptSplit[ 1 ]
 			return Promise.resolve({
 				name: pt,
+				// code: pt,
 				type: navPointType,
 				lat,
 				lon,

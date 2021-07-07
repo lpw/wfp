@@ -67,10 +67,10 @@ class AppHeader extends Component {
         const { renderLogin } = this
         // const { loggedInUserName } = props
 
-                // { loggedInUserName && <NavLink to="/add" className="buttonClassName">Add a Flight Plan</NavLink> }
+                // { loggedInUserName && <NavLink to="/add" className="buttonClassName">Add a Flight</NavLink> }
         return (
             <div className="AppHeader">
-                <NavLink to="/" className="buttonClassName">List Flight Plans</NavLink>
+                <NavLink to="/" className="buttonClassName">List Flights</NavLink>
                 {renderLogin()}
             </div>
         )

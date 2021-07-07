@@ -1,1 +1,1 @@
-export * from './getPoints'
+export * from './insertPoints'

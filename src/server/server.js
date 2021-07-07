@@ -11,13 +11,17 @@ import Inert from 'inert';
 import handleRender from './handleRender';
 
 import {
-	addFlightPlan,
-	deleteFlightPlan,
+	addFlight,
+	addAircraftToFleet,
+	deleteFlight,
+	deleteAircraft,
 	addRoute,
-	promiseFlightPlans,
-	promiseFlightPlan,
+	promiseFlights,
+	promiseFlight,
 	promiseTypes,
 	promiseUsers,
+	promiseFleet,
+	promisePoints,
 } from '../db'
 
 const debug = require('debug')('wisk:server')
@@ -167,10 +171,10 @@ function routeApi( server ) {
 			switch( method ) {
 				case 'post': {
 					switch( op ) {
-						case 'flightplans': {
+						case 'flights': {
 							debug( 'routeApi', method, op, typeof payload, payload )
-							const { name, userId } = typeof payload === 'string' ? JSON.parse( payload ) : payload
-							return addFlightPlan( name, userId ).then( result => {
+							const { aircraftId } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							return addFlight( aircraftId ).then( result => {
 								const replyResult = {
 									status: 'ok', 
 									result, 
@@ -179,7 +183,24 @@ function routeApi( server ) {
 								}
 
 								// return reply.response( replyResult )
-								debug( 'routeApi promiseFlightPlans then replyResult', replyResult )
+								debug( 'routeApi addFlight then replyResult', replyResult )
+								return replyResult
+							}).catch( error => {
+								console.warn( 'routeApi error', error.message ) 
+								return {
+									error: `op /${op} error ${error.message}`
+								}
+							})
+						}
+						case 'fleet': {
+							debug( 'routeApi', method, op, typeof payload, payload )
+							const { name, pointId } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							return addAircraftToFleet( name, pointId ).then( result => {
+								const replyResult = {
+									status: 'ok', 
+									result, 
+								}
+								debug( 'routeApi addAircraftToFleet then replyResult', replyResult )
 								return replyResult
 							}).catch( error => {
 								console.warn( 'routeApi error', error.message ) 
@@ -199,9 +220,9 @@ function routeApi( server ) {
 				}
 				case 'get': {
 					switch( op ) {
-						case 'flightplans': {
+						case 'flights': {
 							debug( 'routeApi', op )
-							return promiseFlightPlans().then( result => {
+							return promiseFlights().then( result => {
 								const replyResult = {
 									status: 'ok', 
 									result, 
@@ -210,7 +231,7 @@ function routeApi( server ) {
 								}
 
 								// return reply.response( replyResult )
-								debug( 'routeApi promiseFlightPlans then replyResult', replyResult )
+								debug( 'routeApi promiseFlights then replyResult', replyResult )
 								return replyResult
 							}).catch( error => {
 								console.warn( 'routeApi error', error.message ) 
@@ -222,6 +243,38 @@ function routeApi( server ) {
 						case 'users': {
 							debug( 'routeApi', op )
 							return promiseUsers().then( result => {
+								const replyResult = {
+									status: 'ok', 
+									result, 
+								}
+								return replyResult
+							}).catch( error => {
+								console.warn( 'routeApi error', error.message ) 
+								return {
+									error: `op /${op} error ${error.message}`
+								}
+							})
+							break
+						}
+						case 'fleet': {
+							debug( 'routeApi', op )
+							return promiseFleet().then( result => {
+								const replyResult = {
+									status: 'ok', 
+									result, 
+								}
+								return replyResult
+							}).catch( error => {
+								console.warn( 'routeApi error', error.message ) 
+								return {
+									error: `op /${op} error ${error.message}`
+								}
+							})
+							break
+						}
+						case 'points': {
+							debug( 'routeApi', op )
+							return promisePoints().then( result => {
 								const replyResult = {
 									status: 'ok', 
 									result, 
@@ -274,21 +327,21 @@ function routeArgApi( server ) {
 			switch( method ) {
 				case 'post': {
 					switch( op ) {
-						case 'flightplan': {
+						case 'flight': {
 							const { path, altitude, speed } = typeof payload === 'string' ? JSON.parse( payload ) : payload
-							debug( 'routeArgApi post flightplan path, altitude, speed', id, path, altitude, speed )
+							debug( 'routeArgApi post flight path, altitude, speed', id, path, altitude, speed )
 							return addRoute( id, path, altitude, speed ).then( result => {
 								const replyResult = {
 									status: 'ok', 
 									result, 
 								}
-								debug( 'routeArgApi post flightplan then replyResult', replyResult )
+								debug( 'routeArgApi post flight then replyResult', replyResult )
 								return replyResult
 							}).catch( error => {
-								debug( 'routeArgApi post flightplan error', error.message )
-								console.warn( 'routeArgApi post flightplan error', error.message ) 
+								debug( 'routeArgApi post flight error', error.message )
+								console.warn( 'routeArgApi post flight error', error.message ) 
 								return {
-									error: `routeArgApi post flightplan/${id} error ${error.message}`
+									error: `routeArgApi post flight/${id} error ${error.message}`
 								}
 							})
 						}
@@ -296,20 +349,37 @@ function routeArgApi( server ) {
 				}
 				case 'delete': {
 					switch( op ) {
-						case 'flightplan': {
-							debug( 'routeArgApi post flightplan', id )
-							return deleteFlightPlan( id ).then( result => {
+						case 'flight': {
+							debug( 'routeArgApi post flight', id )
+							return deleteFlight( id ).then( result => {
 								const replyResult = {
 									status: 'ok', 
 									result, 
 								}
-								debug( 'routeArgApi delete flightplan then replyResult', replyResult )
+								debug( 'routeArgApi delete flight then replyResult', replyResult )
 								return replyResult
 							}).catch( error => {
-								debug( 'routeArgApi delete flightplan error', error.message )
-								console.warn( 'routeArgApi delete flightplan error', error.message ) 
+								debug( 'routeArgApi delete flight error', error.message )
+								console.warn( 'routeArgApi delete flight error', error.message ) 
 								return {
-									error: `routeArgApi delete flightplan/${id} error ${error.message}`
+									error: `routeArgApi delete flight/${id} error ${error.message}`
+								}
+							})
+						}
+						case 'fleet': {
+							debug( 'routeArgApi post flight', id )
+							return deleteAircraft( id ).then( result => {
+								const replyResult = {
+									status: 'ok', 
+									result, 
+								}
+								debug( 'routeArgApi deleteAircraft then replyResult', replyResult )
+								return replyResult
+							}).catch( error => {
+								debug( 'routeArgApi deleteAircraft error', error.message )
+								console.warn( 'routeArgApi deleteAircraft error', error.message ) 
+								return {
+									error: `routeArgApi deleteAircraft/${id} error ${error.message}`
 								}
 							})
 						}
@@ -317,18 +387,18 @@ function routeArgApi( server ) {
 				}
 				default: {
 					switch( op ) {
-						case 'flightplan': {
-							return promiseFlightPlan( id ).then( result => {
+						case 'flight': {
+							return promiseFlight( id ).then( result => {
 								const replyResult = {
 									status: 'ok', 
 									result, 
 								}
-								debug( 'routeArgApi flightplan promiseFlightPlan get then replyResult', replyResult )
+								debug( 'routeArgApi flight promiseFlight get then replyResult', replyResult )
 								return replyResult
 							}).catch( error => {
-								console.warn( 'routeArgApi promiseFlightPlan get error', error.message ) 
+								console.warn( 'routeArgApi promiseFlight get error', error.message ) 
 								return {
-									error: `routeArgApi promiseFlightPlan/${id} get error ${error.message}`
+									error: `routeArgApi promiseFlight/${id} get error ${error.message}`
 								}
 							})
 						}

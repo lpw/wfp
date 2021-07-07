@@ -10,7 +10,7 @@ import rootReducer from '../reducers'
 import { renderToString } from 'react-dom/server'
 import fs from 'fs';
 import { StaticRouter as Router } from 'react-router-dom';
-import { requestFlightPlans } from '../actions'
+import { requestFlights } from '../actions'
                        
 const middleware = [ thunk ]
 const composeEnhancers = compose;
@@ -49,13 +49,13 @@ function handleRender({
     let responsePromise = new Promise( ( resolve, /*reject*/ ) => {
 
         try {
-            store.dispatch( requestFlightPlans( ) ) 
+            store.dispatch( requestFlights( ) ) 
 
             const unsubscribe = store.subscribe( () => {
 
                 // Grab the initial state from our store after initial fetch
                 const preloadedState = store.getState()
-                const { testPlans } = preloadedState
+                const { tests } = preloadedState
 
                 // debug( 'handleRender preloadedState', preloadedState )
                 // debug( 'handleRender header', preloadedState.header )
@@ -63,7 +63,7 @@ function handleRender({
                 
                 // is there some better way to detect when the fetchItems action has finished processing into state?
                 // if( lastAction.type === RISKS_RECEIVED ) { // } || lastAction.type === RECEIVE_ITEMS_FAILED ) {
-                if( Object.keys( testPlans ).length > 0 ) { // } || lastAction.type === RECEIVE_ITEMS_FAILED ) {
+                if( Object.keys( tests ).length > 0 ) { // } || lastAction.type === RECEIVE_ITEMS_FAILED ) {
                     const { info: { host: h }, url: { pathname: p }, query: q } = request
                     // const { host: h } = info
                     // const h = `https://${host}` port (not hostname), but not including origin or protocol
@@ -87,7 +87,7 @@ function handleRender({
 
                     resolve( response )
                 } else {
-                    // waiting for test plans... 
+                    // waiting ... 
                 }
             } )
         }

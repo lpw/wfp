@@ -1,0 +1,69 @@
+.aircraftRow {
+	padding: 5px 0 5px 0;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	/*align-items: xxx;*/
+}
+
+.aircraftRowFields {
+	padding: 0;
+	margin: 0 2% 0 0;
+	width: calc( 100% - 100px );
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+	
+.aircraftRowName {
+	padding: 0;
+	margin: 0 2% 0 0;
+	width: 20%;
+	/*width: 18%;*/
+}
+
+.aircraftRowOrigin {
+	padding: 0;
+	margin: 0 2% 0 0;
+	width: 15%;
+	/*width: 13%;*/
+}
+
+.aircraftRowDestination {
+	padding: 0;
+	margin: 0 2% 0 0;
+	width: 15%;
+	/*width: 13%;*/
+}
+
+.aircraftRowAltitude {
+	padding: 0;
+	margin: 0 2% 0 0;
+	width: 25%;
+	/*width: 23%;*/
+}
+
+.aircraftRowSpeed {
+	padding: 0;
+	margin: 0 2% 0 0;
+	width: 25%;
+	/*width: 23%;*/
+}
+
+.aircraftRowButton {
+	padding: 0;
+	margin: 0 0% 0 0;
+	width: 100px;
+}
+
+/*
+ul.react-autocomplete-input,
+ul.react-autocomplete-input > li.active,
+ul.react-autocomplete-input > li {
+	padding: 0;
+	margin: 0;
+	width: 75%;
+	color:  red;
+	background-color: blue;
+}
+*/

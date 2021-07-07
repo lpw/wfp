@@ -1,0 +1,14 @@
+.AddFlight {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  margin: 40px 0 0 0;
+}
+
+.AddName {
+  width: 10%;
+}
+
+.AddPath {
+  width: 50%;
+}

@@ -1,19 +1,21 @@
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import './App.css'
-import AppHeader from './AppHeader'
-import FlightPlans from './FlightPlans'
-import FlightPlan from './FlightPlan'
-import AddFlightPlan from './AddFlightPlan'
+// import AppHeader from './AppHeader'
+import Fleet from './Fleet'
+// import Flights from './Flights'
+import Flight from './Flight'
+import AddFlight from './AddFlight'
 
 function App( props ) {
+            // <AppHeader />
     return (
         <div className="App">
-            <AppHeader />
             <Switch location={props.location} >
-                <Route path="/flight/:id" component={FlightPlan} />
-                <Route path="/add" component={AddFlightPlan} />
-                <Route component={FlightPlans} />
+                <Route path="/fleet" component={Fleet} />
+                <Route path="/flight/:id" component={Flight} />
+                <Route path="/add" component={AddFlight} />
+                <Route component={Fleet} />
             </Switch>
         </div>
     )

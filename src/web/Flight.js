@@ -3,24 +3,24 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import mapboxgl from 'mapbox-gl'
 import {
-    requestFlightPlan,
-    deleteFlightPlan,
+    requestFlight,
+    deleteFlight,
     // deleteRoute,
 } from '../actions'
 import {
-    nameFromFlightPlanId,
-    routeIdsFromFlightPlanId,
+    nameFromFlightId,
+    routeIdsFromFlightId,
     routePathFromRouteId,
     routeAltitudeFromRouteId,
     routeSpeedFromRouteId,
     routePointsFromRouteId,
 } from '../selectors'
 // import AddRoute from './AddRoute'
-import './FlightPlan.css'
+import './Flight.css'
 
-const stale = () => true // TBD what determines when to refetch stages and status of flight plan - always for now
+const stale = () => true // TBD what determines when to refetch stages and status of flight  - always for now
 
-class FlightPlan extends Component {
+class Flight extends Component {
     constructor(props) {
         super( props )
         this.state = {
@@ -35,13 +35,13 @@ class FlightPlan extends Component {
             id,
             name,
             routeIds,
-            requestFlightPlan,
+            requestFlight,
         } = props
 
         assert( id )
 
         if( !name || !routeIds || routeIds.length <= 0 || stale() ) {
-            requestFlightPlan( id )
+            requestFlight( id )
         }
 
         this.setupMap()
@@ -61,10 +61,10 @@ class FlightPlan extends Component {
         }
     }
 
-    deleteFlightPlan = () => {
+    deleteFlight = () => {
         const { props } = this
-        const { id, deleteFlightPlan } = props
-        deleteFlightPlan( id )
+        const { id, deleteFlight } = props
+        deleteFlight( id )
     }
 
     // deleteRoute = () => {
@@ -72,7 +72,7 @@ class FlightPlan extends Component {
     //     const { deleteRoute, routeIds, id } = props
     //     const { routeIndex } = state
     //     const routeId = routeIds[ routeIndex ]
-    //     deleteFlightPlan( id, routeId )
+    //     deleteFlight( id, routeId )
     // }
 
     previous = () => {
@@ -158,8 +158,8 @@ class FlightPlan extends Component {
     }
 
     render() {
-        // const { props, state, renderRoute, previous, next, deleteFlightPlan } = this
-        const { props, state, renderRoute, deleteFlightPlan } = this
+        // const { props, state, renderRoute, previous, next, deleteFlight } = this
+        const { props, state, renderRoute, deleteFlight } = this
         const { routeIndex } = state
         // const { id, name, routeIds, routePathFromRouteIdSelector, routeAltitudeFromRouteIdSelector, routeSpeedFromRouteIdSelector, userId } = props
         const { name, routeIds, routePathFromRouteIdSelector, routeAltitudeFromRouteIdSelector, routeSpeedFromRouteIdSelector, userId } = props
@@ -175,23 +175,23 @@ class FlightPlan extends Component {
             speed = routeSpeedFromRouteIdSelector( routeId )
             // routeIndexDisplay = routeIndex
         }
-                    // Route: <div className="flightPlan-path">{path}</div> ({ routeIndexDisplay + 1 } / { numRoutes })
+                    // Route: <div className="flight-path">{path}</div> ({ routeIndexDisplay + 1 } / { numRoutes })
                     // <button onClick={previous}>&lsaquo;</button>
                     // <button onClick={next}>&rsaquo;</button>
                     // <AddRoute id={id} />
         return (
-            <div className="flightPlan">
-                <div className="flightPlan-header">
-                    Flight Plan: <b>{name}</b>
-                    Path: <div className="flightPlan-path">{path}</div> 
-                    Altitude: <div className="flightPlan-path">{altitude}</div> 
-                    Speed: <div className="flightPlan-path">{speed}</div> 
+            <div className="flight">
+                <div className="flight-header">
+                    Flight : <b>{name}</b>
+                    Path: <div className="flight-path">{path}</div> 
+                    Altitude: <div className="flight-path">{altitude}</div> 
+                    Speed: <div className="flight-path">{speed}</div> 
                 </div>
-                <div className="flightPlan-body">
+                <div className="flight-body">
                     { renderRoute() }
                 </div>
-                <div id="mapbox" className="flightPlan-mapContainer" ref={this.mapRef}></div>
-                { userId === 1 && <button className="flightPlan-delete" onClick={deleteFlightPlan}>Delete this flight plan</button> }
+                <div id="mapbox" className="flight-mapContainer" ref={this.mapRef}></div>
+                { userId === 1 && <button className="flight-delete" onClick={deleteFlight}>Delete this flight </button> }
             </div>
         )
     }
@@ -200,9 +200,9 @@ class FlightPlan extends Component {
 const mapStateToProps = ( state, props ) => {
     const { match: { params } } = props
     const { id } = params
-    const flightPlanId = +id
-    const name = nameFromFlightPlanId( state, flightPlanId ) || flightPlanId
-    const routeIds = routeIdsFromFlightPlanId( state, flightPlanId )
+    const flightId = +id
+    const name = nameFromFlightId( state, flightId ) || flightId
+    const routeIds = routeIdsFromFlightId( state, flightId )
     const routePathFromRouteIdSelector = id => routePathFromRouteId( state, id )
     const routePointsFromRouteIdSelector = id => routePointsFromRouteId( state, id )
     const routeAltitudeFromRouteIdSelector = id => routeAltitudeFromRouteId( state, id )
@@ -211,7 +211,7 @@ const mapStateToProps = ( state, props ) => {
     const userId = +userIdKey
 
     return {
-        id: flightPlanId,
+        id: flightId,
         userId,
         name,
         routeIds,
@@ -224,11 +224,11 @@ const mapStateToProps = ( state, props ) => {
 
 const mapDispatchToProps = ( dispatch, /* ownProps */ ) => {
     return {
-        requestFlightPlan: id => {
-            dispatch( requestFlightPlan( id ) )
+        requestFlight: id => {
+            dispatch( requestFlight( id ) )
         },
-        deleteFlightPlan: id => {
-            dispatch( deleteFlightPlan( id ) )
+        deleteFlight: id => {
+            dispatch( deleteFlight( id ) )
         },
         // deleteRoute: ( fpid, rid ) => {
         //     dispatch( deleteRoute( fpid, rid ) )
@@ -239,4 +239,4 @@ const mapDispatchToProps = ( dispatch, /* ownProps */ ) => {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(FlightPlan)
+)(Flight)

@@ -1,0 +1,12 @@
+create database
+
+populate users
+INSERT INTO users (name) VALUES ('Lance');
+
+populate pointtypes
+INSERT INTO pointtypes (name) VALUES ('nav);
+
+as needed
+ALTER TABLE pointtypes AUTO_INCREMENT = 0;
+
+and some aircraft too

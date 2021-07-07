@@ -38,6 +38,8 @@ const enhancer = composeEnhancers(
 
 const store = createStore( createRootReducer(history), preloadedState, enhancer )
 
+window._laStore = store
+
 ReactDOM.render(
 	<React.StrictMode>
 		<Provider store={store}>
