@@ -1,3 +1,4 @@
+// import assert from 'assert'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { requestFleet, requestPoints } from '../actions'
@@ -32,21 +33,34 @@ class Fleet extends Component {
         const { props } = this
         const { points } = props
         const { id, name, base } = aircraft  
-        const origin = getCodeFromPath( base, points )
-        return <AircraftParked key={id} id={id} name={name} origin={origin} />
+        const basePoint = points[ base ]
+        // assert( basePoint )
+        // const origin = getCodeFromPath( base, points )
+        return basePoint && <AircraftParked key={id} id={id} name={name} origin={basePoint} points={points} />
     }
+
+    // renderAircraftFlight = aircraft => {
+    //     const { props } = this
+    //     const { points } = props
+    //     const { id, name, path, altitude, speed } = aircraft  // distance, pointCound, duration - depends
+    //     const paths = path && path.split( /\s/ )
+    //     const path0 = paths.length > 0 ? paths[ 0 ].toUpperCase().trim() : ''
+    //     const path1 = paths.length > 1 ? paths[ 1 ].toUpperCase().trim() : ''
+    //     const origin = getCodeFromPath( path0, points )
+    //     const destination = getCodeFromPath( path1, points )
+    //     return <AircraftFlight key={id} id={id} name={name} origin={origin} destination={destination} altitude={altitude} speed={speed} />
+    // }
 
     renderAircraftFlight = aircraft => {
         const { props } = this
         const { points } = props
-        const { id, name, path, altitude, speed } = aircraft  // distance, pointCound, duration - depends
-        const paths = path && path.split( /\s/ )
-        const path0 = paths.length > 0 ? paths[ 0 ].toUpperCase().trim() : ''
-        const path1 = paths.length > 1 ? paths[ 1 ].toUpperCase().trim() : ''
-        const origin = getCodeFromPath( path0, points )
-        const destination = getCodeFromPath( path1, points )
+        const { id, name, origin, destination, altitude, speed } = aircraft  // distance, pointCound, duration - depends
+        const originPoint = points[ origin ]
+        const destinationPoint = points[ destination ]
+        // assert( originPoint )
+        // assert( destinationPoint )
 
-        return <AircraftFlight key={id} id={id} name={name} origin={origin} destination={destination} altitude={altitude} speed={speed} />
+        return originPoint && destinationPoint && <AircraftFlight key={id} id={id} name={name} origin={originPoint} destination={destinationPoint} altitude={altitude} speed={speed} />
     }
 
     renderFleet = fleet => {
@@ -54,7 +68,7 @@ class Fleet extends Component {
 
         return (
             <React.Fragment>
-                { fleet.map( a => a.path ? renderAircraftFlight( a ) : renderAircraftParked( a ) ) }
+                { fleet.map( a => a.destination ? renderAircraftFlight( a ) : renderAircraftParked( a ) ) }
             </React.Fragment>
         )
     }
@@ -66,7 +80,7 @@ class Fleet extends Component {
         return (
             <div className="fleet">
                 { renderFleet( fleet ) }
-                <AddAircraft points={points}/>
+                <AddAircraft points={points} />
             </div>
         )
     }

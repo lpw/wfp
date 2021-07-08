@@ -72,8 +72,9 @@ class AddAircraft extends Component {
         return (
             <div className="aircraftRow">
                 <div className="aircraftRowFields">
-                    <input type="text" onKeyUp={checkAdd} onBlur={checkAdd} className="aircraftRowName" ref={this.nameRef} placeholder="Aircraft name, or tail-number, etc..." />
+                    <input type="text" onKeyUp={checkAdd} onBlur={checkAdd} className="aircraftRowName" ref={this.nameRef} placeholder="Aircraft identifier..." />
                     <input type="text" onKeyUp={checkAdd} onBlur={checkAdd} className="aircraftRowOrigin" ref={this.originRef} placeholder="location..." />
+                    <span className="aircraftRowArrow"></span>
                     <span className="aircraftRowDestination"></span>
                     <span className="aircraftRowAltitude"></span>
                     <span className="aircraftRowSpeed"></span>

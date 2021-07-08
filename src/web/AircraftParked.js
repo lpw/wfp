@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { deleteAircraft } from '../actions'
+import { deleteAircraft, addFlightRoute } from '../actions'
+import { getIdFromPath } from '../utils'
 import {
     // aircraftParkedFromState,
 } from '../selectors'
@@ -18,12 +19,12 @@ class AircraftParked extends Component {
     }
 
     check = () => {
-        const { speedRef, altitudeRef, destinationRef } = this
-        // const { id } = props  
+        const { props, speedRef, altitudeRef, destinationRef } = this
+        const { points } = props  
 
         const speed = speedRef.current.value
         const altitude = altitudeRef.current.value
-        const destination = destinationRef.current.value
+        const destination = getIdFromPath( destinationRef.current.value, points )
 
         this.setState ( {
             disabled: !speed || !altitude || !destination
@@ -32,18 +33,18 @@ class AircraftParked extends Component {
 
     launch = () => {
         const { props, speedRef, altitudeRef, destinationRef } = this
-        const { id, deleteAircraft } = props  
+        const { id, origin, deleteAircraft, addFlightRoute, points } = props  
 
         const speed = speedRef.current.value
         const altitude = altitudeRef.current.value
-        const destination = destinationRef.current.value
-
-        if( speed === '0' && altitude === '0' && destination === '0' ) {
-            deleteAircraft( id )
-        }
+        const destination = getIdFromPath( destinationRef.current.value, points )
 
         if( speed && altitude && destination ) {
-            console.log( 'Supervising', id )
+            if( speed === '0' && altitude === '0' && destination === '0' ) {
+                deleteAircraft( id )
+            } else {
+                addFlightRoute( id, origin.id, destination, altitude, speed )
+            }
         }
     }
 
@@ -55,7 +56,8 @@ class AircraftParked extends Component {
             <div className="aircraftRow">
                 <div className="aircraftRowFields">
                     <span className="aircraftRowName">{ name }</span>
-                    <span className="aircraftRowOrigin">{ origin }</span>
+                    <span className="aircraftRowOrigin">{ origin.code }</span>
+                    <span className="aircraftRowArrow">&#x2192;</span>
                     <input type="text" onKeyUp={check} onBlur={check} className="aircraftRowDestination" ref={this.destinationRef} placeholder="destination..." />
                     <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowAltitude" ref={this.altitudeRef} placeholder="altitude..." />
                     <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowSpeed" ref={this.speedRef} placeholder="speed..." />
@@ -78,6 +80,9 @@ const mapDispatchToProps = dispatch => {
     return {
         deleteAircraft: ( id ) => {
             dispatch( deleteAircraft( id ) )
+        },
+        addFlightRoute: ( aircraft, origin, destination, altitude, speed ) => {
+            dispatch( addFlightRoute( aircraft, origin, destination, altitude, speed ) )
         },
     }
 }

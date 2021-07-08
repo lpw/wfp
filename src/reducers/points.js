@@ -1,6 +1,6 @@
 import {
 	RECEIVED_POINTS,
-	RECEIVED_POINT,
+	// RECEIVED_POINT,
 } from '../actions'
 
 const points = ( state = {}, action ) => {

@@ -3,7 +3,7 @@
  * can easily run them as one process that handles both FE and API,
  * or can run them as two separate process later (or serverless)
  */
-
+import assert from 'assert'
 import fs from 'fs';
 import Hapi from 'hapi';
 import Inert from 'inert';
@@ -22,6 +22,7 @@ import {
 	promiseUsers,
 	promiseFleet,
 	promisePoints,
+	addFlightRoute,
 } from '../db'
 
 const debug = require('debug')('wisk:server')
@@ -161,7 +162,7 @@ const version = 'apiv1'
 
 function routeApi( server ) {
 	server.route({
-		method: ['GET', 'PUT', 'POST'], 
+		method: ['GET', 'POST'], 
 		path: `/${version}/{op}`,
 		handler: function( request, reply ) {
 			const { params: { op }, method } = request  // query also available
@@ -313,6 +314,13 @@ function routeApi( server ) {
 						}
 					}
 				}
+				default: {
+					debug( 'routeApi unknown method', method )
+					return {
+						error: `method /${method} unknown method`
+					}
+					break
+				}
 			}
 		}
 	})
@@ -320,13 +328,31 @@ function routeApi( server ) {
 
 function routeArgApi( server ) {
 	server.route({
-		method: ['GET', 'PUT', 'POST', 'DELETE'], 
+		method: ['GET', 'POST', 'DELETE'], 
 		path: `/${version}/{op}/{id}`,
 		handler: function( request, reply ) {
 			const { params: { op, id }, method, payload } = request  // query also available
 			switch( method ) {
 				case 'post': {
 					switch( op ) {
+						case 'flightroute': {
+							debug( 'routeApi', method, op, typeof payload, payload )
+							const { aircraft, origin, destination, altitude, speed } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							assert( +aircraft === +id )  // until we decide
+							return addFlightRoute( +id, origin, destination, altitude, speed ).then( result => {
+								const replyResult = {
+									status: 'ok', 
+									result, 
+								}
+								debug( 'routeApi addAircraftToFleet then replyResult', replyResult )
+								return replyResult
+							}).catch( error => {
+								console.warn( 'routeApi error', error.message ) 
+								return {
+									error: `op /${op} error ${error.message}`
+								}
+							})
+						}
 						case 'flight': {
 							const { path, altitude, speed } = typeof payload === 'string' ? JSON.parse( payload ) : payload
 							debug( 'routeArgApi post flight path, altitude, speed', id, path, altitude, speed )
@@ -385,7 +411,7 @@ function routeArgApi( server ) {
 						}
 					}
 				}
-				default: {
+				case 'get': {
 					switch( op ) {
 						case 'flight': {
 							return promiseFlight( id ).then( result => {
@@ -418,6 +444,13 @@ function routeArgApi( server ) {
 							})
 						}
 					}
+				}
+				default: {
+					debug( 'routeArgApi unknown method', method )
+					return {
+						error: `method /${method} unknown method`
+					}
+					break
 				}
 			}
 		}

@@ -1,5 +1,6 @@
 import {
 	fleetQuery,
+	routePointsQuery,
 } from './queries'
 
 export function promiseFleet() {
@@ -12,7 +13,7 @@ export function promiseFleet() {
 		})
 	})
 
-	// const pointsPromise = new Promise( function( resolve, reject ) {
+	// const routePointsQuery = new Promise( function( resolve, reject ) {
 	// 	pointsQuery( function ( error, rows ) {
 	// 		if ( error ) {
 	// 			return reject( error ) // throw
@@ -43,5 +44,22 @@ export function promiseFleet() {
 	// 	}))
 	// })
 
-	return fleetPromise
+	return fleetPromise.then( fleet => {
+		const routePointsPromises = fleet.map( f => {
+			return new Promise( function( resolve, reject ) {
+				routePointsQuery( f.route, function ( error, rows ) {
+					if ( error ) {
+						return reject( error ) // throw
+					}
+					const f2 = {
+						...f,
+						...rows[ 0 ] && rows[ 0 ].point && { origin: rows[ 0 ].point },
+						...rows[ 1 ] && rows[ 1 ].point && { destination: rows[ 1 ].point },
+					}
+					resolve( f2 )
+				})
+			})
+		})
+		return Promise.all( routePointsPromises )
+	})
 }

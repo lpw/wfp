@@ -55,7 +55,7 @@ export const deleteFlightQuery = ( id, f ) => connectionQuery( `DELETE FROM flig
 // `, f )
 export const fleetQuery = f => connectionQuery( `
 SELECT 
-fleet.id, fleet.name, fleet_points.point as base, routes.path, routes.altitude, routes.speed 
+fleet.id, fleet.name, fleet_points.point as base, fleet_routes.route, routes.path, routes.origin, routes.destination, routes.altitude, routes.speed 
 FROM 
 fleet 
 LEFT OUTER JOIN 
@@ -72,13 +72,20 @@ ON
 routes.id=fleet_routes.route
 `, f )
 
-export const pointsQuery = f => connectionQuery( `
+export const pointsQuery = ( f ) => connectionQuery( `
 SELECT 
 * 
 FROM 
-points
+points 
 `, f )
 
+export const routePointsQuery = ( routeId, f ) => connectionQuery( `
+SELECT 
+* 
+FROM 
+routes_points 
+WHERE routes_points.route=${routeId}
+`, f )
 
 export const addAircraftToFleetQuery =  ( aircraftName, f ) => connectionQuery( `
 INSERT INTO 
@@ -96,11 +103,26 @@ VALUES
 ('${aircraftId}', '${pointId}')
 `, f )
 
+export const addRouteQuery = ( origin, destination, altitude, speed, f ) => connectionQuery( `
+INSERT INTO 
+\`routes\`
+(\`origin\`, \`destination\`, \`altitude\`, \`speed\`)
+VALUES 
+('${origin}', '${destination}', '${altitude}', '${speed}')
+`, f )
+
+export const addRouteToAircraft = ( aircraft, route, f ) => connectionQuery( `
+DELETE FROM fleet_routes where aircraft=${aircraft};
+INSERT INTO 
+\`fleet_routes\`
+(\`aircraft\`, \`route\`)
+VALUES 
+('${aircraft}', '${route}')
+`, f )
+
 export const deleteAircraftQuery = ( id, f ) => connectionQuery( `
 	DELETE FROM fleet where id=${id}; 
 	DELETE FROM fleet_routes where aircraft=${id}; 
 	DELETE FROM fleet_points where aircraft=${id};
 `, f )
-
-
 

@@ -4,6 +4,8 @@ import {
 } from './queries';
 import airports from '../points/airports.js'
 
+const debug = require('debug')('wfp:db')
+
 let points = {}
 
 const transform = rows => {
@@ -32,18 +34,19 @@ const transform = rows => {
 export function promisePoints() {
 	const pointsPromise = new Promise( function( resolve, reject ) {
 		if( points && Object.keys( points ).length > 0 ) {
-			console.log( `Using ${Object.keys( points ).length} points already cached`)
+			debug( `Using ${Object.keys( points ).length} points already cached`)
 			resolve( points )
 		} else {
 			pointsQuery( function ( error, rows ) {
 				if ( error ) {
-					console.log( `Error querying points`)
+					debug( `Error querying points`)
 					return reject( error ) // throw
 				}
 
 				if( rows.length > 0 ) {
-					console.log( `Using ${rows.length} points already in database`)
+					debug( `Found ${rows.length} points already in database`)
 					resolve( transform( rows ) )
+					debug( `Using ${rows.length} points already in database`)
 				} else {
 					const insertPointsPromises = Object.keys( airports ).map( k => {
 						const airport = airports[ k ]
@@ -57,10 +60,10 @@ export function promisePoints() {
 								airport.altitude,
 								( error, rows ) => {
 									if( error ) {
-										console.log( `Error adding ${airport.icao}`)
+										debug( `Error adding ${airport.icao}`)
 										reject( error )
 									} else {
-										console.log( `Just added ${airport.icao}`)
+										debug( `Just added ${airport.icao}`)
 										resolve()
 									}
 								}
@@ -69,16 +72,16 @@ export function promisePoints() {
 					})
 					const insertPointsPromise = Promise.all( insertPointsPromises )
 					insertPointsPromise.then( insertedPoints => {
-						console.log( `Done adding points`)
+						debug( `Done adding points`)
 						// resolve( insertedPoints )
 
 						pointsQuery( function ( error, rows ) {
 							if ( error ) {
-								console.log( `Error querying points`)
+								debug( `Error querying points`)
 								return reject( error ) // throw
 							}
 
-							console.log( `Using ${rows.length} points added to the database`)
+							debug( `Using ${rows.length} points added to the database`)
 							resolve( transform( rows ) )
 						})
 					})

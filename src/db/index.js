@@ -10,7 +10,6 @@ export * from './promisePoints'
 export * from './promiseFleet'
 export * from './addAircraftToFleet'
 export * from './deleteAircraft'
-
-
+export * from './addFlightRoute'
 
 

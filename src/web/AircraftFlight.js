@@ -26,10 +26,11 @@ class AircraftFlight extends Component {
             <div className="aircraftRow">
                 <div className="aircraftRowFields">
                     <span className="aircraftRowName">{ name }</span>
-                    <span className="aircraftRowOrigin">{ origin }</span>
-                    <span className="aircraftRowDestination">{ destination }</span>
-                    <span className="aircraftRowAltitude">{ altitude }</span>
-                    <span className="aircraftRowSpeed">{ speed }</span>
+                    <span className="aircraftRowOrigin">{ origin.code }</span>
+                    <span className="aircraftRowArrow">&#x2192;</span>
+                    <span className="aircraftRowDestination">{ destination.code }</span>
+                    <span className="aircraftRowAltitude">{ altitude } ft</span>
+                    <span className="aircraftRowSpeed">{ speed } kts</span>
                 </div>
                 <button className="aircraftRowButton" onClick={supervise} disabled={ this.state.disabled }>Supervise</button>
             </div>
