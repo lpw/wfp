@@ -1,7 +1,10 @@
+Bounding box only from selected aircraft (or flyTo if one)
+
 phones as aircraft
 tailnum, location (gps?)
 dest, alt, speed
-INS?
+INS? Instruments?
+MX?
 
 threshold for combining points
 
@@ -9,7 +12,14 @@ hide markers on initial render
 
 monile phone progressive UI
 
+Supervise parked aircraft?
+
 TESTS
+
+append to external/existing classesNames from lib like mapbox via React/classNames
+
+fleet row: dest/parked schedule history mx launch land
+need flight table in db, for past and future (diff tables?)
 
 schedule/launch/cancel/delete
 land/contigency

@@ -61,5 +61,12 @@ export function promiseFleet() {
 			})
 		})
 		return Promise.all( routePointsPromises )
+	}).then( fleet => {
+		return fleet.reduce( ( a, f ) => {
+			return ({
+				...a,
+				[ f.id ]: f,
+			})
+		})
 	})
 }

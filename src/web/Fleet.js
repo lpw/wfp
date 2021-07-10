@@ -20,7 +20,7 @@ class Fleet extends Component {
         const { props } = this
         const { fleet, points, requestPoints, requestFleet } = props
 
-        if( fleet.length <= 0 || stale() ) {
+        if( Object.keys( fleet ).length <= 0 || stale() ) {
             requestFleet()
         }
 
@@ -68,7 +68,7 @@ class Fleet extends Component {
 
         return (
             <React.Fragment>
-                { fleet.map( a => a.destination ? renderAircraftFlight( a ) : renderAircraftParked( a ) ) }
+                { Object.keys( fleet ).map( k => fleet[ k ] ).map( a => a.destination ? renderAircraftFlight( a ) : renderAircraftParked( a ) ) }
             </React.Fragment>
         )
     }

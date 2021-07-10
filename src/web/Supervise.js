@@ -3,6 +3,15 @@ import React, { Component } from 'react'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 import mapboxgl from 'mapbox-gl'
+import ProgressBar from "@ramonak/react-progress-bar"
+import {
+  Airspeed,
+  Altimeter,
+  AttitudeIndicator,
+  HeadingIndicator,
+  TurnCoordinator,
+  Variometer
+} from 'react-flight-indicators'
 import {
     requestFleet,
     requestPoints,
@@ -25,7 +34,7 @@ const removeMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraf
 const addMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftIds.concat( marker.aircraftIds )
 
 const getMarkers = ( fleet, points ) => {
-    const markers = fleet.reduce( ( msf, aircraft )=> {
+    const markers = Object.keys( fleet ).map( k => fleet[ k ]).reduce( ( msf, aircraft )=> {
         const pointId = aircraft.origin || aircraft.base
 console.log( 'LANCE getMarkers msf', msf )
         const colocatedMsf = Object.keys( msf ).map( k => msf[ k ] ).find( m => m.pointId === pointId )
@@ -63,7 +72,7 @@ console.log( 'LANCE getMarkers msf', msf )
 }
 
 const getPaths = ( fleet, points ) => {
-    const paths = fleet.reduce( ( psf, aircraft )=> {
+    const paths = Object.keys( fleet ).map( k => fleet[ k ]).reduce( ( psf, aircraft )=> {
         if( aircraft.origin || aircraft.base ) {
             const originPointId = aircraft.origin || aircraft.base
             const destinationPointId = aircraft.destination
@@ -156,6 +165,26 @@ class Supervise extends Component {
                 selectedAircraftIds: addMarkersAircraft( marker, selectedAircraftIds )
             })
         }
+    }
+
+    comms = () => {
+        window.alert( 'Communications Panel' )
+    }
+
+    contingency = () => {
+        window.alert( 'Contingency Panel' )
+    }
+
+    close = id => {
+        const { state } = this
+        const { selectedAircraftIds } = state
+
+        console.log( 'LANCE close id', id )
+        console.log( 'LANCE close selectedAircraftIds', selectedAircraftIds )
+
+        this.setState({
+            selectedAircraftIds: selectedAircraftIds.filter( said => said !== id )
+        })
     }
 
     setupMap() {
@@ -454,7 +483,13 @@ console.log( 'LANCE fitBounds boundingBox', boundingBox )
         const { setRef, clickMarker, state } = this
         const { selectedAircraftIds } = state
         const markerAndNamesSelected = markerHasSelectedAircraft( m, selectedAircraftIds )
-        const markerClassNames = classNames( 'markerAndNames', { markerAndNamesSelected } )
+        const markerClassNames = classNames( 
+            'markerAndNames', 
+            // append to external/existing classesNames from lib like mapbox via React/classNames?
+            'mapboxgl-marker',
+            'mapboxgl-marker-anchor-top',
+            { markerAndNamesSelected } 
+        )
         return (
             <div key={ m.id } className={ markerClassNames } ref={ el => setRef( el, m ) } onClick={ () => clickMarker( m ) }>
                 <div className="marker"></div>
@@ -465,10 +500,115 @@ console.log( 'LANCE fitBounds boundingBox', boundingBox )
         )
     }
 
+    renderSelectedAircraft = id => {
+        const { props, renderFlyingSelectedAircraft, renderParkedSelectedAircraft } = this
+        const { fleet, points } = props
+        const aircraft = fleet[ id ]
+        // const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
+console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
+console.log( 'LANCE renderSelectedAircraft Object.keys( points ).length', Object.keys( points ).length )
+        if( aircraft && Object.keys( points ).length > 0 ) {
+            const { base, origin, destination } = aircraft
+            const originPoint = points[ origin || base ]
+            const destinationPoint = points[ destination ]
+console.log( 'LANCE renderSelectedAircraft originPoint', originPoint )
+            // if( !originPoint ) {
+            //     console.warn( `missing originPoint for ${origin}`)
+            // }
+            assert( originPoint )
+            if( destinationPoint ) {
+                return renderFlyingSelectedAircraft( id, originPoint, destinationPoint )
+            } else {
+                return renderParkedSelectedAircraft( id, originPoint )
+            }
+        }
+    }
+
+    renderFlyingSelectedAircraft = ( id, originPoint, destinationPoint ) => {
+        const { props, comms, contingency, close, sixPack } = this
+        const { fleet } = props
+        const aircraft = fleet[ id ]
+        const { name, altitude = 123, speed = 456, distance = 789, time = 987 } = aircraft
+        const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
+        const distanceComplete = 0.7
+        const timeComplete = 0.6
+        assert( originPoint && destinationPoint )
+console.log( 'LANCE renderFlyingSelectedAircraft originPoint', originPoint )
+console.log( 'LANCE renderFlyingSelectedAircraft destinationPoint', destinationPoint )
+                    // <div className="selectedTimeAndDistance">
+                    //     <span className="selectedAircraftDistance">{ distance } nm</span>
+                    //     <span className="selectedAircraftRemaining">{ distance * 2 } nm</span>
+                    // </div>
+                    // </div>
+                    // <div className="selecteddAltAndSpeed">
+        return (
+            <div key={ id } className={ selectedAircraftClassNames }>
+                <div className="selectedNameAndPath">
+                    <span className="selectedAircraftName">{ name }</span>
+                    <span>
+                        <span className="selectedAircraftOrigin">{ originPoint.code }</span>
+                        <span className="selectedAircraftArrow">&#x2192;</span>
+                        <span className="selectedAircraftDestination">{ destinationPoint.code }</span>
+                    </span>
+                    <span className="selectedAircraftAltitude">Altitude: { altitude } ft</span>
+                    <span className="selectedAircraftSpeed">Speed: { speed } kts</span>
+                    <button className="selectedCommsButton" onClick={ comms }>Communicate</button>
+                    <button className="selectedContingencyButton" onClick={ contingency }>Contingency</button>
+                    <button className="selectedCloseButton" onClick={ () => close( id ) }>X</button>
+                </div>
+                <div className="selectedAircraftRest">
+                    <div className="selectedAircraftLeftCol">
+                        <div className="selectedDistanceBar">
+                            <span className="selectedAircraftDistance">Distance Total: { distance } nm</span>
+                            <span className="selectedAircraftDistance">Complete: { Math.round( distance * distanceComplete ) } nm</span>
+                            <ProgressBar className="ProgressBar" completed={ distanceComplete * 100 } />
+                            <span className="selectedAircraftDistance">Remaning: { Math.round( distance * ( 1 - distanceComplete ) ) } nm</span>
+                        </div>
+                        <div className="selectedTimeBar">
+                            <span className="selectedAircraftTime">Time Total: { time } min</span>
+                            <span className="selectedAircraftTime">Complete: { Math.round( time * timeComplete ) } min</span>
+                            <ProgressBar className="ProgressBar" completed={ timeComplete * 100 } />
+                            <span className="selectedAircraftTime">Remaning: { Math.round( time * ( 1 - timeComplete ) ) } min</span>
+                        </div>
+                    </div>
+                    <div className="selectedAircraftRightCol" onClick={ sixPack }>
+                        <div className="topRowSixPack">
+                            <HeadingIndicator size={ 50 } className="oneOfSixPack" heading={Math.random() * 360} showBox={false} />
+                            <Airspeed size={ 50 } className="oneOfSixPack" speed={Math.random() * 160} showBox={false} />
+                            <Altimeter size={ 50 } className="oneOfSixPack" ltitude={Math.random() * 28000} showBox={false} />
+                        </div>
+                        <div className="bottomRowoneOfSixPack">
+                            <AttitudeIndicator size={ 50 } className="oneOfSixPack" roll={(Math.random() - 0.5) * 120} pitch={(Math.random() - 0.5) * 40} showBox={false} />
+                            <TurnCoordinator size={ 50 } className="oneOfSixPack" turn={(Math.random() - 0.5) * 120} showBox={false} />
+                            <Variometer size={ 50 } className="oneOfSixPack" vario={(Math.random() - 0.5) * 4000} showBox={false} />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    renderParkedSelectedAircraft = ( id, originPoint ) => {
+        const { props } = this
+        const { fleet } = props
+        const aircraft = fleet[ id ]
+        const { name } = aircraft
+        const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
+        assert( originPoint )
+console.log( 'LANCE renderParkedSelectedAircraft originPoint', originPoint )
+        return (
+            <div key={ id } className={ selectedAircraftClassNames }>
+                <span className="selectedAircraftName">{ name }</span>
+                <span className="selectedAircraftOrigin">{ originPoint.code }</span>
+            </div>
+        )
+    }
+
     render() {
-        const { updateMap, props, renderMarker } = this
+        const { updateMap, props, state, renderMarker, renderSelectedAircraft } = this
         // const { routeIndex } = state
         const { markers } = props
+        const { selectedAircraftIds } = state
         // const routeId = routeIds[ routeIndex ]
         // const numRoutes = routeIds.length
         // let path = 'none'
@@ -513,6 +653,7 @@ console.log( 'LANCE fitBounds boundingBox', boundingBox )
                 </div>
                 <div id="mapbox" className="supervise-mapContainer" ref={this._mapRef}></div>
                 { Object.keys( markers ).map( k => markers[ k ] ).map( renderMarker ) }
+                { selectedAircraftIds.map( renderSelectedAircraft ) }
             </div>
         )
     }
@@ -584,6 +725,7 @@ const mapStateToProps = ( state, props ) => {
     // }
 
     return {
+        fleet,
         markers,
         paths,
         points,
