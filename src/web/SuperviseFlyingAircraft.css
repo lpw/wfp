@@ -1,0 +1,122 @@
+.selectedAircraft {
+  /*border-top-style: solid;*/
+  border-bottom-style: solid;
+  border-width: 1px;
+  display: flex;
+  flex-direction: column;
+}
+
+.selectedAircraftLeftCol {
+  /*width: 50%;*/
+  width:  calc( 100% - 150px );
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.selectedAircraftMiddleCol {
+  margin: 0 2% 0 0;
+}
+
+.selectedAircraftFuel {
+}
+
+.selectedAircraftRightCol {
+  /*width: 20%;*/
+  /*height: 20%;*/
+  display: flex;
+  flex-direction: column;
+  /*transform: scale( 0.3 );*/
+  /*position: absolute;*/
+}
+
+.selectedNameAndPath {
+  justify-content: space-between;
+}
+
+.selectedTimeAndDistance,
+.selectedDistanceBar,
+.selectedTimeBar,
+.selectedTimeAndDistanceBar,
+.selecteddAltAndSpeed,
+.selectedNameAndPath {
+  display: flex;
+  flex-direction: row;
+  padding: 1% 0;
+}
+
+.selectedDistanceBar,
+.selectedTimeBar,
+.selectedTimeAndDistanceBar {
+  display: flex;
+  flex-direction: row;
+}
+
+.ProgressBar {
+  width: 20%;
+  padding: 0;
+  margin: 0 2% 0 0;
+}
+
+.selectedAircraftName,
+.selectedAircraftAltitude,
+.selectedAircraftSpeed,
+.selectedAircraftDistance,
+.selectedAircraftTime,
+.selectedAircraftRemaining,
+.selectedAircraftName {
+  padding: 0;
+  margin: 0 2% 0 0;
+  /*width: 10%;*/
+}
+
+.selectedAircraftName {
+  font-weight: bold;
+}
+
+.selectedAircraftOrigin {
+  padding: 0;
+  margin: 0 0% 0 0;
+  /*width: 10%;*/
+}
+
+.selectedAircraftArrow {
+  padding: 0;
+  margin: 0 2% 0 2%;
+  /*width: 2%;*/
+}
+
+.selectedAircraftDestination {
+  padding: 0;
+  margin: 0 2% 0 0;
+  /*width: 10%%;*/
+}
+
+.selectedCommsButton,
+.selectedContingencyButton,
+.selectedCloseButton,
+.selectedVideoButton,
+button.selectedNameAndPath {
+  border-radius: 10px;
+}
+
+.selectedAircraftRest {
+  display: flex;
+  flex-direction: row;
+  /*justify-content: space-between;*/
+}
+
+.bottomRowoneOfSixPack,
+.topRowSixPack {
+  display: flex;
+  flex-direction: row;
+  /*justify-content: space-between;*/
+}
+
+.oneOfSixPack {
+  /*display: flex;*/
+}
+
+.instrument {
+  transition: width 2s, height 2s;
+}
