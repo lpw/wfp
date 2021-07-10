@@ -1,3 +1,19 @@
+phones as aircraft
+tailnum, location (gps?)
+dest, alt, speed
+INS?
+
+threshold for combining points
+
+hide markers on initial render
+
+monile phone progressive UI
+
+TESTS
+
+schedule/launch/cancel/delete
+land/contigency
+
 fleet /fleet /flms /fms /foc /aircraft /vehicles 
 map /flights /flights?a=123&a=456 (commas, array, etc) /supervise /mvs /map
 instruments /flights/123 /flight/123 (show map? nah, above)

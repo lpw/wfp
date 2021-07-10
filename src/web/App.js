@@ -19,6 +19,7 @@ function App( props ) {
                 <Route path="/flms" component={Fleet} />
                 <Route path="/fms" component={Fleet} />
                 <Route path="/foc" component={Fleet} />
+                <Route path="/gas" component={Fleet} />
                 <Route path="/gs" component={Fleet} />
                 <Route path="/supervise" component={Supervise} />
                 <Route path="/supervisor" component={Supervise} />

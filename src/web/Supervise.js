@@ -1,5 +1,6 @@
 import assert from 'assert'
 import React, { Component } from 'react'
+import classNames from 'classnames'
 import { connect } from 'react-redux'
 import mapboxgl from 'mapbox-gl'
 import {
@@ -10,20 +11,18 @@ import {
     // deleteRoute,
 } from '../actions'
 import {
-    // // nameFromAircraftId,
-    // routeIdsFromAircraftId,
-    // // routePathFromRouteId,
-    // routeAltitudeFromRouteId,
-    // routeSpeedFromRouteId,
-    // routePointsFromRouteId,
-    pointsFromAircraftId,
-    altitudeFromAircraftId,
-    speedFromAircraftId,
+    // pointsFromAircraftId,
+    // altitudeFromAircraftId,
+    // speedFromAircraftId,
 } from '../selectors'
 // import AddRoute from './AddRoute'
 import './Supervise.css'
 
 const stale = () => true // TBD what determines when to refetch stages and status of supervise  - always for now
+
+const markerHasSelectedAircraft = ( marker, selectedAircraftIds ) => marker.aircraftIds.some( id => selectedAircraftIds.includes( id ) )
+const removeMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftIds.filter( id => !marker.aircraftIds.includes( id ) )
+const addMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftIds.concat( marker.aircraftIds )
 
 const getMarkers = ( fleet, points ) => {
     const markers = fleet.reduce( ( msf, aircraft )=> {
@@ -102,19 +101,23 @@ const getPaths = ( fleet, points ) => {
 class Supervise extends Component {
     constructor(props) {
         super( props )
-        this.state = {
-            // routeIndex: 0
-        }
-        this.mapRef = React.createRef()
+        const { selectedAircraftIds } = props
+
+        this._mapRef = React.createRef()
         this._markers = {}
 
         this._sources = []
         this._layers = []
+
+        this.state = {
+            selectedAircraftIds
+        }
     }
 
     setRef = ( el, marker ) => {
         console.log( 'LANCE setRef el', el )
         console.log( 'LANCE setRef marker.el', marker.el )
+        console.log( 'LANCE setRef marker.el === el', marker.el === el )
         console.log( 'LANCE setRef marker', marker )
         marker.el = el
     }
@@ -139,13 +142,29 @@ class Supervise extends Component {
         this.setupMap()
     }
 
+    clickMarker = marker => {
+        console.log( 'LANCE clickMarker marker', marker )
+        const { state } = this
+        const { selectedAircraftIds } = state
+        const markerSelected = markerHasSelectedAircraft( marker, selectedAircraftIds )
+        if( markerSelected ) {
+            this.setState({
+                selectedAircraftIds: removeMarkersAircraft( marker, selectedAircraftIds )
+            })
+        } else {
+            this.setState({
+                selectedAircraftIds: addMarkersAircraft( marker, selectedAircraftIds )
+            })
+        }
+    }
+
     setupMap() {
-        const { mapRef } = this
+        const { _mapRef } = this
         // const { fleet } = props
         // index.js does mapboxgl.accessToken = 'pk.eyJ1IjoibGFuY2VwdyIsImEiOiJja2ZpamE2NGIwMHBnMzhxdTJpYXd3Z3g5In0.aC7y-RlHNxdFXi5UgpagMA';
-        if( mapRef.current ) {
+        if( _mapRef.current ) {
             this._map = new mapboxgl.Map({
-                container: mapRef.current,
+                container: _mapRef.current,
                 style: 'mapbox://styles/mapbox/streets-v11',
                 center: [-122.486052, 37.830348],
                 zoom: 15
@@ -207,14 +226,16 @@ class Supervise extends Component {
         const { _map: map, props } = this
         // const { routeIndex } = state
         // const { fleet, aircraftInfoSelector } = props
-        const { markers, paths } = props
-        let flyToPoint
+        const { markers, paths, boundingBox } = props
+        // let flyToPoint
 console.log( 'LANCE markers', markers )
 console.log( 'LANCE paths', paths )
 
         if( map && map.loaded() && map.isStyleLoaded() ) {
             this._layers.map( layer => map.removeLayer( layer ) )
             this._sources.map( source => map.removeSource( source ) )
+            this._layers = []
+            this._sources = []
 
 //             markers.map( f => {
 //                 const aircraftInfo = aircraftInfoSelector( f.id )
@@ -318,10 +339,10 @@ console.log( 'LANCE paths', paths )
                 const { id, coord } = m
 
                 const source = `marker${id}`
-                const layer = `marker${id}`
+                // const layer = `marker${id}`
 
                 this._sources = this._sources.concat( source )
-                this._layers = this._layers.concat( layer )
+                // this._layers = this._layers.concat( layer )
 
 console.log( 'LANCE marker', source, coord[0], coord[1] )
                 map.addSource( source, {
@@ -338,13 +359,19 @@ console.log( 'LANCE marker', source, coord[0], coord[1] )
 
                 if( !m.mbmarker ) {
                     assert( m.el )
+                    // m.mbmarker = new mapboxgl.Marker( m.el )
                     m.mbmarker = new mapboxgl.Marker( m.el, { anchor: 'top', offset: [ 0, -32 ] } ) // half of css height
+                    m.mbmarker.setLngLat( coord ).addTo( map )
+console.log( 'LANCE updateMap newMarker id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
+                } else {
+                    m.mbmarker.setLngLat( coord )
+console.log( 'LANCE updateMap setLngLat id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
                 }
-console.log( 'LANCE updateMap id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
-                m.mbmarker.setLngLat( coord ).addTo( map )
 
                 // if( !flyToPoint ) {
-                //     flyToPoint = coordinates[ 0 ]
+                //     if( markerHasSelectedAircraft( m, selectedAircraftIds ) ) {
+                //         flyToPoint = coord
+                //     }
                 // }
 
                 return null
@@ -386,14 +413,20 @@ console.log( 'LANCE line source, coordinates', source, coordinates )
                         'line-width': 8
                     }
                 })
+
+                return null
             })
 
-console.log( 'LANCE flyToPoint', flyToPoint, flyToPoint && flyToPoint[0], flyToPoint && flyToPoint[1] )
-            if( flyToPoint ) {
-                map.flyTo({
-                    center: flyToPoint
-                })
-                // this._marker.setLngLat( flyToPoint ).addTo( map )
+// console.log( 'LANCE flyToPoint', flyToPoint, flyToPoint && flyToPoint[0], flyToPoint && flyToPoint[1] )
+//             if( flyToPoint ) {
+//                 map.flyTo({
+//                     center: flyToPoint
+//                 })
+//                 // this._marker.setLngLat( flyToPoint ).addTo( map )
+//             }
+console.log( 'LANCE fitBounds boundingBox', boundingBox )
+            if( boundingBox ) {
+                map.fitBounds( boundingBox )
             }
         }
     }
@@ -418,10 +451,13 @@ console.log( 'LANCE flyToPoint', flyToPoint, flyToPoint && flyToPoint[0], flyToP
     // }
 
     renderMarker = m => {
-        const { setRef } = this
+        const { setRef, clickMarker, state } = this
+        const { selectedAircraftIds } = state
+        const markerAndNamesSelected = markerHasSelectedAircraft( m, selectedAircraftIds )
+        const markerClassNames = classNames( 'markerAndNames', { markerAndNamesSelected } )
         return (
-            <div className="markerAndNames" ref={ el => setRef( el, m ) }>
-                <div key={ m.id } className="marker"></div>
+            <div key={ m.id } className={ markerClassNames } ref={ el => setRef( el, m ) } onClick={ () => clickMarker( m ) }>
+                <div className="marker"></div>
                 <div className="markerNames">
                     { m.name }
                 </div>
@@ -475,7 +511,7 @@ console.log( 'LANCE flyToPoint', flyToPoint, flyToPoint && flyToPoint[0], flyToP
                 <div className="supervise-body">
                     { updateMap() }
                 </div>
-                <div id="mapbox" className="supervise-mapContainer" ref={this.mapRef}></div>
+                <div id="mapbox" className="supervise-mapContainer" ref={this._mapRef}></div>
                 { Object.keys( markers ).map( k => markers[ k ] ).map( renderMarker ) }
             </div>
         )
@@ -488,7 +524,8 @@ const mapStateToProps = ( state, props ) => {
     // const aircraftId = +id
     const { fleet, points } = state
     const { location: { search } } = props
-    const selectedAircraftIds = new URLSearchParams( search ).get( 'a' )
+    const selectedAircraftIds = ( new URLSearchParams( search ).getAll( 'a' ) || [] ).map( said => +said )
+    console.log( 'LANCE selectedAircraftIds', selectedAircraftIds )
 
     // const name = nameFromAircraftId( state, aircraftId ) || aircraftId
     // const routeIds = routeIdsFromAircraftId( state, aircraftId )
@@ -508,6 +545,25 @@ const mapStateToProps = ( state, props ) => {
     const markers = getMarkers( fleet, points )
     const paths = getPaths( fleet, points )
 
+
+    let boundingBox
+    const coords = Object.keys( markers ).map( k => markers[ k ].coord ).concat(
+        Object.keys( paths ).map( k => paths[ k ].originCoord ) ).concat(
+        Object.keys( paths ).map( k => paths[ k ].destinationCoord ) )
+    if( coords.length ) {
+        let north = Math.max( ...coords.map( c => c[ 1 ] ) )
+        let south = Math.min( ...coords.map( c => c[ 1 ] ) )
+        let west = Math.min( ...coords.map( c => c[ 0 ] ) )
+        let east = Math.max( ...coords.map( c => c[ 0 ] ) )
+        north = Math.min( north + 0.1 * ( north - south ), 90 )
+        south = Math.max( south - 0.2 * ( north - south ), -90 )    // a little more for labels
+        west = Math.max( west - 0.1 * ( east - west ), -180 )
+        east = Math.min( east + 0.1 * ( east - west ), 180 )
+        const southWest = new mapboxgl.LngLat( west, south )
+        const northEast = new mapboxgl.LngLat( east, north )
+        boundingBox = new mapboxgl.LngLatBounds( southWest, northEast )
+    }
+
     // const aircraftInfoSelector = aircraftId => {
     //     // const routeIds = routeIdsFromAircraftId( state, aircraftId )
     //     // const routeId = routeIds[ 0 ]  // presume to use only the first route
@@ -526,12 +582,13 @@ const mapStateToProps = ( state, props ) => {
     //         points,
     //     }
     // }
-        
+
     return {
         markers,
         paths,
         points,
         selectedAircraftIds,
+        boundingBox,
         // getMarkerInfo,
         // routeIdsSelector
         // routePathFromRouteIdSelector,
