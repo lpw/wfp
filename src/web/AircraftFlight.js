@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 // import { requestAircraftFlight } from '../actions'
 import {
     // aircraftFlightFromState,
@@ -9,18 +10,30 @@ import {
 class AircraftFlight extends Component {
     constructor(props) {
         super(props);
-        this.state = { disabled: false }
+        this.state = {
+            disabled: false, 
+            aircraft: null,
+        }
     }
 
     supervise = () => {
         const { props } = this
         const { id } = props  
+        
         console.log( 'Supervising', id )
+        this.setState({
+            aircraft: id
+        })
     }
 
     render() {
-        const { props, supervise } = this
+        const { props, supervise, state } = this
         const { name, origin, destination, altitude, speed } = props
+        const { aircraft } = state
+
+        if( aircraft ) {
+            return <Redirect to={`/supervise/${aircraft}`} />
+        }
 
         return (
             <div className="aircraftRow">

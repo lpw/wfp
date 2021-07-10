@@ -467,11 +467,11 @@ if( !noSSL ) {
 	const httpsServer = connectHttps()
 
 	httpsServer.register( Inert ).then( () => {
+		routeStaticAssets( httpsServer )
 		routeRootAny( httpsServer )
 		routeIndexHtml( httpsServer )
 		routeApi( httpsServer )
 		routeArgApi( httpsServer )
-		routeStaticAssets( httpsServer )
 		startServer( httpsServer )
 	} )
 }
@@ -479,6 +479,7 @@ if( !noSSL ) {
 const httpServer = connectHttp()
 
 httpServer.register( Inert ).then( () => {
+	routeStaticAssets( httpServer )
 	if( !noRedirect ) {
 		routeRedirect( httpServer )
 	} else {
@@ -487,7 +488,6 @@ httpServer.register( Inert ).then( () => {
 		routeApi( httpServer )
 		routeArgApi( httpServer )
 	}
-	routeStaticAssets( httpServer )
 	startServer( httpServer )
 } )
 

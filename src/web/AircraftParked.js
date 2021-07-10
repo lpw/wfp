@@ -58,9 +58,9 @@ class AircraftParked extends Component {
                     <span className="aircraftRowName">{ name }</span>
                     <span className="aircraftRowOrigin">{ origin.code }</span>
                     <span className="aircraftRowArrow">&#x2192;</span>
-                    <input type="text" onKeyUp={check} onBlur={check} className="aircraftRowDestination" ref={this.destinationRef} placeholder="destination..." />
-                    <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowAltitude" ref={this.altitudeRef} placeholder="altitude..." />
-                    <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowSpeed" ref={this.speedRef} placeholder="speed..." />
+                    <input type="text" onKeyUp={check} onBlur={check} className="aircraftRowDestination" ref={this.destinationRef} placeholder="Filed destination..." />
+                    <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowAltitude" ref={this.altitudeRef} placeholder="Filed altitude..." />
+                    <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowSpeed" ref={this.speedRef} placeholder="Filed speed..." />
                 </div>
                 <button className="aircraftRowButton" onClick={launch} disabled={ this.state.disabled }>Launch</button>
             </div>
