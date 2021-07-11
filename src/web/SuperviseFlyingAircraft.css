@@ -8,13 +8,15 @@
 
 .selectedAircraftLeftCol {
   /*width: 50%;*/
-  width:  calc( 100% - 150px );
+  width:  calc( 100% - 300px );
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
 .selectedAircraftMiddleCol {
+  display: flex;
+  flex-direction: column;
   margin: 0 2% 0 0;
 }
 
@@ -103,20 +105,31 @@ button.selectedNameAndPath {
 .selectedAircraftRest {
   display: flex;
   flex-direction: row;
-  /*justify-content: space-between;*/
+  justify-content: space-between;
+  margin: 0 0 1% 0;
 }
 
-.bottomRowoneOfSixPack,
-.topRowSixPack {
+.text-group {
+  transform: translate(38%, 42.325%);
+}
+
+.selectedAircraftCharge {
+  text-align: center;
+}
+
+.selectedAircraftCharge.notEnough {
+  color: red;
+}
+
+.largeSixPack {
   display: flex;
-  flex-direction: row;
-  /*justify-content: space-between;*/
+  flex-direction: column;
+  align-items: center;
+  height: 0;
+  overflow:  hidden;
+  transition: height 1s;
 }
 
-.oneOfSixPack {
-  /*display: flex;*/
-}
-
-.instrument {
-  transition: width 2s, height 2s;
+.showSixPack {
+  height: 500px;
 }

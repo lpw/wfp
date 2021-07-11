@@ -58,9 +58,11 @@ console.log( 'LANCE renderParkedSelectedAircraft originPoint', originPoint )
         return (
             <div key={ id } className={ selectedAircraftClassNames }>
                 <div className="selectedNameAndParked">
-                    <span className="selectedAircraftName">{ name }</span>
-                    <span className="selectedAircraftParked">Landed at { originPoint.code }</span>
-                    <button className="selectedCloseButton" onClick={ () => close( id ) }>X</button>
+                    <span className="selectedAircraftNameParked">{ name }</span>
+                    <span className="selectedAircraftOriginParked">Landed at { originPoint.code }</span>
+                    <span className="selectedAircraftCloseParked">
+                        <button className="selectedCloseButton" onClick={ () => close( id ) }>X</button>
+                    </span>
                 </div>
             </div>
         )

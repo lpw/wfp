@@ -18,6 +18,7 @@ import {
 import {
 } from '../selectors'
 import './SuperviseFlyingAircraft.css'
+import SixPack from './SixPack'
 
 // const stale = () => true // TBD what determines when to refetch stages and status of supervise  - always for now
 
@@ -49,15 +50,27 @@ class SuperviseFlyingAircraft extends Component {
     // }
 
     comms = () => {
-        window.alert( 'Communications Panel' )
+        const { props } = this
+        const { id, fleet } = props
+        const aircraft = fleet[ id ]
+        const { name } = aircraft
+        window.alert( `Communications Panel for ${name}` )
     }
 
     video = () => {
-        window.alert( 'Video Panel' )
+        const { props } = this
+        const { id, fleet } = props
+        const aircraft = fleet[ id ]
+        const { name } = aircraft
+        window.alert( `Video Panel for ${name}` )
     }
 
     contingency = () => {
-        window.alert( 'Contingency Panel' )
+        const { props } = this
+        const { id, fleet } = props
+        const aircraft = fleet[ id ]
+        const { name } = aircraft
+        window.alert( `Contingency Panel for ${name}` )
     }
 
     toggleSixPack = () => {
@@ -72,15 +85,26 @@ class SuperviseFlyingAircraft extends Component {
         const { props, state, comms, video, contingency, toggleSixPack } = this
         const { id, originPoint, destinationPoint, fleet, close } = props
         const { showSixPack } = state
-        const sixPackSize = showSixPack ? 250 : 50
+        // const sixPackSize = showSixPack ? 250 : 50
         const aircraft = fleet[ id ]
         const { name, altitude = 123, speed = 456, distance = 789, time = 987 } = aircraft
+        const distancePercentComplete = 0.7
+        const timePercentComplete = 0.6
+        const distanceComplete = distance * distancePercentComplete
+        const timeComplete = time * timePercentComplete
+        const distanceRemaining = distance - distanceComplete
+        const timeRemaining = time - timeComplete
+        const wh = 95000
+        const level = 0.8
+        const whpm = 300
+        const chargeMinutesRemaining = wh * level / whpm
         const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
-        const distanceComplete = 0.7
-        const timeComplete = 0.6
-        const fuel = 0.8
+        const notEnough = timeRemaining > chargeMinutesRemaining
+        const selectedAircraftChargeClassNames = classNames( 'selectedAircraftCharge', { notEnough } )
+        const largeSixPackClassNames = classNames( 'largeSixPack', { showSixPack } )
         const chartStyle = {
-          width: "70%",
+          // width: "70%",
+          width: "180px",
         }
         assert( originPoint && destinationPoint )
 console.log( 'LANCE SuperviseFlyingAircraft render originPoint', originPoint )
@@ -105,32 +129,27 @@ console.log( 'LANCE SuperviseFlyingAircraft render destinationPoint', destinatio
                     <div className="selectedAircraftLeftCol">
                         <div className="selectedDistanceBar">
                             <span className="selectedAircraftDistance">Distance Total: { distance } nm</span>
-                            <span className="selectedAircraftDistance">Complete: { Math.round( distance * distanceComplete ) } nm</span>
-                            <ProgressBar className="ProgressBar" completed={ distanceComplete * 100 } />
-                            <span className="selectedAircraftDistance">Remaning: { Math.round( distance * ( 1 - distanceComplete ) ) } nm</span>
+                            <span className="selectedAircraftDistance">Complete: { Math.round( distanceComplete ) } nm</span>
+                            <ProgressBar bgColor={'#0000FF'} className="ProgressBar" completed={ distancePercentComplete * 100 } />
+                            <span className="selectedAircraftDistance">Remaning: { Math.round( distanceRemaining ) } nm</span>
                         </div>
                         <div className="selectedTimeBar">
                             <span className="selectedAircraftTime">Time Total: { time } min</span>
-                            <span className="selectedAircraftTime">Complete: { Math.round( time * timeComplete ) } min</span>
-                            <ProgressBar className="ProgressBar" completed={ timeComplete * 100 } />
-                            <span className="selectedAircraftTime">Remaning: { Math.round( time * ( 1 - timeComplete ) ) } min</span>
+                            <span className="selectedAircraftTime">Complete: { Math.round( timeComplete ) } min</span>
+                            <ProgressBar bgColor={'#0000FF'} className="ProgressBar" completed={ timePercentComplete * 100 } />
+                            <span className="selectedAircraftTime">Remaning: { Math.round( timeRemaining ) } min</span>
                         </div>
                     </div>
-                    <div className="selectedAircraftMiddleCol" onClick={ toggleSixPack }>
-                        <GaugeChart marginInPercent="0.00" colors={['#FF0000', '#FFFF00', '#00FF00']} percent={ fuel } className="selectedAircraftFuel" style={chartStyle} />
+                    <div className="selectedAircraftMiddleCol" >
+                        <GaugeChart textColor="black" colors={['#FF0000', '#FFFF00', '#00FF00']} percent={ level } className="selectedAircraftFuel" style={chartStyle} />
+                        <span className={ selectedAircraftChargeClassNames }>Remaning: { Math.round( chargeMinutesRemaining ) } min</span>
                     </div>
-                    <div className="selectedAircraftRightCol" onClick={ toggleSixPack }>
-                        <div className="topRowSixPack">
-                            <HeadingIndicator size={ sixPackSize } className="oneOfSixPack" heading={Math.random() * 360} showBox={false} />
-                            <Airspeed size={ sixPackSize } className="oneOfSixPack" speed={Math.random() * 160} showBox={false} />
-                            <Altimeter size={ sixPackSize } className="oneOfSixPack" ltitude={Math.random() * 28000} showBox={false} />
-                        </div>
-                        <div className="bottomRowoneOfSixPack">
-                            <AttitudeIndicator size={ sixPackSize } className="oneOfSixPack" roll={(Math.random() - 0.5) * 120} pitch={(Math.random() - 0.5) * 40} showBox={false} />
-                            <TurnCoordinator size={ sixPackSize } className="oneOfSixPack" turn={(Math.random() - 0.5) * 120} showBox={false} />
-                            <Variometer size={ sixPackSize } className="oneOfSixPack" vario={(Math.random() - 0.5) * 4000} showBox={false} />
-                        </div>
+                    <div onClick={ toggleSixPack }>
+                        <SixPack size={ 50 } />
                     </div>
+                </div>
+                <div className={ largeSixPackClassNames }>
+                    <SixPack size={ 250 } />
                 </div>
             </div>
         )
