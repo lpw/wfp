@@ -5,7 +5,7 @@ import { getIdFromPath } from '../utils'
 import {
     // aircraftParkedFromState,
 } from '../selectors'
-// import './AircraftParked.css'
+// import './AircraftParked.css' using AircraftFlight, which is imported from fleet
 
 class AircraftParked extends Component {
     constructor(props) {
@@ -49,20 +49,31 @@ class AircraftParked extends Component {
     }
 
     render() {
-        const { props, launch, check } = this
+        const { 
+            props, 
+            state,
+            launch,
+            check,
+            schedule,
+            history,
+            maintenance,
+         } = this
         const { name, origin } = props
-
+        const { disabled } = state 
         return (
             <div className="aircraftRow">
-                <div className="aircraftRowFields">
+                 <div className="aircraftRowFields">
                     <span className="aircraftRowName">{ name }</span>
+                    <button className="aircraftRowButtonSchedule" onClick={ schedule } disabled={ true }>Schedule</button>
+                    <button className="aircraftRowButtonHistory" onClick={ history } disabled={ true }>History</button>
+                    <button className="aircraftRowButtonMaintenance" onClick={ maintenance } disabled={ true }>Maintenance</button>
                     <span className="aircraftRowOrigin">{ origin.code }</span>
                     <span className="aircraftRowArrow">&#x2192;</span>
-                    <input type="text" onKeyUp={check} onBlur={check} className="aircraftRowDestination" ref={this.destinationRef} placeholder="Filed destination..." />
-                    <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowAltitude" ref={this.altitudeRef} placeholder="Filed altitude..." />
-                    <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowSpeed" ref={this.speedRef} placeholder="Filed speed..." />
+                    <input type="text" onKeyUp={check} onBlur={check} className="aircraftRowDestination" ref={this.destinationRef} placeholder="destination..." />
+                    <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowButton aircraftRowAltitude" ref={this.altitudeRef} placeholder="altitude..." />
+                    <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowButton aircraftRowSpeed" ref={this.speedRef} placeholder="speed..." />
                 </div>
-                <button className="aircraftRowButton" onClick={launch} disabled={ this.state.disabled }>Launch</button>
+                <button className="aircraftRowButton aircraftRowRightButton" onClick={launch} disabled={ disabled }>Request</button>
             </div>
         )
     }

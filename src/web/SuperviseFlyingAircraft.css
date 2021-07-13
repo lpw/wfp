@@ -34,6 +34,7 @@
 
 .selectedNameAndPath {
   justify-content: space-between;
+  align-items: center;
 }
 
 .selectedTimeAndDistance,
@@ -74,6 +75,7 @@
 
 .selectedAircraftName {
   font-weight: bold;
+  font-size: x-large;
 }
 
 .selectedAircraftOrigin {

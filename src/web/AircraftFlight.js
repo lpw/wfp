@@ -5,7 +5,7 @@ import { Redirect } from 'react-router-dom'
 import {
     // aircraftFlightFromState,
 } from '../selectors'
-// import './AircraftFlight.css'
+// import './AircraftFlight.css' imported from fleet
 
 class AircraftFlight extends Component {
     constructor(props) {
@@ -27,7 +27,14 @@ class AircraftFlight extends Component {
     }
 
     render() {
-        const { props, supervise, state } = this
+        const { 
+            props, 
+            state,
+            supervise,
+            schedule,
+            history,
+            maintenance,
+         } = this
         const { name, origin, destination, altitude, speed } = props
         const { aircraft } = state
 
@@ -35,17 +42,45 @@ class AircraftFlight extends Component {
             return <Redirect to={`/supervise/${aircraft}`} />
         }
 
+                    // <span className="aircraftRowAltitude">{ altitude } ft</span>
+                    // <span className="aircraftRowSpeed">{ speed } kts</span>
+        // return (
+        //     <div className="aircraftRow">
+        //         <div className="aircraftRowFields">
+        //             <span className="aircraftRowName">{ name }
+        //             </span>
+        //             <span className="aircraftRowButtons">
+        //                 <button className="aircraftRowButton aircraftRowButtonSchedule" onClick={ schedule } disabled={ true }>Schedule</button>
+        //                 <button className="aircraftRowButton aircraftRowButtonHistory" onClick={ history } disabled={ true }>History</button>
+        //                 <button className="aircraftRowButton aircraftRowButtonMaintenance" onClick={ maintenance } disabled={ true }>Maintenance</button>
+        //             </span>
+        //             <span className="aircraftRowPath">
+        //                 <span className="aircraftRowOrigin">{ origin.code }</span>
+        //                 <span className="aircraftRowArrow">&#x2192;</span>
+        //                 <span className="aircraftRowDestination">{ destination.code }</span>
+        //             </span>
+        //             <span className="aircraftAltitudeAndSpeed">
+        //                 <span className="aircraftRowAltitude">{ altitude } ft</span>
+        //                 <span className="aircraftRowSpeed">{ speed } kts</span>
+        //             </span>
+        //         </div>
+        //         <button className="aircraftRowButton aircraftRowRightButton" onClick={supervise} disabled={ this.state.disabled }>Supervise</button>
+        //     </div>
+        // )
         return (
             <div className="aircraftRow">
-                <div className="aircraftRowFields">
+                 <div className="aircraftRowFields">
                     <span className="aircraftRowName">{ name }</span>
+                    <button className="aircraftRowButtonSchedule" onClick={ schedule } disabled={ true }>Schedule</button>
+                    <button className="aircraftRowButtonHistory" onClick={ history } disabled={ true }>History</button>
+                    <button className="aircraftRowButtonMaintenance" onClick={ maintenance } disabled={ true }>Maintenance</button>
                     <span className="aircraftRowOrigin">{ origin.code }</span>
                     <span className="aircraftRowArrow">&#x2192;</span>
                     <span className="aircraftRowDestination">{ destination.code }</span>
                     <span className="aircraftRowAltitude">{ altitude } ft</span>
                     <span className="aircraftRowSpeed">{ speed } kts</span>
                 </div>
-                <button className="aircraftRowButton" onClick={supervise} disabled={ this.state.disabled }>Supervise</button>
+                <button className="aircraftRowRightButton" onClick={supervise} disabled={ this.state.disabled }>Supervise</button>
             </div>
         )
     }

@@ -12,7 +12,6 @@ import {
 import './Fleet.css'
 import './AircraftFlight.css'  // for/from Flight and Parked rows
 
-
 const stale = () => true // TBD what determines when to refetch flight  - always for now
 
 class Fleet extends Component {

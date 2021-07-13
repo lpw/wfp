@@ -18,6 +18,7 @@ TESTS
 
 append to external/existing classesNames from lib like mapbox via React/classNames
 
+name base dest (or parked or field) sched hist mx supervise/launch
 fleet row: dest/parked schedule history mx launch land
 need flight table in db, for past and future (diff tables?)
 
