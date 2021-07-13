@@ -19,7 +19,27 @@ const markerHasSelectedAircraft = ( marker, selectedAircraftIds ) => marker.airc
 const removeMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftIds.filter( id => !marker.aircraftIds.includes( id ) )
 const addMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftIds.concat( marker.aircraftIds )
 
-const getMarkers = ( fleet, points ) => {
+const getMarker = ( aircraftId, fleet, points ) => {
+    let marker
+    const aircraft = fleet[ aircraftId ]
+    if( aircraft ) {
+        const pointId = aircraft.origin || aircraft.base
+        const point = points[ pointId ]
+        if( point ) {   // && point.lat && point.lon ) {
+            const coord = [ point.lon, point.lat ]
+            marker = {
+                aircraftId,
+                pointId,
+                point,
+                coord,
+                name: aircraft.name,
+            }
+        }
+    }
+    return marker
+}
+
+const getMarkers = ( selectedAircraftIds, fleet, points ) => {
     const markers = Object.keys( fleet ).map( k => fleet[ k ]).reduce( ( msf, aircraft )=> {
         const pointId = aircraft.origin || aircraft.base
 console.log( 'LANCE getMarkers msf', msf )
@@ -57,8 +77,9 @@ console.log( 'LANCE getMarkers msf', msf )
     return markers
 }
 
-const getPaths = ( fleet, points ) => {
+const getPaths = ( selectedAircraftIds, fleet, points ) => {
     const paths = Object.keys( fleet ).map( k => fleet[ k ]).reduce( ( psf, aircraft )=> {
+        const selected = selectedAircraftIds.includes( aircraft.id )
         if( aircraft.origin || aircraft.base ) {
             const originPointId = aircraft.origin || aircraft.base
             const destinationPointId = aircraft.destination
@@ -81,6 +102,7 @@ const getPaths = ( fleet, points ) => {
                         destinationPoint,
                         originCoord,
                         destinationCoord,
+                        selected,
                         // name: f.name,
                         // aircraftIds: [ f.id ],
                     }
@@ -105,8 +127,10 @@ class Supervise extends Component {
         this._layers = []
 
         this.state = {
-            selectedAircraftIds
+            selectedAircraftIds,
         }
+
+        this._initialMapRendered = false
     }
 
     setRef = ( el, marker ) => {
@@ -186,8 +210,7 @@ class Supervise extends Component {
         const { _map: map, props } = this
         // const { routeIndex } = state
         // const { fleet, aircraftInfoSelector } = props
-        const { markers, paths, boundingBox } = props
-        // let flyToPoint
+        const { markers, paths, boundingBox, flyToCoord } = props
 console.log( 'LANCE markers', markers )
 console.log( 'LANCE paths', paths )
 
@@ -233,17 +256,11 @@ console.log( 'LANCE updateMap newMarker id, coord, m.mbmarker, m', id, coord, m.
 console.log( 'LANCE updateMap setLngLat id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
                 }
 
-                // if( !flyToPoint ) {
-                //     if( markerHasSelectedAircraft( m, selectedAircraftIds ) ) {
-                //         flyToPoint = coord
-                //     }
-                // }
-
                 return null
             })
 
             Object.keys( paths ).map( k => paths[ k ] ).map( p => {
-                const { id, originCoord, destinationCoord } = p
+                const { id, originCoord, destinationCoord, selected } = p
                 // const coordinates = originCoord && destinationCoord && [ originCoord, destinationCoord ]
                 const coordinates = [ originCoord, destinationCoord ]
 
@@ -274,7 +291,7 @@ console.log( 'LANCE line source, coordinates', source, coordinates )
                         'line-cap': 'round'
                     },
                     'paint': {
-                        'line-color': '#888',
+                        'line-color': selected ? '#00F' : '#888',
                         'line-width': 8
                     }
                 })
@@ -282,16 +299,18 @@ console.log( 'LANCE line source, coordinates', source, coordinates )
                 return null
             })
 
-// console.log( 'LANCE flyToPoint', flyToPoint, flyToPoint && flyToPoint[0], flyToPoint && flyToPoint[1] )
-//             if( flyToPoint ) {
-//                 map.flyTo({
-//                     center: flyToPoint
-//                 })
-//                 // this._marker.setLngLat( flyToPoint ).addTo( map )
-//             }
-console.log( 'LANCE fitBounds boundingBox', boundingBox )
-            if( boundingBox ) {
-                map.fitBounds( boundingBox )
+            if( !this._initialMapRendered ) {
+                if( flyToCoord && !this._initialMapRendered ) {
+    console.log( 'LANCE flyToCoord', flyToCoord, flyToCoord && flyToCoord[0], flyToCoord && flyToCoord[1] )
+                    map.flyTo({
+                        center: flyToCoord
+                    })
+                    // this._marker.setLngLat( flyToCoord ).addTo( map )
+                } else if( boundingBox ) {
+    console.log( 'LANCE fitBounds boundingBox', boundingBox )
+                    map.fitBounds( boundingBox )
+                }
+            this._initialMapRendered = true
             }
         }
     }
@@ -368,8 +387,16 @@ const mapStateToProps = ( state, props ) => {
     const selectedAircraftIds = ( new URLSearchParams( search ).getAll( 'a' ) || [] ).map( said => +said )
     console.log( 'LANCE selectedAircraftIds', selectedAircraftIds )
 
-    const markers = getMarkers( fleet, points )
-    const paths = getPaths( fleet, points )
+    const markers = getMarkers( selectedAircraftIds, fleet, points )
+    const paths = getPaths( selectedAircraftIds, fleet, points )
+    let flyToCoord
+
+    if( selectedAircraftIds && selectedAircraftIds.length > 0 ) {
+        const marker = getMarker( selectedAircraftIds[ 0 ], fleet, points )
+        if( marker ) {
+            flyToCoord = marker.coord
+        }
+    }
 
     let boundingBox
     const coords = Object.keys( markers ).map( k => markers[ k ].coord ).concat(
@@ -396,6 +423,7 @@ const mapStateToProps = ( state, props ) => {
         points,
         selectedAircraftIds,
         boundingBox,
+        flyToCoord,
     }
 }
 

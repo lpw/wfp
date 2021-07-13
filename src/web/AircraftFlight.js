@@ -39,7 +39,8 @@ class AircraftFlight extends Component {
         const { aircraft } = state
 
         if( aircraft ) {
-            return <Redirect to={`/supervise/${aircraft}`} />
+            // return <Redirect to={`/supervise/${aircraft}`} />
+            return <Redirect to={`/supervise?a=${aircraft}`} />
         }
 
                     // <span className="aircraftRowAltitude">{ altitude } ft</span>

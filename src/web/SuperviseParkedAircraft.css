@@ -3,6 +3,7 @@
   flex-direction: row;
   padding: 1% 0;
   justify-content: space-between;
+  align-items: center;
 }
 
 .selectedAircraftNameParked,
@@ -16,6 +17,8 @@
 
 .selectedAircraftNameParked {
   justify-content: start;
+  font-weight: bold;
+  font-size: x-large;
 }
 
 .selectedAircraftCloseParked {
