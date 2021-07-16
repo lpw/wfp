@@ -1,9 +1,14 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 // import TextInput from 'react-autocomplete-input';
-import { getIdFromPath } from '../utils'
-import { addAircraftToFleet } from '../actions'
-// import './AddAircraft.css' using AircraftFlight, which is imported from fleet
+import { addAircraft, requestFleet, requestPoints, flyAircraft } from '../actions'
+import { setLocalStorage, getLocalStorage, getIdFromText } from '../utils'
+import './AddAircraft.css' 
+
+// const storedAircraft = getLocalStorage( 'aircraft' )
+
+const stale = () => true // TBD what determines when to refetch flight  - always for now
 
 class AddAircraft extends Component {
 	constructor(props) {
@@ -13,18 +18,34 @@ class AddAircraft extends Component {
         this.originRef = React.createRef()
 
         this.state = {
-            addEnabled: false
+            addEnabled: false,
+            // addedName: null,
         }
 	}
 
-    // componentDidMount() {
-    //     const { props } = this
-    //     const { points, requestPoints } = props
+    componentDidMount() {
+        const { props } = this
+        const { points, requestFleet, requestPoints, flyingAircraft, flyAircraft, fleet } = props
 
-    //     if( Object.keys( points ).length <= 0 || stale() ) {
-    //         requestPoints()
-    //     }
-    // }
+        if( Object.keys( fleet ).length <= 0 || stale() ) {
+            requestFleet()
+        }
+
+        if( Object.keys( points ).length <= 0 || stale() ) {
+            requestPoints()
+        }
+    }
+
+    componentWillReceiveProps( nextProps ) {
+        const { points, requestFleet, requestPoints, flyingAircraft, flyAircraft, fleet } = nextProps
+
+        if( !flyingAircraft ) {
+            const aircraft = Object.keys( fleet ).map( k => fleet[ k ] ).find( a => a.name === getLocalStorage( 'aircraft' ) )
+            if( aircraft ) {
+                flyAircraft( aircraft.id )
+            }
+        }
+    }
 
     addAircraft = () => {
         const { props, nameRef, originRef } = this
@@ -33,12 +54,19 @@ class AddAircraft extends Component {
         const name = nameRef.current.value
         const pointName = originRef.current.value ? originRef.current.value : originRef.current.recentValue
         // const point = Object.keys( points ).find( k => points[ k ].code.toUpperCase() === pointName.toUpperCase() )
-        const point = getIdFromPath( pointName, points )
+        const point = getIdFromText( pointName, points )
 
         if( name && point ) {
             addAircraft( name, point )
+
+            setLocalStorage( 'aircraft', name )
+
             nameRef.current.value = ''
             originRef.current.value = ''
+
+            // this.setState({
+            //     addedName: name
+            // })
         }
     }
 
@@ -49,7 +77,7 @@ class AddAircraft extends Component {
         const name = nameRef.current.value
         const pointName = originRef.current.value ? originRef.current.value : originRef.current.recentValue
         // const point = Object.keys( points ).find( k => points[ k ].code.toUpperCase() === pointName.toUpperCase() )
-        const point = getIdFromPath( pointName, points )
+        const point = getIdFromText( pointName, points )
 
         this.setState ( {
             addEnabled: name && point
@@ -57,53 +85,54 @@ class AddAircraft extends Component {
     }
 
     render() {
-        const { addAircraft, checkAdd } = this
-        // const { points } = props
-        // const pointOptions = Object.keys( points ).map( k => points[ k ].code )
+        const { props, addAircraft, checkAdd, state } = this
+        const { fleet, aircraft } = props
+        // const { addedName } = state
+        // const foundName = Object.keys( fleet ).map( k => fleet[ k ] ).find( a => a.name === addedName )
 
-                // <input type="text" placeholder="Location, airport code, etc" className="AddPoint" ref={this.originRef} onKeyUp={checkAdd} />
-            // <div className="AddAircraft">
-            //     <input type="text" placeholder="Aircraft name, or tail-number, etc." className="AddName" ref={this.nameRef} onKeyUp={checkAdd} />
-            //     <button onClick={addAircraft} disabled={!this.state.addEnabled} >Add</button>
-            // </div>
-                    // <span className="aircraftRowOrigin">
-                    //     <TextInput trigger={[""]} maxOptions={200} Component="input" options={pointOptions} ref={this.originRef} changeOnSelect={checkAdd}/>
-                    // </span>
+        if( aircraft ) {
+            return <Redirect to={`/flight`} />  // ?a=123 ?
+        }
+
         return (
-            <div className="aircraftRow">
-                <div className="aircraftRowFields">
-                    <input type="text" onKeyUp={checkAdd} onBlur={checkAdd} className="aircraftRowName" ref={this.nameRef} placeholder="Aircraft identifier..." />
-                    <span className="aircraftRowButtonSchedule"></span>
-                    <span className="aircraftRowButtonHistory"></span>
-                    <span className="aircraftRowButtonMaintenance"></span>
-                    <input type="text" onKeyUp={checkAdd} onBlur={checkAdd} className="aircraftRowOrigin" ref={this.originRef} placeholder="Location..." />
-                    <span className="aircraftRowArrow"></span>
-                    <span className="aircraftRowDestination"></span>
-                    <span className="aircraftRowAltitude"></span>
-                    <span className="aircraftRowSpeed"></span>
-                </div>
-                <button className="aircraftRowRightButton" onClick={addAircraft} disabled={ !this.state.addEnabled }>Add</button>
+            <div className="addAircraft">
+                <h1 className="addFlightName">Add Aircraft to Fleet</h1>
+                <input type="text" onKeyUp={checkAdd} onBlur={checkAdd} className="addAircraftField addAircraftName" ref={this.nameRef} placeholder="Aircraft identifier, name, tail-number, etc..." />
+                <input type="text" onKeyUp={checkAdd} onBlur={checkAdd} className="addAircraftField addAircraftOrigin" ref={this.originRef} placeholder="Location (for now, airport like KSJC, KSFO, KSAC, etc.)......" />
+                <button className="addAircraftButton" onClick={addAircraft} disabled={ !this.state.addEnabled }>Add</button>
             </div>
         )
     }
 }
 
 const mapStateToProps = state => {
-    // const { points } = state
+    const { fleet, points, flyingAircraft } = state
+
+    // const aircraft = Object.keys( fleet ).map( k => fleet[ k ] ).find( a => a.name === storedAircraft )
+    const aircraft = fleet && flyingAircraft && fleet[ flyingAircraft ]
 
     return {
-    //     points
+        fleet,
+        points,
+        aircraft,
+        flyingAircraft,
     }
 }
 
 const mapDispatchToProps = ( dispatch, /* ownProps */ ) => {
     return {
         addAircraft: ( name, pointId ) => {
-            dispatch( addAircraftToFleet( name, pointId ) )
+            dispatch( addAircraft( name, pointId ) )
         },
-        // requestPoints: ( name, pointId ) => {
-        //     dispatch( requestPoints( name, pointId ) )
-        // },
+        requestFleet: () => {
+            dispatch( requestFleet() )
+        },
+        requestPoints: () => {
+            dispatch( requestPoints() )
+        },
+        flyAircraft: ( aircraftId ) => {
+            dispatch( flyAircraft( aircraftId ) )
+        },
     }
 }
 

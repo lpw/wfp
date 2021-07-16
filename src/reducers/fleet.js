@@ -16,13 +16,17 @@ const fleet = ( state = [], action ) => {
 		}
 
 		case ADDED_AIRCRAFT: {
-			const { aircraftId, aircraftName, pointId } = action
+			const { aircraftId: id, aircraftName: name, pointId: base } = action
 
-			return state.concat({ 
-				id: aircraftId,
-				name: aircraftName,
-				base: pointId,
-			})
+			return {
+				...state, 
+				[ id ]: {
+					...state[ id ],
+					id,
+					name,
+					base,
+				}
+			}
 		}
 
 		case DELETED_AIRCRAFT: {

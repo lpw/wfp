@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { requestFleet, requestPoints } from '../actions'
 import AircraftParked from './AircraftParked'
 import AircraftFlight from './AircraftFlight'
-import AddAircraft from './AddAircraft'
+import AddAircraft from './AircraftAdd'
 // import { getCodeFromPath } from '../utils'
 import {
     // fleetFromState,
@@ -31,11 +31,11 @@ class Fleet extends Component {
     renderAircraftParked = aircraft => {
         const { props } = this
         const { points } = props
-        const { id, name, base } = aircraft  
-        const basePoint = points[ base ]
-        // assert( basePoint )
+        const { id, name, originId } = aircraft  
+        const originPoint = points[ originId ]
+        // assert( originPoint )
         // const origin = getCodeFromPath( base, points )
-        return basePoint && <AircraftParked key={id} id={id} name={name} origin={basePoint} points={points} />
+        return originPoint && <AircraftParked key={id} id={id} name={name} originId={originId} points={points} />
     }
 
     // renderAircraftFlight = aircraft => {
@@ -53,9 +53,9 @@ class Fleet extends Component {
     renderAircraftFlight = aircraft => {
         const { props } = this
         const { points } = props
-        const { id, name, origin, destination, altitude, speed } = aircraft  // distance, pointCound, duration - depends
-        const originPoint = points[ origin ]
-        const destinationPoint = points[ destination ]
+        const { id, name, originId, destinationId, altitude, speed } = aircraft  // distance, pointCound, duration - depends
+        const originPoint = points[ originId ]
+        const destinationPoint = points[ destinationId ]
         // assert( originPoint )
         // assert( destinationPoint )
 
@@ -67,7 +67,7 @@ class Fleet extends Component {
 
         return (
             <React.Fragment>
-                { Object.keys( fleet ).map( k => fleet[ k ] ).map( a => a.destination ? renderAircraftFlight( a ) : renderAircraftParked( a ) ) }
+                { Object.keys( fleet ).map( k => fleet[ k ] ).map( a => a.destinationId ? renderAircraftFlight( a ) : renderAircraftParked( a ) ) }
             </React.Fragment>
         )
     }

@@ -7,6 +7,7 @@ import fleet from './fleet'
 import users from './users'
 import userId from './userId'
 import mostRecentlyAddedFlight from './mostRecentlyAddedFlight'
+import flyingAircraft from './flyingAircraft'
 
 const reducers = {
 	flights,
@@ -16,6 +17,7 @@ const reducers = {
 	users,
 	userId,
 	mostRecentlyAddedFlight,
+	flyingAircraft,
 }
 
 const createRootReducer = (history) => combineReducers({

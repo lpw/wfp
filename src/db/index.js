@@ -8,7 +8,7 @@ export * from './promiseUsers'
 export * from './deleteFlight'
 export * from './promisePoints'
 export * from './promiseFleet'
-export * from './addAircraftToFleet'
+export * from './addAircraft'
 export * from './deleteAircraft'
 export * from './addFlightRoute'
 

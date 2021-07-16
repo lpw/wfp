@@ -8,16 +8,16 @@ const dev = typeof window !== 'undefined' ? window.location.hostname === 'localh
 export const hostname = 'localhost'
 export const getPrefix = () => dev ? 'http://localhost:3001' : `http://${hostname}`
 
-export const getIdFromPath = ( path, points ) => {
-	if( typeof path === 'string') {
-		path = path.toUpperCase()
+export const getIdFromText = ( text, points ) => {
+	if( typeof text === 'string') {
+		text = text.toUpperCase()
 	}
     let point
     let id
-    if( path ) {
-        point = points[ path ]
+    if( text ) {
+        point = points[ text ]
         if( !point ) {
-            point = points[ `K${path}` ]
+            point = points[ `K${text}` ]
         }
         if( point ) {
             id = point.id
@@ -26,8 +26,8 @@ export const getIdFromPath = ( path, points ) => {
     return id
 }
 
-export const getCodeFromPath = ( path, points ) => {
-	const id = getIdFromPath( path, points )
+export const getCodeFromText = ( text, points ) => {
+	const id = getIdFromText( text, points )
 	let point
 	let code
     if( id ) {

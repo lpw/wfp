@@ -9,6 +9,7 @@ export const LOGIN_USER = 'LOGIN_USER'
 export const ADDED_FLIGHT = 'ADDED_FLIGHT'
 export const ADDED_AIRCRAFT = 'ADDED_AIRCRAFT'
 export const DELETED_AIRCRAFT = 'DELETED_AIRCRAFT'
+export const FLY_AIRCRAFT = 'FLY_AIRCRAFT'
 
 export function receivedFlights( flights = [] ) {
     return {
@@ -78,6 +79,13 @@ export function addedAircraft( aircraftId, aircraftName, pointId ) {
 export function deletedAircraft( aircraftId ) {
     return {
         type: DELETED_AIRCRAFT,
+        aircraftId,
+    }
+}
+
+export function flyAircraft( aircraftId ) {
+    return {
+        type: FLY_AIRCRAFT,
         aircraftId,
     }
 }

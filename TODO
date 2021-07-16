@@ -1,3 +1,5 @@
+route selection and route editor
+
 Bounding box only from selected aircraft (or flyTo if one)
 
 phones as aircraft
@@ -79,4 +81,19 @@ allow or dedup routes (same route, altitude?)
 POST, PUT
 /plan/id vs /plans/id
 optimize DISTINCT for dups
+
+ALTER TABLE fleet
+  ADD type varchar(45),
+  ADD base INT,
+  ADD lat decimal(9,6),
+  ADD pitch DOUBLE,
+  ADD yaw DOUBLE,
+  ADD roll DOUBLE,
+  ADD turn DOUBLE,
+  ADD heading DOUBLE,
+  ADD speed DOUBLE,
+  ADD altitude DOUBLE,
+  ADD vsi DOUBLE,
+  ADD charge DOUBLE
+;
 

@@ -1,20 +1,17 @@
-/*.AddFlight {
+.addAircraft {
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  margin: 40px 0 0 0;
+  flex-direction: column;
+  /*justify-content: space-around;*/
+  align-items: center;
+  justify-content: center;
+  margin: 5%;
 }
 
-.AddName {
-  width: 10%;
+.addAircraftField {
+  margin-bottom: 10px;
+  width: 100%;
+  text-align:  center;
 }
 
-.AddPath {
-  width: 50%;
-}*/
-
-.aircraftBottomRow {
-  /*position: fixed;*/
-  bottom:  4px;
-  width: calc( 100% - 4% );  /* fixed position doesn't get the 2% margins on .fleet */
+.addAircraftButton {
 }

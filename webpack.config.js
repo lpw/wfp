@@ -56,11 +56,15 @@ module.exports = [
                     loader: require.resolve('url-loader'),
                     options: {}
 				},
-      {
-       test: /\.css$/,
-       // use: [ 'style-loader', 'css-loader' ]
-       use: [ 'css-loader' ]
-      }
+			    {
+			        test: /\.svg$/,
+			        loader: 'svg-inline-loader'
+			    },
+				{
+					test: /\.css$/,
+					// use: [ 'style-loader', 'css-loader' ]
+					use: [ 'css-loader' ]
+				}
 			],
 		},
 		plugins: [

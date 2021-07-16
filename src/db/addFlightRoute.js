@@ -4,9 +4,9 @@ import {
 	addRouteToAircraft,
 } from './queries'
 
-export function addFlightRoute( aircraft, origin, destination, altitude, speed ) {
+export function addFlightRoute( aircraft, origin, destination, altitude, speed, charge ) {
 	return new Promise( function( resolve, reject ) {
-		addRouteQuery( origin, destination, altitude, speed, function ( error ) {
+		addRouteQuery( origin, destination, altitude, speed, charge, function ( error ) {
 			if ( error ) {
 				return reject( error ) // throw
 			}

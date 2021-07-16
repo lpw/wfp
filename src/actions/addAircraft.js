@@ -3,7 +3,7 @@ import fetch from 'isomorphic-fetch'
 import { getPrefix } from '../utils'
 import { addedAircraft, flyAircraft } from './'
 
-export function addAircraftToFleet( name, pointId ) {
+export function addAircraft( name, pointId ) {
 	return( dispatch, getState ) => {
         const prefix = getPrefix()
 		const url = `${prefix}/apiv1/fleet`
@@ -19,7 +19,7 @@ export function addAircraftToFleet( name, pointId ) {
 			if( response.status === 200 ) {
 				return response.json()
 			} else {
-				throw new Error( `action addAircraftToFleet route not 200 ${response.status}` )
+				throw new Error( `action addAircraft route not 200 ${response.status}` )
 			}
 		})
 		.then( response => {
@@ -29,12 +29,12 @@ export function addAircraftToFleet( name, pointId ) {
 				dispatch( addedAircraft( aircraftId, aircraftName, pointId ) )
 				dispatch( flyAircraft( aircraftId ) )
 			} else {
-				console.warn( `action addAircraftToFleet route 200 but status not ok ${response.status}` )
-				throw new Error( `action addAircraftToFleet route 200 but status not ok ${response.status}` )
+				console.warn( `action addAircraft route 200 but status not ok ${response.status}` )
+				throw new Error( `action addAircraft route 200 but status not ok ${response.status}` )
 			}
 		})
 		.catch( error => {
-			console.error( `action addAircraftToFleet route caught error ${error}` )
+			console.error( `action addAircraft route caught error ${error}` )
 			// handleApiError()  // retry, etc.
 		})
 	}

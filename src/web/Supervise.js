@@ -15,7 +15,9 @@ import './Supervise.css'
 
 const stale = () => true // TBD what determines when to refetch stages and status of supervise  - always for now
 
-const markerHasSelectedAircraft = ( marker, selectedAircraftIds ) => marker.aircraftIds.some( id => selectedAircraftIds.includes( id ) )
+const oneHasSomeOther = ( one, other ) => one.some( id => other.includes( id ) )
+const markerHasSelectedAircraft = ( marker, selectedAircraftIds ) => oneHasSomeOther( marker.aircraftIds, selectedAircraftIds )
+const pathHasSelectedAircraft = ( path, selectedAircraftIds ) => oneHasSomeOther( path.aircraftIds, selectedAircraftIds )
 const removeMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftIds.filter( id => !marker.aircraftIds.includes( id ) )
 const addMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftIds.concat( marker.aircraftIds )
 
@@ -39,7 +41,7 @@ const getMarker = ( aircraftId, fleet, points ) => {
     return marker
 }
 
-const getMarkers = ( selectedAircraftIds, fleet, points ) => {
+const getMarkers = ( fleet, points ) => {
     const markers = Object.keys( fleet ).map( k => fleet[ k ]).reduce( ( msf, aircraft )=> {
         const pointId = aircraft.origin || aircraft.base
 console.log( 'LANCE getMarkers msf', msf )
@@ -77,9 +79,8 @@ console.log( 'LANCE getMarkers msf', msf )
     return markers
 }
 
-const getPaths = ( selectedAircraftIds, fleet, points ) => {
+const getPaths = ( fleet, points ) => {
     const paths = Object.keys( fleet ).map( k => fleet[ k ]).reduce( ( psf, aircraft )=> {
-        const selected = selectedAircraftIds.includes( aircraft.id )
         if( aircraft.origin || aircraft.base ) {
             const originPointId = aircraft.origin || aircraft.base
             const destinationPointId = aircraft.destination
@@ -91,27 +92,37 @@ const getPaths = ( selectedAircraftIds, fleet, points ) => {
                     && originPointId !== destinationPointId
                     && originPoint && destinationPoint
             ) {
-                const id = Object.keys( psf ).length
-                psf = {
-                    ...psf,
-                    [ id ]: {
-                        id,
-                        originPointId,
-                        destinationPointId,
-                        originPoint,
-                        destinationPoint,
-                        originCoord,
-                        destinationCoord,
-                        selected,
-                        // name: f.name,
-                        // aircraftIds: [ f.id ],
+                // const colocatedPsf = Object.keys( psf ).map( k => psf[ k ] ).find( p => p.originPointId === originPointId && p.destinationPointId === destinationPointId )
+                const id = `${originPointId}-${destinationPointId}`
+                const colocatedPsf = psf[ id ]
+                if( colocatedPsf ) {
+                    psf = {
+                        ...psf,
+                        [ colocatedPsf.id ]: {
+                            ...colocatedPsf, // id, pointId...
+                            // name: `${colocatedPsf.name}, ${aircraft.name}`,
+                            aircraftIds: colocatedPsf.aircraftIds.concat( aircraft.id ),
+                        }
+                    }
+                } else {
+                    psf = {
+                        ...psf,
+                        [ id ]: {
+                            id,
+                            originPointId,
+                            destinationPointId,
+                            originPoint,
+                            destinationPoint,
+                            originCoord,
+                            destinationCoord,
+                            aircraftIds: [ aircraft.id ],
+                        }
                     }
                 }
             }
         }
         return psf
     }, {})
-
     return paths
 }
 
@@ -206,9 +217,8 @@ class Supervise extends Component {
     }
 
     updateMap = routes => {
-        // const { _map: map, props, state } = this
-        const { _map: map, props } = this
-        // const { routeIndex } = state
+        const { _map: map, props, state } = this
+        const { selectedAircraftIds } = state
         // const { fleet, aircraftInfoSelector } = props
         const { markers, paths, boundingBox, flyToCoord } = props
 console.log( 'LANCE markers', markers )
@@ -261,6 +271,7 @@ console.log( 'LANCE updateMap setLngLat id, coord, m.mbmarker, m', id, coord, m.
 
             Object.keys( paths ).map( k => paths[ k ] ).map( p => {
                 const { id, originCoord, destinationCoord, selected } = p
+                const highlighted = oneHasSomeOther( p.aircraftIds, selectedAircraftIds )
                 // const coordinates = originCoord && destinationCoord && [ originCoord, destinationCoord ]
                 const coordinates = [ originCoord, destinationCoord ]
 
@@ -291,7 +302,7 @@ console.log( 'LANCE line source, coordinates', source, coordinates )
                         'line-cap': 'round'
                     },
                     'paint': {
-                        'line-color': selected ? '#00F' : '#888',
+                        'line-color': highlighted ? '#00F' : '#888',
                         'line-width': 8
                     }
                 })
@@ -387,8 +398,8 @@ const mapStateToProps = ( state, props ) => {
     const selectedAircraftIds = ( new URLSearchParams( search ).getAll( 'a' ) || [] ).map( said => +said )
     console.log( 'LANCE selectedAircraftIds', selectedAircraftIds )
 
-    const markers = getMarkers( selectedAircraftIds, fleet, points )
-    const paths = getPaths( selectedAircraftIds, fleet, points )
+    const markers = getMarkers( fleet, points )
+    const paths = getPaths( fleet, points )
     let flyToCoord
 
     if( selectedAircraftIds && selectedAircraftIds.length > 0 ) {

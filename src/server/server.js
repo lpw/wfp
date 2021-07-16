@@ -12,7 +12,7 @@ import handleRender from './handleRender';
 
 import {
 	addFlight,
-	addAircraftToFleet,
+	addAircraft,
 	deleteFlight,
 	deleteAircraft,
 	addRoute,
@@ -174,8 +174,8 @@ function routeApi( server ) {
 					switch( op ) {
 						case 'flights': {
 							debug( 'routeApi', method, op, typeof payload, payload )
-							const { aircraftId } = typeof payload === 'string' ? JSON.parse( payload ) : payload
-							return addFlight( aircraftId ).then( result => {
+							const { aircraftId, originId, destinationId, altitude, speed, charge } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							return addFlight( aircraftId, originId, destinationId, altitude, speed, charge ).then( result => {
 								const replyResult = {
 									status: 'ok', 
 									result, 
@@ -196,12 +196,12 @@ function routeApi( server ) {
 						case 'fleet': {
 							debug( 'routeApi', method, op, typeof payload, payload )
 							const { name, pointId } = typeof payload === 'string' ? JSON.parse( payload ) : payload
-							return addAircraftToFleet( name, pointId ).then( result => {
+							return addAircraft( name, pointId ).then( result => {
 								const replyResult = {
 									status: 'ok', 
 									result, 
 								}
-								debug( 'routeApi addAircraftToFleet then replyResult', replyResult )
+								debug( 'routeApi addAircraft then replyResult', replyResult )
 								return replyResult
 							}).catch( error => {
 								console.warn( 'routeApi error', error.message ) 
@@ -344,7 +344,7 @@ function routeArgApi( server ) {
 									status: 'ok', 
 									result, 
 								}
-								debug( 'routeApi addAircraftToFleet then replyResult', replyResult )
+								debug( 'routeApi addFlightRoute then replyResult', replyResult )
 								return replyResult
 							}).catch( error => {
 								console.warn( 'routeApi error', error.message ) 

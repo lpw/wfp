@@ -1,15 +1,39 @@
 import {
 	addFlightQuery,
-	addFlightQueryText,
-	getLastInsertIdQuery
+	addRouteQuery,
+	addPointToRouteQuery,
+	getLastInsertIdQuery,
 } from './queries';
 
-export function addFlight( aircraftId ) {
-	return new Promise( function( resolve, reject ) {
-		addFlightQuery( aircraftId, function ( error ) {
+export function addFlight( aircraftId, originId, destinationId, altitude, speed, charge ) {
+
+	// todo: add bearing and distance from origin to destination into table
+	// const bearDistPromise = new Promise( function( resolve, reject ) {
+	// 	bearDistQuery( aircraftId, destinationId, altitude, speed, charge, function ( error ) {
+	// 		if ( error ) {
+	// 			return reject( error ) // throw
+	// 		}
+	// 		resolve()
+	// 	})
+	// }).then( () => {
+	// 	return new Promise( function( resolve, reject ) {
+	// 		return getLastInsertIdQuery( function ( error, rows ) {
+	// 			if ( error ) {
+	// 				return reject( error ) // throw
+	// 			}
+	// 			resolve( rows[ 0 ] )
+	// 		})
+	// 	})
+	// })
+
+	// todo: reuse routes
+
+	const routePromise = new Promise( function( resolve, reject ) {
+		addRouteQuery( originId, destinationId, altitude, speed, function ( error ) {
 			if ( error ) {
 				return reject( error ) // throw
 			}
+
 			resolve()
 		})
 	}).then( () => {
@@ -18,8 +42,52 @@ export function addFlight( aircraftId ) {
 				if ( error ) {
 					return reject( error ) // throw
 				}
-				resolve( rows[ 0 ] )
+				resolve( rows[ 0 ].id )
 			})
 		})
 	})
+
+	const flightPromise = routePromise.then( routeId => {
+		return new Promise( function( resolve, reject ) {
+			return addFlightQuery( aircraftId, routeId, altitude, speed, function ( error ) {
+				if ( error ) {
+					return reject( error ) // throw
+				}
+				resolve()
+			})
+		}).then( () => {
+			return new Promise( function( resolve, reject ) {
+				return getLastInsertIdQuery( function ( error, rows ) {
+					if ( error ) {
+						return reject( error ) // throw
+					}
+					resolve( rows[ 0 ].id )
+				})
+			})
+		})
+	})
+
+	const routesPointsPromise = routePromise.then( routeId => {
+		const originPromise = new Promise( function( resolve, reject ) {
+			return addPointToRouteQuery( routeId, 1, originId, altitude, speed, function ( error ) {
+				if ( error ) {
+					return reject( error ) // throw
+				}
+				resolve( routeId )
+			})
+		})
+
+		const destinationPromise = new Promise( function( resolve, reject ) {
+			return addPointToRouteQuery( routeId, 2, destinationId, altitude, speed, function ( error ) {
+				if ( error ) {
+					return reject( error ) // throw
+				}
+				resolve( routeId )
+			})
+		})
+
+		return Promise.all( [ originPromise, destinationPromise ] )
+	})
+
+	return routesPointsPromise
 }

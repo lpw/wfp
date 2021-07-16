@@ -1,24 +1,54 @@
-/*.AddFlight {
+.addFlight {
+  display: flex;
+  flex-direction: column;
+  margin: 5%;
+  align-items: center;
+  justify-content: center;
+}
+
+.addFlightFields {
+  width: 100%;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
-  margin: 40px 0 0 0;
+  align-items: center;
+  justify-content: center;
+}
+  
+.addFlightField {
+  width: 100%;
+  margin-bottom: 5px;
+  margin-right: 5px;
+  text-align:  center;
+  justify-content: center;
 }
 
-.AddName {
-  width: 10%;
+.addFlightParked {
+  white-space: nowrap;
+  justify-content: flex-end;
+  align-items: flex-end;
+  text-align: end;
+  /*min-width: 0;*/
+  flex-basis: 150px;
+}
+  
+.addDestination {
+  /*min-width: 300px;*/
+  /*flex-basis: 200px;*/
 }
 
-.AddPath {
-  width: 50%;
+.addAltitude {
+  /*min-width: 50px;*/
 }
-*/
 
-/*
-.aircraftBottomRow {
-  position: fixed;
-  bottom:  4px;
-  width: calc( 100% - 4% );  
+.addSpeed {
+  /*min-width: 50px;*/
 }
-*/
-  /* fixed position doesn't get the 2% margins on .fleet */
+
+.addCharge {
+  /*min-width: 50px;*/
+}
+
+.addButton {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
