@@ -4,11 +4,13 @@
  * or can run them as two separate process later (or serverless)
  */
 import assert from 'assert'
-import fs from 'fs';
-import Hapi from 'hapi';
-import Inert from 'inert';
+import fs from 'fs'
+import Hapi from 'hapi'
+import Inert from 'inert'
 
-import handleRender from './handleRender';
+import { sim } from '../sim'
+
+import handleRender from './handleRender'
 
 import {
 	addFlight,

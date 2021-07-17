@@ -11,5 +11,6 @@ export * from './promiseFleet'
 export * from './addAircraft'
 export * from './deleteAircraft'
 export * from './addFlightRoute'
+export * from './promiseLaunch'
 
 
