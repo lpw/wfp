@@ -77,84 +77,195 @@ export const deleteFlightQuery = ( id, f ) => connectionQuery( `DELETE FROM flig
 	// ORDER BY routes_points.sequence
 	// WHERE flights.id IS NULL OR flights.atd IS NOT NULL AND flights.ata IS NULL
 	// WHERE flights.id IS NULL OR flights.ata IS NULL
-export const fleetQuery = f => connectionQuery( `
+	// points.lat, points.lon,
+	// points.code,
+	// points.lat,
+	// points.lon
+// export const fleetQuery = f => connectionQuery( `
+// 	SELECT 
+// 		fleet.id, fleet.name, fleet.base as baseId, fleet.lat, fleet.lon,
+// 		flights.id as flightId,
+// 		flights.altitude, flights.speed,
+// 		UNIX_TIMESTAMP( flights.etd ), UNIX_TIMESTAMP( flights.eta ),
+// 		UNIX_TIMESTAMP( flights.atd ), UNIX_TIMESTAMP( flights.ata ),
+// 		routes.id as routeId, 
+// 		routes_points.sequence,
+// 		routes.altitude, routes.speed,
+// 		points.id as pointId
+// 	FROM 
+// 		fleet 
+// 	LEFT OUTER JOIN 
+// 		flights 
+// 	ON 
+// 		flights.aircraft=fleet.id
+// 	LEFT OUTER JOIN 
+// 		routes
+// 	ON
+// 		routes.id=flights.route
+// 	LEFT OUTER JOIN 
+// 		routes_points
+// 	ON 
+// 		routes_points.route=routes.id
+// 	LEFT OUTER JOIN 
+// 		points
+// 	ON 
+// 		points.id=routes_points.point
+// 	ORDER BY flights.ata DESC, routes_points.sequence ASC
+// `, f )
+
+// export const readyFleetQuery = f => connectionQuery( `
+// 	SELECT 
+// 		fleet.id, fleet.name, fleet.base as baseId, fleet.lat, fleet.lon,
+// 		flights.id as flightId,
+// 		flights.altitude, flights.speed,
+// 		UNIX_TIMESTAMP( flights.etd ), UNIX_TIMESTAMP( flights.eta ),
+// 		UNIX_TIMESTAMP( flights.atd ), UNIX_TIMESTAMP( flights.ata ),
+// 		routes.id as routeId, 
+// 		routes_points.sequence,
+// 		routes.altitude, routes.speed,
+// 		points.id as pointId
+// 	FROM 
+// 		fleet 
+// 	LEFT OUTER JOIN 
+// 		flights 
+// 	ON 
+// 		flights.aircraft=fleet.id
+// 	LEFT OUTER JOIN 
+// 		routes
+// 	ON
+// 		routes.id=flights.route
+// 	LEFT OUTER JOIN 
+// 		routes_points
+// 	ON 
+// 		routes_points.route=routes.id
+// 	LEFT OUTER JOIN 
+// 		points
+// 	ON 
+// 		points.id=routes_points.point
+// 	WHERE flights.atd IS NULL AND flights.ata IS NULL
+// 	ORDER BY flights.ata DESC, routes_points.sequence ASC
+// `, f )
+
+// export const flyingFleetQuery = f => connectionQuery( `
+// 	SELECT 
+// 		fleet.id, fleet.name, fleet.base as baseId, fleet.lat, fleet.lon,
+// 		flights.id as flightId,
+// 		flights.altitude, flights.speed,
+// 		UNIX_TIMESTAMP( flights.etd ), UNIX_TIMESTAMP( flights.eta ),
+// 		UNIX_TIMESTAMP( flights.atd ), UNIX_TIMESTAMP( flights.ata ),
+// 		routes.id as routeId, 
+// 		routes_points.sequence,
+// 		routes.altitude, routes.speed,
+// 		points.id as pointId
+// 	FROM 
+// 		fleet 
+// 	LEFT OUTER JOIN 
+// 		flights 
+// 	ON 
+// 		flights.aircraft=fleet.id
+// 	LEFT OUTER JOIN 
+// 		routes
+// 	ON
+// 		routes.id=flights.route
+// 	LEFT OUTER JOIN 
+// 		routes_points
+// 	ON 
+// 		routes_points.route=routes.id
+// 	LEFT OUTER JOIN 
+// 		points
+// 	ON 
+// 		points.id=routes_points.point
+// 	WHERE flights.atd IS NOT NULL AND flights.ata IS NULL
+// 	ORDER BY flights.ata DESC, routes_points.sequence ASC
+// `, f )
+
+const fleetQueryText = ( where = '' ) => `
 	SELECT 
-	fleet.id, fleet.name, fleet.base as baseId, 
+		fleet.id, fleet.name, fleet.base as baseId, fleet.lat, fleet.lon,
+		fleet.charge, 
+		fleet.heading, fleet.speed as aircraftSpeed, fleet.altitude as aircraftAltitude, fleet.pitch, fleet.yaw, fleet.roll, fleet.turn, fleet.vsi, 
 		flights.id as flightId,
-	UNIX_TIMESTAMP( flights.etd ), UNIX_TIMESTAMP( flights.eta ),
-	UNIX_TIMESTAMP( flights.atd ), UNIX_TIMESTAMP( flights.ata ),
-	flights.altitude, flights.speed,
-		routes.id as routeId, routes.altitude, routes.speed,
-		points.id as pointId, 
+		flights.altitude as flidht, flights.speed as flightSpeed,
+		UNIX_TIMESTAMP( flights.etd ) as etd, UNIX_TIMESTAMP( flights.eta ) as eta,
+		UNIX_TIMESTAMP( flights.atd ) as atd, UNIX_TIMESTAMP( flights.ata ) as ata,
+		routes.id as routeId, 
 		routes_points.sequence,
-	points.code
+		routes.altitude as routeAltitude, routes.speed as routeSpeed,
+		points.id as pointId
 	FROM 
-	fleet 
+		fleet 
 	LEFT OUTER JOIN 
-	flights 
+		flights 
 	ON 
-	flights.aircraft=fleet.id
+		flights.aircraft=fleet.id
 	LEFT OUTER JOIN 
-	routes
+		routes
 	ON
-	routes.id=flights.route
+		routes.id=flights.route
 	LEFT OUTER JOIN 
-	routes_points
+		routes_points
 	ON 
-	routes_points.route=routes.id
+		routes_points.route=routes.id
 	LEFT OUTER JOIN 
-	points
+		points
 	ON 
-	points.id=routes_points.point
-	ORDER BY flights.ata DESC, routes_points.sequence ASC
-`, f )
+		points.id=routes_points.point
+	${where}
+	ORDER BY 
+		flights.ata DESC, routes_points.sequence ASC
+`
+
+export const fleetQuery = f => connectionQuery( fleetQueryText(), f )
+export const readyFleetQuery = f => connectionQuery( fleetQueryText( 'WHERE flights.atd IS NULL AND flights.ata IS NULL AND flights.etd < NOW()' ), f )
+export const flyingFleetQuery = f => connectionQuery( fleetQueryText( 'WHERE flights.atd IS NOT NULL AND flights.ata IS NULL' ), f )
 
 export const pointsQuery = ( f ) => connectionQuery( `
 	SELECT 
-	* 
+		* 
 	FROM 
-	points 
+		points 
 `, f )
 
 export const routePointsQuery = ( routeId, f ) => connectionQuery( `
 	SELECT 
-	* 
+		* 
 	FROM 
-	routes_points 
-	WHERE routes_points.route=${routeId}
+		routes_points 
+	WHERE 
+		routes_points.route=${routeId}
 `, f )
 
 export const addAircraftQuery =  ( aircraftName, pointId, f ) => connectionQuery( `
 	INSERT INTO 
-	\`fleet\`
-	(\`name\`, \'base\')
+		\`fleet\`
+		(\`name\`, \'base\')
 	VALUES 
-	('${aircraftName}', ${pointId})
+		('${aircraftName}', ${pointId})
 `, f )
 
 export const addFleetPointQuery = ( aircraftId, pointId, f ) => connectionQuery( `
 	INSERT INTO 
-	\`fleet_points\`
-	(\`aircraft\`, \`point\`)
+		\`fleet_points\`
+		(\`aircraft\`, \`point\`)
 	VALUES 
-	('${aircraftId}', '${pointId}')
+		('${aircraftId}', '${pointId}')
 `, f )
 
 export const addRouteQuery = ( origin, destination, altitude, speed, f ) => connectionQuery( `
 	INSERT INTO 
-	\`routes\`
-	(\`origin\`, \`destination\`, \`altitude\`, \`speed\`)
+		\`routes\`
+		(\`origin\`, \`destination\`, \`altitude\`, \`speed\`)
 	VALUES 
-	('${origin}', '${destination}', '${altitude}', '${speed}')
+		('${origin}', '${destination}', '${altitude}', '${speed}')
 `, f )
 
 export const addRouteToAircraft = ( aircraft, route, f ) => connectionQuery( `
 	DELETE FROM fleet_routes where aircraft=${aircraft};
 	INSERT INTO 
-	\`fleet_routes\`
-	(\`aircraft\`, \`route\`)
+		\`fleet_routes\`
+		(\`aircraft\`, \`route\`)
 	VALUES 
-	('${aircraft}', '${route}')
+		('${aircraft}', '${route}')
 `, f )
 
 export const deleteAircraftQuery = ( id, f ) => connectionQuery( `
@@ -164,45 +275,78 @@ export const deleteAircraftQuery = ( id, f ) => connectionQuery( `
 
 export const addFlightQuery = ( aircraftId, routeId, altitude, speed, f ) => connectionQuery( `
 	INSERT INTO 
-	\`flights\`
-	(\`aircraft\`, \`route\`, \`altitude\`, \`speed\`)
+		\`flights\`
+		(\`aircraft\`, \`route\`, \`altitude\`, \`speed\`)
 	VALUES 
-	('${aircraftId}', '${routeId}', '${altitude}', '${speed}')
+		('${aircraftId}', '${routeId}', '${altitude}', '${speed}')
 `, f )
 
 export const addPointToRouteQuery = ( routeId, sequence, pointId, altitude, speed, f ) => connectionQuery( `
 	INSERT INTO 
-	\`routes_points\`
-	(\`route\`, \`sequence\`, \`point\`, \`altitude\`, \`speed\`, \`etd\`)
+		\`routes_points\`
+		(\`route\`, \`sequence\`, \`point\`, \`altitude\`, \`speed\`, \`etd\`)
 	VALUES 
-	('${routeId}', '${sequence}', '${pointId}', '${altitude}', '${speed}', NOW())
+		('${routeId}', '${sequence}', '${pointId}', '${altitude}', '${speed}', NOW())
 `, f )
 
 export const launchQuery = ( flightId, f ) => connectionQuery( `
 	UPDATE 
-	\`flights\`
+		\`flights\`
 	SET 
-	\`atd\`
+		\`atd\`
 	= 
-	NOW()
+		NOW()
 `, f )
 
-export const llandQuery = ( flightId, f ) => connectionQuery( `
+export const landQuery = ( flightId, f ) => connectionQuery( `
 	UPDATE 
-	\`flights\`
+		\`flights\`
 	SET 
-	\`ata\`
+		\`ata\`
 	= 
-	NOW()
+		NOW()
 `, f )
 
 export const flightsQuery = f => connectionQuery( `
 	SELECT 
-	id, aircraft, route, altitude, speed,
-	UNIX_TIMESTAMP( etd ) as etd, UNIX_TIMESTAMP( eta ) as eta,
-	UNIX_TIMESTAMP( atd ) as atd, UNIX_TIMESTAMP( ata ) as ata
+		id, aircraft, route, altitude, speed,
+		UNIX_TIMESTAMP( etd ) as etd, UNIX_TIMESTAMP( eta ) as eta,
+		UNIX_TIMESTAMP( atd ) as atd, UNIX_TIMESTAMP( ata ) as ata
 	FROM
-	flights
+		flights
 `, f )
+
+export const updateFlightETAQuery = ( flightId, eta, f ) => connectionQuery( `
+	UPDATE 
+		\`flights\`
+	SET 
+		\`eta\`
+	= 
+		FROM_UNIXTIME(${ Math.round( eta ) })
+	WHERE
+		id 
+	=
+		${flightId}
+`, f )
+
+export const updateAircraftQuery = ( aircraftId, charge, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi, f ) => connectionQuery( `
+	UPDATE 
+		fleet
+	SET 
+		charge=${ Math.round( charge ) },
+		lat=${ lat },
+		lon=${ lon },
+		heading=${ Math.round( heading ) },
+		speed=${ Math.round( speed ) },
+		altitude=${ Math.round( altitude ) },
+		pitch=${ Math.round( pitch ) },
+		yaw=${ Math.round( yaw ) },
+		roll=${ Math.round( roll ) },
+		turn=${ Math.round( turn ) },
+		vsi=${ Math.round( vsi ) }
+	WHERE
+		id=${aircraftId}
+`, f )
+
 
 

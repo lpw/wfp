@@ -11,6 +11,7 @@ export * from './promiseFleet'
 export * from './addAircraft'
 export * from './deleteAircraft'
 export * from './addFlightRoute'
-export * from './promiseLaunch'
-
-
+export * from './launchFlight'
+export * from './landFlight'
+export * from './updateAircraft'
+export * from './updateFlightETA'

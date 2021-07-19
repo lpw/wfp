@@ -1,10 +1,10 @@
 import {
-	launchQuery,
+	landFlightQuery,
 } from './queries';
 
-export function promiseLaunch( flightId ) {
+export function landFlight( flightId ) {
 	return new Promise( function( resolve, reject ) {
-		launchQuery( flightId, function ( error ) {
+		landFlightQuery( flightId, function ( error ) {
 			if ( error ) {
 				return reject( error ) // throw
 			}

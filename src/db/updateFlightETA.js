@@ -1,10 +1,10 @@
 import {
-	landQuery,
+	updateFlightETAQuery,
 } from './queries';
 
-export function land( flightId ) {
+export function updateFlightETA( flightId, eta ) {
 	return new Promise( function( resolve, reject ) {
-		landQuery( flightId, function ( error ) {
+		updateFlightETAQuery( flightId, eta, function ( error ) {
 			if ( error ) {
 				return reject( error ) // throw
 			}
