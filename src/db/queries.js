@@ -181,16 +181,35 @@ export const deleteFlightQuery = ( id, f ) => connectionQuery( `DELETE FROM flig
 
 const fleetQueryText = ( where = '' ) => `
 	SELECT 
-		fleet.id, fleet.name, fleet.base as baseId, fleet.lat, fleet.lon,
+		fleet.id, 
+		fleet.name, 
+		fleet.base as baseId, 
+		fleet.lat, 
+		fleet.lon,
 		fleet.charge, 
-		fleet.heading, fleet.speed as aircraftSpeed, fleet.altitude as aircraftAltitude, fleet.pitch, fleet.yaw, fleet.roll, fleet.turn, fleet.vsi, 
+		fleet.heading, 
+		fleet.speed as aircraftSpeed, 
+		fleet.altitude as aircraftAltitude, 
+		fleet.pitch, 
+		fleet.yaw, 
+		fleet.roll, 
+		fleet.turn, 
+		fleet.vsi, 
 		flights.id as flightId,
-		flights.altitude as flightAltitude, flights.speed as flightSpeed,
-		UNIX_TIMESTAMP( flights.etd ) as etd, UNIX_TIMESTAMP( flights.eta ) as eta,
-		UNIX_TIMESTAMP( flights.atd ) as atd, UNIX_TIMESTAMP( flights.ata ) as ata,
+		flights.altitude as flightAltitude,
+		flights.speed as flightSpeed,
+		UNIX_TIMESTAMP( flights.etd ) as etd, 
+		UNIX_TIMESTAMP( flights.eta ) as eta,
+		UNIX_TIMESTAMP( flights.atd ) as atd, 
+		UNIX_TIMESTAMP( flights.ata ) as ata,
+		flights.elapsed,
+		flights.covered,
 		routes.id as routeId, 
+		routes.distance, 
+		routes.bearing, 
 		routes_points.sequence,
-		routes.altitude as routeAltitude, routes.speed as routeSpeed,
+		routes.altitude as routeAltitude,
+		routes.speed as routeSpeed,
 		points.id as pointId
 	FROM 
 		fleet 
@@ -226,6 +245,15 @@ export const pointsQuery = ( f ) => connectionQuery( `
 		points 
 `, f )
 
+export const routeQuery = ( routeId, f ) => connectionQuery( `
+	SELECT 
+		* 
+	FROM 
+		routes
+	WHERE 
+		id=${routeId}
+`, f )
+
 export const routePointsQuery = ( routeId, f ) => connectionQuery( `
 	SELECT 
 		* 
@@ -233,6 +261,15 @@ export const routePointsQuery = ( routeId, f ) => connectionQuery( `
 		routes_points 
 	WHERE 
 		routes_points.route=${routeId}
+`, f )
+
+export const pointQuery = ( pointId, f ) => connectionQuery( `
+	SELECT 
+		* 
+	FROM 
+		points
+	WHERE 
+		id=${pointId}
 `, f )
 
 export const addAircraftQuery =  ( aircraftName, pointId, f ) => connectionQuery( `
@@ -276,17 +313,17 @@ export const deleteAircraftQuery = ( id, f ) => connectionQuery( `
 export const addFlightQuery = ( aircraftId, routeId, altitude, speed, f ) => connectionQuery( `
 	INSERT INTO 
 		\`flights\`
-		(\`aircraft\`, \`route\`, \`altitude\`, \`speed\`)
+		(\`aircraft\`, \`route\`, \`altitude\`, \`speed\`, \`etd\`)
 	VALUES 
-		('${aircraftId}', '${routeId}', '${altitude}', '${speed}')
+		('${aircraftId}', '${routeId}', '${altitude}', '${speed}', NOW())
 `, f )
 
 export const addPointToRouteQuery = ( routeId, sequence, pointId, altitude, speed, f ) => connectionQuery( `
 	INSERT INTO 
 		\`routes_points\`
-		(\`route\`, \`sequence\`, \`point\`, \`altitude\`, \`speed\`, \`etd\`)
+		(\`route\`, \`sequence\`, \`point\`, \`altitude\`, \`speed\`)
 	VALUES 
-		('${routeId}', '${sequence}', '${pointId}', '${altitude}', '${speed}', NOW())
+		('${routeId}', '${sequence}', '${pointId}', '${altitude}', '${speed}')
 `, f )
 
 export const launchFlightQuery = ( flightId, f ) => connectionQuery( `
@@ -324,17 +361,49 @@ export const flightsQuery = f => connectionQuery( `
 		flights
 `, f )
 
-export const updateFlightETAQuery = ( flightId, eta, f ) => connectionQuery( `
+export const updateFlightQuery = ( flightId, eta, elapsed, coveredDistance, f ) => connectionQuery( `
 	UPDATE 
 		\`flights\`
 	SET 
 		\`eta\`
 	= 
-		FROM_UNIXTIME(${ Math.round( eta ) })
+		FROM_UNIXTIME(${ eta }),
+		\`elapsed\`
+	= 
+		${ Math.round( elapsed ) },
+		\`covered\`
+	= 
+		${ Math.round( coveredDistance ) }
 	WHERE
 		id 
 	=
 		${flightId}
+`, f )
+
+export const updateRouteDistanceQuery = ( routeId, distance, f ) => connectionQuery( `
+	UPDATE 
+		\`routes\`
+	SET 
+		\`distance\`
+	= 
+		${ Math.round( distance ) }
+	WHERE
+		id 
+	=
+		${routeId}
+`, f )
+
+export const updateRouteBearingQuery = ( routeId, bearing, f ) => connectionQuery( `
+	UPDATE 
+		\`routes\`
+	SET 
+		\`bearing\`
+	= 
+		${ Math.round( bearing ) }
+	WHERE
+		id 
+	=
+		${routeId}
 `, f )
 
 export const updateAircraftQuery = ( aircraftId, charge, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi, f ) => connectionQuery( `
@@ -356,5 +425,40 @@ export const updateAircraftQuery = ( aircraftId, charge, lat, lon, heading, spee
 		id=${aircraftId}
 `, f )
 
+export const getLaunchInfoFlightQuery = ( flightId, f ) => connectionQuery( `
+	SELECT 
+		aircraft, points.lat, points.lon, bearing, flights.speed, flights.altitude
+	FROM
+		flights, routes, points
+	WHERE
+		flights.id=${flightId} 
+	AND
+		routes.id=flights.route 
+	AND
+		points.id=routes.origin 
+`, f )
 
+export const getLandInfoFlightQuery = ( flightId, f ) => connectionQuery( `
+	SELECT 
+		aircraft, points.lat, points.lon, elevation
+	FROM
+		flights, routes, points
+	WHERE
+		flights.id=${flightId} 
+	AND
+		routes.id=flights.route 
+	AND
+		points.id=routes.destination 
+`, f )
 
+export const updateAircraftLandQuery = ( aircraftId, lat, lon, elevation, f ) => connectionQuery( `
+	UPDATE 
+		fleet
+	SET 
+		altitude=${ Math.round( elevation ) },
+		lat=${ lat },
+		lon=${ lon },
+		speed=${ 0 }
+	WHERE
+		id=${aircraftId}
+`, f )

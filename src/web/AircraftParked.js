@@ -62,12 +62,12 @@ class AircraftParked extends Component {
         const origin = points[ originId ]
         const originCode = origin.code
         const { disabled } = state 
+                    // <button className="aircraftRowButtonSchedule" onClick={ schedule } disabled={ true }>Schedule</button>
         return (
             <div className="aircraftRow">
                  <div className="aircraftRowFields">
                     <span className="aircraftRowName">{ name }</span>
-                    <button className="aircraftRowButtonSchedule" onClick={ schedule } disabled={ true }>Schedule</button>
-                    <button className="aircraftRowButtonHistory" onClick={ history } disabled={ true }>History</button>
+                    <button className="aircraftRowButtonHistory" onClick={ history } disabled={ true }>Flights</button>
                     <button className="aircraftRowButtonMaintenance" onClick={ maintenance } disabled={ true }>Maintenance</button>
                     <span className="aircraftRowOrigin">{ originCode }</span>
                     <span className="aircraftRowArrow">&#x2192;</span>

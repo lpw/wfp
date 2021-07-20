@@ -65,9 +65,10 @@ class Fleet extends Component {
     renderFleet = fleet => {
         const { renderAircraftFlight, renderAircraftParked } = this
 
+                // { Object.keys( fleet ).map( k => fleet[ k ] ).map( a => ( !!a.atd && !a.ata ) ? renderAircraftFlight( a ) : renderAircraftParked( a ) ) }
         return (
             <React.Fragment>
-                { Object.keys( fleet ).map( k => fleet[ k ] ).map( a => a.destinationId ? renderAircraftFlight( a ) : renderAircraftParked( a ) ) }
+                { Object.keys( fleet ).map( k => fleet[ k ] ).map( a => ( !!a.etd && !a.ata ) ? renderAircraftFlight( a ) : renderAircraftParked( a ) ) }
             </React.Fragment>
         )
     }

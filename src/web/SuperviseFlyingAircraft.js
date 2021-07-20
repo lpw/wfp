@@ -14,6 +14,7 @@ import {
 } from 'react-flight-indicators'
 import {
     requestFleet,
+    landFlight,
 } from '../actions'
 import {
 } from '../selectors'
@@ -51,27 +52,24 @@ class SuperviseFlyingAircraft extends Component {
 
     comms = () => {
         const { props } = this
-        const { id, fleet } = props
-        const aircraft = fleet[ id ]
-        const { name } = aircraft
+        const { name } = props
         window.alert( `Communications Panel for ${name}` )
     }
 
     video = () => {
         const { props } = this
-        const { id, fleet } = props
-        const aircraft = fleet[ id ]
-        const { name } = aircraft
+        const { name } = props
         window.alert( `Video Panel for ${name}` )
     }
 
     contingency = () => {
         const { props } = this
-        const { id, fleet } = props
-        const aircraft = fleet[ id ]
-        const { name } = aircraft
-        window.alert( `Contingency Panel for ${name}` )
-    }
+        const { name, destinationCode, flightId, landFlight } = props
+        const answer = window.confirm( `Contingency Panel for ${name}\n\nLand at ${destinationCode} immediately?` )
+        if( answer ) {
+            landFlight( flightId )
+        }
+    }   
 
     toggleSixPack = () => {
         const { state } = this
@@ -83,21 +81,33 @@ class SuperviseFlyingAircraft extends Component {
         
     render() {
         const { props, state, comms, video, contingency, toggleSixPack } = this
-        const { id, originPoint, destinationPoint, fleet, close } = props
+        const { 
+            id,
+            name,
+            originCode,
+            destinationCode,
+            charge,
+            altitude,
+            speed,
+            atd,
+            eta,
+            bearing,
+            distance,
+            covered,
+            elapsed,
+            close,
+        } = props
         const { showSixPack } = state
         // const sixPackSize = showSixPack ? 250 : 50
-        const aircraft = fleet[ id ]
-        const { name, altitude = 123, speed = 456, distance = 789, time = 987 } = aircraft
-        const distancePercentComplete = 0.7
-        const timePercentComplete = 0.6
-        const distanceComplete = distance * distancePercentComplete
-        const timeComplete = time * timePercentComplete
-        const distanceRemaining = distance - distanceComplete
-        const timeRemaining = time - timeComplete
-        const wh = 95000
-        const level = 0.8
+        const distancePercentComplete = distance > 0 ? covered / distance : 0
+        const totalTime = eta > 0 ? eta - atd : 0
+        const timePercentComplete = totalTime > 0 ? elapsed / totalTime : 0
+        const distanceRemaining = distance - covered
+        const timeRemaining = totalTime > 0 ? totalTime - elapsed : 0
+        const rechargedCapacity = 100000  // from sim
+        const level = charge / rechargedCapacity
         const whpm = 300
-        const chargeMinutesRemaining = wh * level / whpm
+        const chargeMinutesRemaining = charge / whpm
         const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
         const notEnough = timeRemaining > chargeMinutesRemaining
         const selectedAircraftChargeClassNames = classNames( 'selectedAircraftCharge', { notEnough } )
@@ -106,17 +116,17 @@ class SuperviseFlyingAircraft extends Component {
           // width: "70%",
           width: "180px",
         }
-        assert( originPoint && destinationPoint )
-console.log( 'LANCE SuperviseFlyingAircraft render originPoint', originPoint )
-console.log( 'LANCE SuperviseFlyingAircraft render destinationPoint', destinationPoint )
+        assert( originCode && destinationCode )
+console.log( 'LANCE SuperviseFlyingAircraft render originCode', originCode )
+console.log( 'LANCE SuperviseFlyingAircraft render destinationCode', destinationCode )
         return (
             <div className={ selectedAircraftClassNames }>
                 <div className="selectedNameAndPath">
                     <span className="selectedAircraftName">{ name }</span>
                     <span>
-                        <span className="selectedAircraftOrigin">{ originPoint.code }</span>
+                        <span className="selectedAircraftOrigin">{ originCode }</span>
                         <span className="selectedAircraftArrow">&#x2192;</span>
-                        <span className="selectedAircraftDestination">{ destinationPoint.code }</span>
+                        <span className="selectedAircraftDestination">{ destinationCode }</span>
                     </span>
                     <span className="selectedAircraftAltitude">Altitude: { altitude } ft</span>
                     <span className="selectedAircraftSpeed">Speed: { speed } kts</span>
@@ -128,16 +138,16 @@ console.log( 'LANCE SuperviseFlyingAircraft render destinationPoint', destinatio
                 <div className="selectedAircraftRest">
                     <div className="selectedAircraftLeftCol">
                         <div className="selectedDistanceBar">
-                            <span className="selectedAircraftDistance">Distance Total: { distance } nm</span>
-                            <span className="selectedAircraftDistance">Complete: { Math.round( distanceComplete ) } nm</span>
-                            <ProgressBar bgColor={'#0000FF'} className="ProgressBar" completed={ distancePercentComplete * 100 } />
+                            <span className="selectedAircraftDistance">Distance Total: { Math.round( distance ) } nm</span>
+                            <span className="selectedAircraftDistance">Complete: { Math.round( covered ) } nm</span>
+                            <ProgressBar bgColor={'#0000FF'} className="ProgressBar" completed={ Math.round( distancePercentComplete * 100 ) } />
                             <span className="selectedAircraftDistance">Remaning: { Math.round( distanceRemaining ) } nm</span>
                         </div>
                         <div className="selectedTimeBar">
-                            <span className="selectedAircraftTime">Time Total: { time } min</span>
-                            <span className="selectedAircraftTime">Complete: { Math.round( timeComplete ) } min</span>
-                            <ProgressBar bgColor={'#0000FF'} className="ProgressBar" completed={ timePercentComplete * 100 } />
-                            <span className="selectedAircraftTime">Remaning: { Math.round( timeRemaining ) } min</span>
+                            <span className="selectedAircraftTime">Time Total: { Math.round( totalTime / 60 ) } min</span>
+                            <span className="selectedAircraftTime">Complete: { Math.round( elapsed / 60 ) } min</span>
+                            <ProgressBar bgColor={'#0000FF'} className="ProgressBar" completed={ Math.round( timePercentComplete * 100 ) } />
+                            <span className="selectedAircraftTime">Remaning: { Math.round( timeRemaining / 60 ) } min</span>
                         </div>
                     </div>
                     <div className="selectedAircraftMiddleCol" >
@@ -145,11 +155,11 @@ console.log( 'LANCE SuperviseFlyingAircraft render destinationPoint', destinatio
                         <span className={ selectedAircraftChargeClassNames }>Remaning: { Math.round( chargeMinutesRemaining ) } min</span>
                     </div>
                     <div onClick={ toggleSixPack }>
-                        <SixPack size={ 50 } />
+                        <SixPack size={ 50 } bearing={ bearing } speed={ speed } altitude={ altitude }/>
                     </div>
                 </div>
                 <div className={ largeSixPackClassNames }>
-                    <SixPack size={ 250 } />
+                    <SixPack size={ 250 } bearing={ bearing } speed={ speed } altitude={ altitude }/>
                 </div>
             </div>
         )
@@ -166,9 +176,9 @@ const mapStateToProps = ( state, props ) => {
 
 const mapDispatchToProps = ( dispatch, /* ownProps */ ) => {
     return {
-        // requestFleet: () => {
-        //     dispatch( requestFleet() )
-        // },
+        landFlight: flightId => {
+            dispatch( landFlight( flightId ) )
+        },
     }
 }
 

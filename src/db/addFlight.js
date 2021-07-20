@@ -27,6 +27,7 @@ export function addFlight( aircraftId, originId, destinationId, altitude, speed,
 	// })
 
 	// todo: reuse routes
+	// todo: there's two getLastInsertIdQuery running in parallel, can they get swapped?
 
 	const routePromise = new Promise( function( resolve, reject ) {
 		addRouteQuery( originId, destinationId, altitude, speed, function ( error ) {
@@ -89,5 +90,10 @@ export function addFlight( aircraftId, originId, destinationId, altitude, speed,
 		return Promise.all( [ originPromise, destinationPromise ] )
 	})
 
-	return routesPointsPromise
+	// return Promise.all( [ flightPromise, routesPointsPromise ] ).then( ( [ flightId, nada ] ) => flightId )
+	return Promise.all( [ flightPromise, routesPointsPromise ] 
+	).then( ( [ flightId, nada ] ) => {
+		console.log( 'LANCE flightId', flightId )
+		return flightId
+	})
 }

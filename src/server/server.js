@@ -25,6 +25,7 @@ import {
 	promiseFleet,
 	promisePoints,
 	addFlightRoute,
+	landFlight,
 } from '../db'
 
 const debug = require('debug')('wisk:server')
@@ -356,22 +357,44 @@ function routeArgApi( server ) {
 							})
 						}
 						case 'flight': {
-							const { path, altitude, speed } = typeof payload === 'string' ? JSON.parse( payload ) : payload
-							debug( 'routeArgApi post flight path, altitude, speed', id, path, altitude, speed )
-							return addRoute( id, path, altitude, speed ).then( result => {
-								const replyResult = {
-									status: 'ok', 
-									result, 
+							const { action } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							switch( action ) {
+								case 'land': {
+									debug( 'routeArgApi post flight action', id, action )
+									return landFlight( id ).then( result => {
+										const replyResult = {
+											status: 'ok', 
+											result, 
+										}
+										debug( 'routeArgApi post flight then replyResult', replyResult )
+										return replyResult
+									}).catch( error => {
+										debug( 'routeArgApi post flight error', error.message )
+										console.warn( 'routeArgApi post flight error', error.message ) 
+										return {
+											error: `routeArgApi post flight/${id} error ${error.message}`
+										}
+									})
 								}
-								debug( 'routeArgApi post flight then replyResult', replyResult )
-								return replyResult
-							}).catch( error => {
-								debug( 'routeArgApi post flight error', error.message )
-								console.warn( 'routeArgApi post flight error', error.message ) 
-								return {
-									error: `routeArgApi post flight/${id} error ${error.message}`
+								default: {
+									const { path, altitude, speed } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+									debug( 'routeArgApi post flight action, path, altitude, speed', id, action, path, altitude, speed )
+									return addRoute( id, path, altitude, speed ).then( result => {
+										const replyResult = {
+											status: 'ok', 
+											result, 
+										}
+										debug( 'routeArgApi post flight then replyResult', replyResult )
+										return replyResult
+									}).catch( error => {
+										debug( 'routeArgApi post flight error', error.message )
+										console.warn( 'routeArgApi post flight error', error.message ) 
+										return {
+											error: `routeArgApi post flight/${id} error ${error.message}`
+										}
+									})
 								}
-							})
+							}
 						}
 					}
 				}

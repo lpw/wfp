@@ -1,7 +1,7 @@
 import assert from 'assert'
 import fetch from 'isomorphic-fetch'
 import { getPrefix } from '../utils'
-// import { addedFlight } from './'
+import { requestFleet } from './'
 
 export function addFlight( aircraftId, originId, destinationId, altitude, speed, charge ) {
 	return( dispatch, getState ) => {
@@ -24,9 +24,11 @@ export function addFlight( aircraftId, originId, destinationId, altitude, speed,
 		})
 		.then( response => {
 			if( response.status === 'ok' ) {
-				const { id } = response.result
+				// const { id } = response.result
+				const id = response.result
 				assert( id !== undefined )
 				// dispatch( addedFlight( id ) )
+				dispatch( requestFleet() )
 			} else {
 				console.warn( `action addFlight route 200 but status not ok ${response.status}` )
 				throw new Error( `action addFlight route 200 but status not ok ${response.status}` )

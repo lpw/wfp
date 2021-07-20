@@ -40,18 +40,22 @@ class SixPack extends Component {
 
     render() {
         const { props } = this
-        const { size } = props
+        const { size, bearing, speed, altitude } = props
+
+                    // <AttitudeIndicator size={ size } className="oneOfSixPack" roll={(Math.random() - 0.5) * 120} pitch={(Math.random() - 0.5) * 40} showBox={false} />
+                    // <TurnCoordinator size={ size } className="oneOfSixPack" turn={(Math.random() - 0.5) * 120} showBox={false} />
+                    // <Variometer size={ size } className="oneOfSixPack" vario={(Math.random() - 0.5) * 4000} showBox={false} />
         return (
             <div className="">
                 <div className="topRowSixPack">
-                    <HeadingIndicator size={ size } className="oneOfSixPack" heading={Math.random() * 360} showBox={false} />
-                    <Airspeed size={ size } className="oneOfSixPack" speed={Math.random() * 160} showBox={false} />
-                    <Altimeter size={ size } className="oneOfSixPack" ltitude={Math.random() * 28000} showBox={false} />
+                    <HeadingIndicator size={ size } className="oneOfSixPack" heading={ bearing } showBox={false} />
+                    <Airspeed size={ size } className="oneOfSixPack" speed={ speed } showBox={false} />
+                    <Altimeter size={ size } className="oneOfSixPack" altitude={ altitude } showBox={false} />
                 </div>
                 <div className="bottomRowoneOfSixPack">
-                    <AttitudeIndicator size={ size } className="oneOfSixPack" roll={(Math.random() - 0.5) * 120} pitch={(Math.random() - 0.5) * 40} showBox={false} />
-                    <TurnCoordinator size={ size } className="oneOfSixPack" turn={(Math.random() - 0.5) * 120} showBox={false} />
-                    <Variometer size={ size } className="oneOfSixPack" vario={(Math.random() - 0.5) * 4000} showBox={false} />
+                    <AttitudeIndicator size={ size } className="oneOfSixPack" roll={0} pitch={0} showBox={false} />
+                    <TurnCoordinator size={ size } className="oneOfSixPack" turn={0} showBox={false} />
+                    <Variometer size={ size } className="oneOfSixPack" vario={0} showBox={false} />
                 </div>
             </div>
         )

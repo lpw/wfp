@@ -459,7 +459,22 @@ console.log( 'LANCE updateMarkers', source, coord[0], coord[1] )
 console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
 console.log( 'LANCE renderSelectedAircraft Object.keys( points ).length', Object.keys( points ).length )
         if( aircraft && Object.keys( points ).length > 0 ) {
-            const { baseId, originId, destinationId } = aircraft
+            const { 
+                name,
+                baseId,
+                flightId,
+                originId,
+                destinationId,
+                charge,
+                aircraftAltitude: altitude,
+                aircraftSpeed: speed,
+                atd,
+                eta,
+                bearing,
+                distance,
+                covered,
+                elapsed,
+            } = aircraft
             const originPoint = points[ originId || baseId ]
             const destinationPoint = points[ destinationId ]
 console.log( 'LANCE renderSelectedAircraft originPoint', originPoint )
@@ -468,8 +483,29 @@ console.log( 'LANCE renderSelectedAircraft originPoint', originPoint )
             // }
             assert( originPoint )
             if( destinationPoint ) {
+                const originCode = originPoint.code
+                const destinationCode = destinationPoint.code
                 // return renderFlyingSelectedAircraft( id, originPoint, destinationPoint )
-                return <SuperviseFlyingAircraft key={ id } id={id} originPoint={originPoint} destinationPoint={destinationPoint} close={ close } fleet={ fleet }/>
+                return <SuperviseFlyingAircraft 
+                    key={ id } 
+                    id={id} 
+                    name={name} 
+                    flightId={flightId}
+                    originCode={originCode} 
+                    destinationCode={destinationCode} 
+                    charge={charge} 
+                    altitude={altitude} 
+                    speed={speed} 
+                    atd={atd} 
+                    eta={eta} 
+                    bearing={bearing} 
+                    speed={speed} 
+                    altitude={altitude} 
+                    distance={distance} 
+                    covered={covered} 
+                    elapsed={elapsed} 
+                    close={ close } 
+                />
             } else {
                 // return renderParkedSelectedAircraft( id, originPoint )
                 return <SuperviseParkedAircraft key={ id } id={id} originPoint={originPoint} close={ close } fleet={ fleet }/>

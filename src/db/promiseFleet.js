@@ -23,12 +23,16 @@ export function promiseFleet( query = fleetQuery ) {
 	const pointsPromise = promisePoints()	// cached
 
 	return Promise.all( [ fleetPromise, pointsPromise ] ).then( ( [ fleet, points ] ) => {
+		// console.log( 'LANCE fleet.map( f => f.flightId )', fleet.map( f => f.flightId ) )
+		fleet.map( f => console.log( 'LANCE fleet flightId', f.flightId ) )
 		const rf = fleet.reduce( ( sofar, aircraft ) => {
 			const { pointId, ...aWithoutPointId } = aircraft
-			const { id, flightId, routeId, baseId, atd, sequence } = aircraft
+			const { id, flightId, routeId, baseId, atd, ata, etd, sequence } = aircraft
 			const existing = sofar[ id ]
 
-			if( existing && existing.atd > atd ) {  
+			// if( existing && existing.atd > atd ) {  
+			// use existing entry if it's scheduled to depart more recently 
+			if( existing && existing.etd > etd ) {  
 				// the existing entry is newer than the current aircraft entry/row
 				return sofar
 			} else if( !sequence ) {  
@@ -47,9 +51,9 @@ export function promiseFleet( query = fleetQuery ) {
 						originLon: points[ baseId ].lon,
 					}
 				}
-			} else if( sequence <= 1 ) {
-				// first point of flight (or another flight with)
-				assert( sequence === 1 )
+			} else if( sequence <= 1 || ata ) {
+				// first point of flight (or landed)
+				assert( sequence === 1 || ata )
 				assert( flightId )
 				assert( pointId )
 				return {
@@ -68,6 +72,7 @@ export function promiseFleet( query = fleetQuery ) {
 				assert( sequence === 2 )
 				assert( flightId )
 				assert( pointId )
+
 				if( !existing ) {
 					console.warn( 'surprised to get no existing entry with advanced sequence' )
 				} else {
@@ -87,6 +92,7 @@ export function promiseFleet( query = fleetQuery ) {
 						console.warn( 'surprised to get different atd with existing entry advanced sequence', existing.atd, atd )
 					}
 				}
+
 				return {
 					...sofar,
 					[ id ]: {
@@ -100,7 +106,8 @@ export function promiseFleet( query = fleetQuery ) {
 			}
 		}, {} )
 
-		debug( 'rf', rf )
+		// debug( 'rf', rf )
+		console.log( 'LANCE rf', rf )
 
 		return rf
 	})

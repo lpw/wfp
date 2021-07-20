@@ -53,7 +53,7 @@ export function loginUser( userId = '' ) {
     }
 }
 
-export function addedNewFlight( flightId ) {
+export function addedFlight( flightId ) {
     return {
         type: ADDED_FLIGHT,
         flightId,

@@ -10,7 +10,9 @@ import {
 	launchFlight,
 	landFlight,
 	updateAircraft,
-	updateFlightETA,
+	updateFlight,
+	updateRouteDistance,
+	updateRouteBearing,
 	// land,
 } from '../db'
 // import LatLon from './llmin.js' 
@@ -54,8 +56,13 @@ const launch = ( aircraft, now ) => {
 		// charge = rechargedCapacity,
 
 		heading = 360,
-		aircraftSpeed: speed = 100,
-		aircraftAltitude: altitude = 10000,
+
+		// aircraftSpeed: speed = 100,
+		// aircraftAltitude: altitude = 10000,
+
+		routeSpeed,
+		routeAltitude,
+
 		pitch = 1,
 		yaw = 2,
 		roll = 3,
@@ -64,7 +71,10 @@ const launch = ( aircraft, now ) => {
 	} = aircraft
 
 	const charge = rechargedCapacity
-	
+
+	const speed = routeSpeed
+	const altitude = routeAltitude
+
 	updateAircraft( id, charge, originLat, originLon, heading, speed, altitude, pitch, yaw, roll, turn, vsi )
 	launchFlight( flightId, now )
 }
@@ -102,13 +112,37 @@ const fly = ( aircraft, now ) => {
 	debug( 'fly aircraft', aircraft )
 	debug( 'fly now', now )
 
-	const { lat, lon, originLat, originLon, destinationLat, destinationLon } = aircraft
+	const {
+		id,
+		flightId,
+		routeId,
 
-	let { charge = rechargedCapacity } = aircraft
+		lat,
+		lon,
+		originLat,
+		originLon,
+		destinationLat,
+		destinationLon,
 
-	const { heading = 360, aircraftSpeed: speed = 100, aircraftAltitude: altitude = 10000, pitch = 1, yaw = 2, roll = 3, turn = 4, vsi = 5 } = aircraft
+		heading = 360,
+		aircraftSpeed: speed = 100,
+		aircraftAltitude: altitude = 10000,
+		pitch = 1,
+		yaw = 2,
+		roll = 3,
+		turn = 4,
+		vsi = 5,
 
-	const { atd } = aircraft
+		atd,
+
+		distance,
+		bearing,
+	} = aircraft
+
+	let {
+		charge = rechargedCapacity,
+	} = aircraft
+
 	assert( atd )
 
 	assert( originLat )
@@ -143,6 +177,8 @@ const fly = ( aircraft, now ) => {
 	// const coveredDistance = origin.distanceTo( current )
 	// const remainingDistance = current.distanceTo( destination )
 	const totalDistance = turf.distance( origin, destination, turfOptions )
+	// const calculatedBeariing = turf.bearing( origin, destination, turfOptions ) + 180
+	const calculatedBeariing = turf.bearing( destination, origin, turfOptions ) + 180
 	const coveredDistance = turf.distance( origin, current, turfOptions )
 	const remainingDistance = turf.distance( current, destination, turfOptions )
 	// const totalDistance = distance( origin, destination )
@@ -158,8 +194,8 @@ const fly = ( aircraft, now ) => {
 	// }
 
 	const nmps = speed * groundSpeedNmphToNmps
-	const ete = totalDistance / nmps
-	const etr = remainingDistance / nmps
+	const ete = nmps > 0 ? totalDistance / nmps : 0
+	const etr = nmps > 0 ? remainingDistance / nmps : 0
 	// const eta = atd + ete
 	const eta = now + etr
  debug( 'fly speed', speed )
@@ -178,7 +214,9 @@ const fly = ( aircraft, now ) => {
 	// const ip = along( origin, destination, fraction * totalDistance )
 	const ip = turf.along( alongLine, fraction * totalDistance )
  debug( 'fly elapsed', elapsed )
- // debug( 'fly fraction', fraction )
+ debug( 'fly ete', ete )
+ debug( 'fly fraction', fraction )
+ debug( 'fly fraction * totalDistance', fraction * totalDistance )
  debug( 'fly ip', ip )
 	// assert( fraction >= 0 && fraction <= 1 )
 	// if( !( fraction >= 0 && fraction <= 1 ) ) {
@@ -190,20 +228,27 @@ const fly = ( aircraft, now ) => {
 	if( remainingDistance <= 0 || coveredDistance >= totalDistance ) {
 	// if( remainingDistance <= 0 ) {
 		land( aircraft, now )
+	} else {
+		// charge = chargeAttotalDistanceOrigin - chargePerMeter * coveredDistance
+		// charge -= chargePerMeter * distance
+		// charge = rechargedCapacity - chargeLossPerSecond * elapsed
+		charge -= chargeLossPerSecond * checkSeconds
+	 debug( 'fly charge', charge )
+
+	 	// const { geometry: { coordinates: [ ipLon, ipLat ] } } = ip
+	 	const { geometry } = ip
+	 	const { coordinates } = geometry
+	 	const [ ipLon, ipLat ] = coordinates
+		updateAircraft( id, charge, ipLat, ipLon, heading, speed, altitude, pitch, yaw, roll, turn, vsi )
+		// updateFlightETA( aircraft.flightId, eta )
+		updateFlight( flightId, eta, elapsed, coveredDistance )
+		if( distance !== totalDistance ) {
+			updateRouteDistance( routeId, totalDistance )
+		}
+		if( bearing !== calculatedBeariing ) {
+			updateRouteBearing( routeId, calculatedBeariing )
+		}
 	}
-
-	// charge = chargeAttotalDistanceOrigin - chargePerMeter * coveredDistance
-	// charge -= chargePerMeter * distance
-	// charge = rechargedCapacity - chargeLossPerSecond * elapsed
-	charge -= chargeLossPerSecond * checkSeconds
- debug( 'fly charge', charge )
-
- 	// const { geometry: { coordinates: [ ipLon, ipLat ] } } = ip
- 	const { geometry } = ip
- 	const { coordinates } = geometry
- 	const [ ipLon, ipLat ] = coordinates
-	updateAircraft( aircraft.id, charge, ipLat, ipLon, heading, speed, altitude, pitch, yaw, roll, turn, vsi )
-	updateFlightETA( aircraft.flightId, eta )
 }
 
 const launchFleet = ( fleet, now ) => {
@@ -259,7 +304,7 @@ export const sim = () => {
 	}, checkTimeout )
 }
 
-sim()
+// sim()
 
 // sanity checks
 
