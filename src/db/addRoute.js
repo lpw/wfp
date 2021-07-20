@@ -1,6 +1,6 @@
 import {
-	addRouteToRoutesQuery,
-	addRouteToFlightsQuery,
+	// addRouteToRoutesQuery,
+	// addRouteToFlightsQuery,
 	addPointToPointsQuery,
 	addPointToRouteQuery,
 	getLastInsertIdQuery,

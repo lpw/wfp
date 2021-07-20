@@ -1,12 +1,14 @@
 import assert from 'assert'
 import {
 	fleetQuery,
-	readyFleetQuery,
+	launchingFlightQuery,
 	flyingFleetQuery,
 } from './queries'
 import {
 	promisePoints,
 } from './'
+const debug = require('debug')('wfp:sim')
+debug.enabled = false
 
 export function promiseFleet( query = fleetQuery ) {
 	const fleetPromise = new Promise( function( resolve, reject ) {
@@ -21,21 +23,37 @@ export function promiseFleet( query = fleetQuery ) {
 	const pointsPromise = promisePoints()	// cached
 
 	return Promise.all( [ fleetPromise, pointsPromise ] ).then( ( [ fleet, points ] ) => {
-		return fleet.reduce( ( s, a ) => {
-			const { pointId, ...aWithoutPointId } = a
-			const id = a.id
-			const r = s[ id ]
-			if( !r ) {
-				let pointId
-				assert( a.sequence === 1 || !a.routePointsQuery )
-				if( a.pointId ) {
-					pointId = a.pointId
-				} else {
-					pointId = a.baseId
+		const rf = fleet.reduce( ( sofar, aircraft ) => {
+			const { pointId, ...aWithoutPointId } = aircraft
+			const { id, flightId, routeId, baseId, atd, sequence } = aircraft
+			const existing = sofar[ id ]
+
+			if( existing && existing.atd > atd ) {  
+				// the existing entry is newer than the current aircraft entry/row
+				return sofar
+			} else if( !sequence ) {  
+				// no flight
+				assert( !sequence )
+				assert( !flightId )
+				assert( !pointId )
+				assert( baseId )
+				return {
+					...sofar,
+					[ id ]: {
+						...aWithoutPointId,
+						originId: baseId,
+						originCode: points[ baseId ].code, 
+						originLat: points[ baseId ].lat,
+						originLon: points[ baseId ].lon,
+					}
 				}
+			} else if( sequence <= 1 ) {
+				// first point of flight (or another flight with)
+				assert( sequence === 1 )
+				assert( flightId )
 				assert( pointId )
 				return {
-					...s,
+					...sofar,
 					[ id ]: {
 						...aWithoutPointId,
 						originId: pointId,
@@ -44,22 +62,36 @@ export function promiseFleet( query = fleetQuery ) {
 						originLon: points[ pointId ].lon,
 					}
 				}
-			} else {
-				console.warn( a.sequence > 1 )
-				console.warn( a.sequence === 2 )
-				console.warn( r.originId )
-				console.warn( !r.destinationId )
-				console.warn( r.flightId === a.flightId )
-				console.warn( r.routeId === a.routeId )
-				console.warn( r.etd === a.etd )
-				console.warn( r.eta === a.eta )
-				console.warn( r.atd === a.atd )
-				console.warn( r.ata === a.ata )
+			} else {  
+				// subsequent point od flight (and last since now only handling two-point flights
+				assert( sequence > 1 )
+				assert( sequence === 2 )
+				assert( flightId )
+				assert( pointId )
+				if( !existing ) {
+					console.warn( 'surprised to get no existing entry with advanced sequence' )
+				} else {
+					if( !existing.originId ) {
+						console.warn( 'surprised to get no originId with existing entry advanced sequence' )
+					}
+					if( existing.destinationId ) {
+						console.warn( 'surprised to get destinationId with existing entry advanced sequence', existing.destinationId )
+					}
+					if( existing.flightId !== flightId ) {
+						console.warn( 'surprised to get different flights with existing entry advanced sequence', existing.flightId, flightId )
+					}
+					if( existing.routeId !== routeId ) {
+						console.warn( 'surprised to get different routes with existing entry advanced sequence', existing.routeId, routeId )
+					}
+					if( existing.atd !== atd ) {
+						console.warn( 'surprised to get different atd with existing entry advanced sequence', existing.atd, atd )
+					}
+				}
 				return {
-					...s,
+					...sofar,
 					[ id ]: {
-						...r,	
-						destinationId: a.pointId, 
+						...existing,	
+						destinationId: pointId, 
 						destinationCode: points[ pointId ].code, 
 						destinationLat: points[ pointId ].lat, 
 						destinationLon: points[ pointId ].lon, 
@@ -67,8 +99,12 @@ export function promiseFleet( query = fleetQuery ) {
 				}
 			}
 		}, {} )
+
+		debug( 'rf', rf )
+
+		return rf
 	})
 }
 
-export const promiseReadyFleet = () => promiseFleet( readyFleetQuery )
+export const promiseLaunchingFleet = () => promiseFleet( launchingFlightQuery )
 export const promiseFlyingFleet = () => promiseFleet( flyingFleetQuery )

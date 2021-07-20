@@ -185,7 +185,7 @@ const fleetQueryText = ( where = '' ) => `
 		fleet.charge, 
 		fleet.heading, fleet.speed as aircraftSpeed, fleet.altitude as aircraftAltitude, fleet.pitch, fleet.yaw, fleet.roll, fleet.turn, fleet.vsi, 
 		flights.id as flightId,
-		flights.altitude as flidht, flights.speed as flightSpeed,
+		flights.altitude as flightAltitude, flights.speed as flightSpeed,
 		UNIX_TIMESTAMP( flights.etd ) as etd, UNIX_TIMESTAMP( flights.eta ) as eta,
 		UNIX_TIMESTAMP( flights.atd ) as atd, UNIX_TIMESTAMP( flights.ata ) as ata,
 		routes.id as routeId, 
@@ -216,7 +216,7 @@ const fleetQueryText = ( where = '' ) => `
 `
 
 export const fleetQuery = f => connectionQuery( fleetQueryText(), f )
-export const readyFleetQuery = f => connectionQuery( fleetQueryText( 'WHERE flights.atd IS NULL AND flights.ata IS NULL AND flights.etd < NOW()' ), f )
+export const launchingFlightQuery = f => connectionQuery( fleetQueryText( 'WHERE flights.atd IS NULL AND flights.ata IS NULL AND flights.etd < NOW()' ), f )
 export const flyingFleetQuery = f => connectionQuery( fleetQueryText( 'WHERE flights.atd IS NOT NULL AND flights.ata IS NULL' ), f )
 
 export const pointsQuery = ( f ) => connectionQuery( `
@@ -289,22 +289,30 @@ export const addPointToRouteQuery = ( routeId, sequence, pointId, altitude, spee
 		('${routeId}', '${sequence}', '${pointId}', '${altitude}', '${speed}', NOW())
 `, f )
 
-export const launchQuery = ( flightId, f ) => connectionQuery( `
+export const launchFlightQuery = ( flightId, f ) => connectionQuery( `
 	UPDATE 
 		\`flights\`
 	SET 
 		\`atd\`
 	= 
 		NOW()
+	WHERE
+		id 
+	=
+		${flightId}
 `, f )
 
-export const landQuery = ( flightId, f ) => connectionQuery( `
+export const landFlightQuery = ( flightId, f ) => connectionQuery( `
 	UPDATE 
 		\`flights\`
 	SET 
 		\`ata\`
 	= 
 		NOW()
+	WHERE
+		id 
+	=
+		${flightId}
 `, f )
 
 export const flightsQuery = f => connectionQuery( `

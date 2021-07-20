@@ -3,6 +3,8 @@ import React, { Component } from 'react'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 import mapboxgl from 'mapbox-gl'
+// import turf from 'turf'
+import * as turf from '@turf/turf'
 import {
     requestFleet,
     requestPoints,
@@ -24,28 +26,51 @@ const addMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftId
 const getMarker = ( aircraftId, fleet, points ) => {
     let marker
     const aircraft = fleet[ aircraftId ]
+    const { baseId, originId, lat, lon } = aircraft || {}
     if( aircraft ) {
-        const pointId = aircraft.origin || aircraft.base
-        const point = points[ pointId ]
-        if( point ) {   // && point.lat && point.lon ) {
-            const coord = [ point.lon, point.lat ]
+        // const pointId = aircraft.originId || aircraft.baseId
+        // let pointId 
+        // let point
+        let coord 
+
+        if( lat && lon ) {
+            coord = [ lon, lat ]
+        } else if( aircraft.originId ) {
+            const pointId = aircraft.originId
+            const point = points[ pointId ]
+            assert( point )
+            coord = [ point.lon, point.lat ]
+        } else if( aircraft.baseId ) {
+            const pointId = aircraft.baseId
+            const point = points[ pointId ]
+            assert( point )
+            coord = [ point.lon, point.lat ]
+        } else {
+            console.warn( 'no coord/point/id for', aircraft )
+        }
+
+        if( coord ) {   
             marker = {
-                aircraftId,
-                pointId,
-                point,
+                // aircraftId,
+                // pointId,
+                // point,
                 coord,
                 name: aircraft.name,
             }
         }
     }
+
+    console.log( 'LANCE marker', marker )
+
     return marker
 }
 
 const getMarkers = ( fleet, points ) => {
     const markers = Object.keys( fleet ).map( k => fleet[ k ]).reduce( ( msf, aircraft )=> {
-        const pointId = aircraft.origin || aircraft.base
+        // const pointId = aircraft.originId || aircraft.baseId
 console.log( 'LANCE getMarkers msf', msf )
-        const colocatedMsf = Object.keys( msf ).map( k => msf[ k ] ).find( m => m.pointId === pointId )
+        // const colocatedMsf = Object.keys( msf ).map( k => msf[ k ] ).find( m => m.pointId === pointId )
+        const colocatedMsf = Object.keys( msf ).map( k => msf[ k ] ).find( m => m.lat === aircraft.lat && m.lon === aircraft.lon )
         if( colocatedMsf ) {
             msf = {
                 ...msf,
@@ -57,19 +82,17 @@ console.log( 'LANCE getMarkers msf', msf )
             }
         } else {
             const id = Object.keys( msf ).length
-            const point = points[ pointId ]
-            if( point ) {   // && point.lat && point.lon ) {
-                const coord = [ point.lon, point.lat ]
-                msf = {
-                    ...msf,
-                    [ id ]: {
-                        id,
-                        pointId,
-                        point,
-                        coord,
-                        name: aircraft.name,
-                        aircraftIds: [ aircraft.id ],
-                    }
+            // const point = points[ pointId ]
+            const coord = [ aircraft.lon, aircraft.lat ]
+            msf = {
+                ...msf,
+                [ id ]: {
+                    id,
+                    // pointId,
+                    // point,
+                    coord,
+                    name: aircraft.name,
+                    aircraftIds: [ aircraft.id ],
                 }
             }
         }
@@ -81,13 +104,13 @@ console.log( 'LANCE getMarkers msf', msf )
 
 const getPaths = ( fleet, points ) => {
     const paths = Object.keys( fleet ).map( k => fleet[ k ]).reduce( ( psf, aircraft )=> {
-        if( aircraft.origin || aircraft.base ) {
-            const originPointId = aircraft.origin || aircraft.base
-            const destinationPointId = aircraft.destination
+        if( aircraft.originId || aircraft.baseId ) {
+            const originPointId = aircraft.originId || aircraft.baseId
+            const destinationPointId = aircraft.destinationId
             const originPoint = points[ originPointId ]
             const destinationPoint = points[ destinationPointId ]
-            const originCoord = originPoint && [ originPoint.lon, originPoint.lat ]
-            const destinationCoord = destinationPoint && [ destinationPoint.lon, destinationPoint.lat ]
+            const originCoords = originPoint && [ originPoint.lon, originPoint.lat ]
+            const destinationCoords = destinationPoint && [ destinationPoint.lon, destinationPoint.lat ]
             if( originPointId && destinationPointId 
                     && originPointId !== destinationPointId
                     && originPoint && destinationPoint
@@ -113,8 +136,8 @@ const getPaths = ( fleet, points ) => {
                             destinationPointId,
                             originPoint,
                             destinationPoint,
-                            originCoord,
-                            destinationCoord,
+                            originCoords,
+                            destinationCoords,
                             aircraftIds: [ aircraft.id ],
                         }
                     }
@@ -216,7 +239,7 @@ class Supervise extends Component {
         }
     }
 
-    updateMap = routes => {
+    updateMap = () => {
         const { _map: map, props, state } = this
         const { selectedAircraftIds } = state
         // const { fleet, aircraftInfoSelector } = props
@@ -270,10 +293,10 @@ console.log( 'LANCE updateMap setLngLat id, coord, m.mbmarker, m', id, coord, m.
             })
 
             Object.keys( paths ).map( k => paths[ k ] ).map( p => {
-                const { id, originCoord, destinationCoord, selected } = p
+                const { id, originCoords, destinationCoords, selected } = p
                 const highlighted = oneHasSomeOther( p.aircraftIds, selectedAircraftIds )
-                // const coordinates = originCoord && destinationCoord && [ originCoord, destinationCoord ]
-                const coordinates = [ originCoord, destinationCoord ]
+                // const coordinates = originCoords && destinationCoords && [ originCoords, destinationCoords ]
+                const coordinates = [ originCoords, destinationCoords ]
 
                 const source = `path${id}`
                 const layer = `path${id}`
@@ -282,17 +305,67 @@ console.log( 'LANCE updateMap setLngLat id, coord, m.mbmarker, m', id, coord, m.
                 this._layers = this._layers.concat( layer )
 
 console.log( 'LANCE line source, coordinates', source, coordinates )
+                // map.addSource( source, {
+                //     'type': 'geojson',
+                //     'data': {
+                //         'type': 'Feature',
+                //         'properties': {},
+                //         'geometry': {
+                //             'type': 'LineString',
+                //             coordinates
+                //         }
+                //     }
+                // })
+
+                var route = {
+                    'type': 'FeatureCollection',
+                    'features': [
+                        {
+                            'type': 'Feature',
+                            'geometry': {
+                                'type': 'LineString',
+                                'coordinates': coordinates
+                            }
+                        }
+                    ]
+                }
+
+                // // Calculate the distance in kilometers between route start/end point.
+                // // const lineDistance = turf.length(route.features[0]);
+                // // const lineDistance = length(route.features[0]);
+                // // const lineDistance = turf.distance( originCoords, destinationCoords )
+                // const lineDistance = turf.distance( route.features[0].geometry.coordinates[ 0 ], route.features[0].geometry.coordinates[ 1 ] )
+
+                // const arc = [];
+                 
+                // // Number of steps to use in the arc and animation, more steps means
+                // // a smoother arc and animation, but too many steps will result in a
+                // // low frame rate
+                // const steps = 500;
+                 
+                // // Draw an arc between the `origin` & `destination` of the two points
+                // for ( let i = 0; i < lineDistance; i += lineDistance / steps ) {
+                //     const segment = turf.along(route.features[0], i);
+                //     // const segment = turf.along(route.features[0].geometry.coordinates, i);
+                //     // const segment = along(route.features[0], i);
+                //     arc.push(segment.geometry.coordinates);
+                // }
+                 
+                // // Update the route with calculated arc coordinates
+                // route.features[0].geometry.coordinates = arc;
+
+                const originTurfPoint = new turf.point( originCoords )
+                const destinationTurfPoint = new turf.point( destinationCoords )
+                const greatCircle = turf.greatCircle( originTurfPoint, destinationTurfPoint )  // , {properties: {npoints: 123, name: '...'} } )
+
+                // Update the route with calculated arc coordinates
+                route.features[0].geometry.coordinates = greatCircle.geometry.coordinates
+
                 map.addSource( source, {
                     'type': 'geojson',
-                    'data': {
-                        'type': 'Feature',
-                        'properties': {},
-                        'geometry': {
-                            'type': 'LineString',
-                            coordinates
-                        }
-                    }
-                })
+                    'data': route
+                });
+ 
                 map.addLayer({
                     'id': layer,
                     'type': 'line',
@@ -326,6 +399,37 @@ console.log( 'LANCE line source, coordinates', source, coordinates )
         }
     }
 
+    updateMarkers = () => {
+        const { _map: map, props, state } = this
+        // const { selectedAircraftIds } = state
+        // const { fleet, aircraftInfoSelector } = props
+        // const { markers, paths, boundingBox, flyToCoord } = props
+        const { markers } = props
+console.log( 'LANCE updateMarkers', markers )
+
+        if( map && map.loaded() && map.isStyleLoaded() ) {
+            Object.keys( markers ).map( k => markers[ k ] ).map( m => {
+                // const aircraftInfo = aircraftInfoSelector( f.id )
+                // const points = aircraftInfo.points.filter( p => p.lat && p.lon )
+                // const coordinates = points.map( p => [ p.lon, p.lat ] )
+                const { id, coord } = m
+
+                const source = `marker${id}`
+                // const layer = `marker${id}`
+
+console.log( 'LANCE updateMarkers', source, coord[0], coord[1] )
+
+                assert( m.mbmarker )
+                assert( m.el )
+
+                m.mbmarker.setLngLat( coord )
+
+                return null
+            })
+        }
+    }
+
+
     renderMarker = m => {
         const { setRef, clickMarker, state } = this
         const { selectedAircraftIds } = state
@@ -355,9 +459,9 @@ console.log( 'LANCE line source, coordinates', source, coordinates )
 console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
 console.log( 'LANCE renderSelectedAircraft Object.keys( points ).length', Object.keys( points ).length )
         if( aircraft && Object.keys( points ).length > 0 ) {
-            const { base, origin, destination } = aircraft
-            const originPoint = points[ origin || base ]
-            const destinationPoint = points[ destination ]
+            const { baseId, originId, destinationId } = aircraft
+            const originPoint = points[ originId || baseId ]
+            const destinationPoint = points[ destinationId ]
 console.log( 'LANCE renderSelectedAircraft originPoint', originPoint )
             // if( !originPoint ) {
             //     console.warn( `missing originPoint for ${origin}`)
@@ -411,8 +515,8 @@ const mapStateToProps = ( state, props ) => {
 
     let boundingBox
     const coords = Object.keys( markers ).map( k => markers[ k ].coord ).concat(
-        Object.keys( paths ).map( k => paths[ k ].originCoord ) ).concat(
-        Object.keys( paths ).map( k => paths[ k ].destinationCoord ) )
+        Object.keys( paths ).map( k => paths[ k ].originCoords ) ).concat(
+        Object.keys( paths ).map( k => paths[ k ].destinationCoords ) )
     if( coords.length ) {
         let north = Math.max( ...coords.map( c => c[ 1 ] ) )
         let south = Math.min( ...coords.map( c => c[ 1 ] ) )

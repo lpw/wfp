@@ -53,7 +53,7 @@ class Fleet extends Component {
     renderAircraftFlight = aircraft => {
         const { props } = this
         const { points } = props
-        const { id, name, originId, destinationId, altitude, speed } = aircraft  // distance, pointCound, duration - depends
+        const { id, name, originId, destinationId, aircraftAltitude: altitude, aircraftSpeed: speed } = aircraft  // distance, pointCound, duration - depends
         const originPoint = points[ originId ]
         const destinationPoint = points[ destinationId ]
         // assert( originPoint )

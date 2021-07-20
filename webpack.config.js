@@ -10,8 +10,11 @@
 
 const path = require('path');
 
+const isProd = process.env.NODE_ENV === 'production';
+
 module.exports = [
 	{
+	mode: isProd ? 'production' : 'development',
     optimization:{
         minimize: false, // <---- disables uglify.
         // minimizer: [new UglifyJsPlugin()] if you want to customize it.
