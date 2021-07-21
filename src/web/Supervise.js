@@ -83,6 +83,7 @@ console.log( 'LANCE getMarkers msf', msf )
         } else {
             const id = Object.keys( msf ).length
             // const point = points[ pointId ]
+            // toconsider: backup aircraft lat/lon with route/origin lat/lon
             const coord = [ aircraft.lon, aircraft.lat ]
             msf = {
                 ...msf,
@@ -278,7 +279,8 @@ console.log( 'LANCE marker', source, coord[0], coord[1] )
                     }
                 })
 
-                if( !m.mbmarker ) {
+                // if( !m.mbmarker ) {
+                if( !m.mbmarker && m.el ) {
                     assert( m.el )
                     // m.mbmarker = new mapboxgl.Marker( m.el )
                     m.mbmarker = new mapboxgl.Marker( m.el, { anchor: 'top', offset: [ 0, -32 ] } ) // half of css height

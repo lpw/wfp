@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch'
 import { getPrefix } from '../utils'
-import { deletedAircraft } from './'
+import { requestFleet } from './'
 
 export function deleteAircraft( id ) {
 	return( dispatch, getState ) => {
@@ -20,7 +20,9 @@ export function deleteAircraft( id ) {
 		})
 		.then( response => {
 			if( response.status === 'ok' ) {
-				dispatch( deletedAircraft( id ) )
+				// dispatch( deletedAircraft( id ) )
+				// could remove from state, but for now just reget the whole fleet
+				dispatch( requestFleet() )
 			} else {
 				console.warn( `action deleteAircraft route 200 but status not ok ${response.status}` )
 				throw new Error( `action deleteAircraft route 200 but status not ok ${response.status}` )

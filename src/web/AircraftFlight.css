@@ -15,7 +15,7 @@
 }
 	
 .aircraftRowName {
-	width: 15%;
+	width: 25%;
 }
 
 .aircraftRowArrow {
@@ -34,11 +34,28 @@
 .aircraftRowButtonHistory {
 	margin: 0 2% 0 0;
 	width: 100px;
+	opacity:  0.5;
+	pointer-events: none;
 }
 
 .aircraftRowButtonMaintenance {
 	margin: 0 2% 0 0;
 	width: 100px;
+	opacity:  0.5;
+	pointer-events: none;
+}
+
+.aircraftRow:hover .aircraftRowButtonMaintenance {
+	opacity:  1;
+	pointer-events: auto;
+}
+
+.aircraftRow:hover .aircraftRowRightButton {
+	opacity:  1;
+}
+
+.aircraftRow:hover .aircraftRowName {
+	font-weight: bold;
 }
 
 /*.aircraftAltitudeAndSpeed,*/
@@ -61,7 +78,7 @@
 }
 
 .aircraftRowOrigin {
-	width: 15%;
+	width: 25%;
 	margin: 0 1% 0 0;
 	text-align: right;
 }
@@ -73,7 +90,7 @@
 }
 
 .aircraftRowDestination {
-	width: 10%;
+	width: 20%;
 	margin: 0 2% 0 0;
 }
 
@@ -102,6 +119,7 @@
 	/*padding: 0;*/
 	width: 100px;
 	/*opacity: 0;*/
+	opacity:  0.5;
 }
 
 input {

@@ -26,6 +26,7 @@ import {
 	promisePoints,
 	addFlightRoute,
 	landFlight,
+	promiseRoutes,
 } from '../db'
 
 const debug = require('debug')('wisk:server')
@@ -279,6 +280,22 @@ function routeApi( server ) {
 						case 'points': {
 							debug( 'routeApi', op )
 							return promisePoints().then( result => {
+								const replyResult = {
+									status: 'ok', 
+									result, 
+								}
+								return replyResult
+							}).catch( error => {
+								console.warn( 'routeApi error', error.message ) 
+								return {
+									error: `op /${op} error ${error.message}`
+								}
+							})
+							break
+						}
+						case 'routes': {
+							debug( 'routeApi', op )
+							return promiseRoutes().then( result => {
 								const replyResult = {
 									status: 'ok', 
 									result, 

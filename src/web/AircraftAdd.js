@@ -69,18 +69,18 @@ class AircraftAdd extends Component {
                     // <span className="aircraftRowOrigin">
                     //     <TextInput trigger={[""]} maxOptions={200} Component="input" options={pointOptions} ref={this.originRef} changeOnSelect={checkAdd}/>
                     // </span>
+                    // <span className="aircraftRowButtonSchedule"></span>
+                    // <span className="aircraftRowAltitude"></span>
+                    // <span className="aircraftRowSpeed"></span>
         return (
             <div className="aircraftRow">
                 <div className="aircraftRowFields">
                     <input type="text" onKeyUp={checkAdd} onBlur={checkAdd} className="aircraftRowName" ref={this.nameRef} placeholder="Aircraft identifier..." />
-                    <span className="aircraftRowButtonSchedule"></span>
                     <span className="aircraftRowButtonHistory"></span>
                     <span className="aircraftRowButtonMaintenance"></span>
                     <input type="text" onKeyUp={checkAdd} onBlur={checkAdd} className="aircraftRowOrigin" ref={this.originRef} placeholder="Location..." />
                     <span className="aircraftRowArrow"></span>
                     <span className="aircraftRowDestination"></span>
-                    <span className="aircraftRowAltitude"></span>
-                    <span className="aircraftRowSpeed"></span>
                 </div>
                 <button className="aircraftRowRightButton" onClick={addAircraft} disabled={ !this.state.addEnabled }>Add</button>
             </div>

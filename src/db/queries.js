@@ -462,3 +462,13 @@ export const updateAircraftLandQuery = ( aircraftId, lat, lon, elevation, f ) =>
 	WHERE
 		id=${aircraftId}
 `, f )
+
+export const routesQuery = ( f ) => connectionQuery( `
+	SELECT 
+		routes.*, points.code as destinationCode
+	FROM
+		routes, points
+	WHERE
+		points.id=routes.destination 
+`, f )
+

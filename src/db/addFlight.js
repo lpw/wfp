@@ -4,6 +4,7 @@ import {
 	addPointToRouteQuery,
 	getLastInsertIdQuery,
 } from './queries';
+const debug = require('debug')('wfp:sim')
 
 export function addFlight( aircraftId, originId, destinationId, altitude, speed, charge ) {
 
@@ -93,7 +94,7 @@ export function addFlight( aircraftId, originId, destinationId, altitude, speed,
 	// return Promise.all( [ flightPromise, routesPointsPromise ] ).then( ( [ flightId, nada ] ) => flightId )
 	return Promise.all( [ flightPromise, routesPointsPromise ] 
 	).then( ( [ flightId, nada ] ) => {
-		console.log( 'LANCE flightId', flightId )
+		debug( 'flightId', flightId )
 		return flightId
 	})
 }

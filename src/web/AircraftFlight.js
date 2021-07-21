@@ -33,9 +33,8 @@ class AircraftFlight extends Component {
             supervise,
             schedule,
             history,
-            maintenance,
          } = this
-        const { name, origin, destination, altitude, speed } = props
+        const { id, name, origin, destination, altitude, speed, maintenance } = props
         const { aircraft } = state
 
         if( aircraft ) {
@@ -69,17 +68,17 @@ class AircraftFlight extends Component {
         //     </div>
         // )
                     // <button className="aircraftRowButtonSchedule" onClick={ schedule } disabled={ true }>Schedule</button>
+                    // <span className="aircraftRowAltitude">{ altitude } ft</span>
+                    // <span className="aircraftRowSpeed">{ speed } kts</span>
         return (
             <div className="aircraftRow">
                  <div className="aircraftRowFields">
                     <span className="aircraftRowName">{ name }</span>
-                    <button className="aircraftRowButtonHistory" onClick={ history } disabled={ true }>Flights</button>
-                    <button className="aircraftRowButtonMaintenance" onClick={ maintenance } disabled={ true }>Maintenance</button>
+                    <button className="aircraftRowButtonHistory" onClick={ history }>Flights</button>
+                    <button className="aircraftRowButtonMaintenance" onClick={ () => maintenance( id ) }>Maintenance</button>
                     <span className="aircraftRowOrigin">{ origin.code }</span>
                     <span className="aircraftRowArrow">&#x2192;</span>
                     <span className="aircraftRowDestination">{ destination.code }</span>
-                    <span className="aircraftRowAltitude">{ altitude } ft</span>
-                    <span className="aircraftRowSpeed">{ speed } kts</span>
                 </div>
                 <button className="aircraftRowRightButton" onClick={supervise} disabled={ this.state.disabled }>Supervise</button>
             </div>

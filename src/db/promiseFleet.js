@@ -23,15 +23,19 @@ export function promiseFleet( query = fleetQuery ) {
 	const pointsPromise = promisePoints()	// cached
 
 	return Promise.all( [ fleetPromise, pointsPromise ] ).then( ( [ fleet, points ] ) => {
-		// console.log( 'LANCE fleet.map( f => f.flightId )', fleet.map( f => f.flightId ) )
-		fleet.map( f => console.log( 'LANCE fleet flightId', f.flightId ) )
 		const rf = fleet.reduce( ( sofar, aircraft ) => {
 			const { pointId, ...aWithoutPointId } = aircraft
 			const { id, flightId, routeId, baseId, atd, ata, etd, sequence } = aircraft
 			const existing = sofar[ id ]
 
-			// if( existing && existing.atd > atd ) {  
-			// use existing entry if it's scheduled to depart more recently 
+			// // if( existing && existing.atd > atd ) {  
+			// // if( existing && existing.etd > etd ) {  
+			// // use existing entry if it's departed before this one, or scheduled to depart more recently 
+			// if( existing && (
+			// 	( atd && existing.atd > atd ) ||
+			// 	// ( !existing.atd && existing.etd > etd )
+			// 	// ( existing.atd && existing.etd > etd )
+			// 	( !atd && existing.etd > etd )
 			if( existing && existing.etd > etd ) {  
 				// the existing entry is newer than the current aircraft entry/row
 				return sofar
@@ -106,8 +110,7 @@ export function promiseFleet( query = fleetQuery ) {
 			}
 		}, {} )
 
-		// debug( 'rf', rf )
-		console.log( 'LANCE rf', rf )
+		debug( 'rf', rf )
 
 		return rf
 	})

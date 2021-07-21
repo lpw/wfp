@@ -179,40 +179,47 @@ const fly = ( aircraft, now ) => {
 	const totalDistance = turf.distance( origin, destination, turfOptions )
 	// const calculatedBeariing = turf.bearing( origin, destination, turfOptions ) + 180
 	const calculatedBeariing = turf.bearing( destination, origin, turfOptions ) + 180
-	const coveredDistance = turf.distance( origin, current, turfOptions )
-	const remainingDistance = turf.distance( current, destination, turfOptions )
+	// const coveredDistance = turf.distance( origin, current, turfOptions )
+	// const remainingDistance = turf.distance( current, destination, turfOptions )
 	// const totalDistance = distance( origin, destination )
 	// const coveredDistance = distance( origin, current )
 	// const remainingDistance = distance( current, destination )
 
- debug( 'fly totalDistance', totalDistance )
- debug( 'fly coveredDistance', coveredDistance )
- debug( 'fly remainingDistance', remainingDistance )
 	// assert( Math.round( coveredDistance + remainingDistance ) === Math.round( totalDistance ) )
 	// if( !( Math.round( coveredDistance + remainingDistance ) === Math.round( totalDistance ) ) ) {
 	// 	console.warn( 'Overflown flight distance', aircraft.flightId, coveredDistance, remainingDistance, totalDistance )
 	// }
 
 	const nmps = speed * groundSpeedNmphToNmps
-	const ete = nmps > 0 ? totalDistance / nmps : 0
-	const etr = nmps > 0 ? remainingDistance / nmps : 0
-	// const eta = atd + ete
-	const eta = now + etr
  debug( 'fly speed', speed )
- // debug( 'fly ete', ete )
+
+	const ete = nmps > 0 ? totalDistance / nmps : 0
  debug( 'fly eta', eta )
- debug( 'fly atd', atd )
-	// debug( 'fly eta', ata )
 	
 	// const fraction = coveredDistance / totalDistance
 	const elapsed = now - atd
 
 	const fraction = elapsed / ete
+
+	const coveredDistance = fraction * totalDistance)
+	const remainingDistance = totalDistance - coveredDistance
+
+	const etr = nmps > 0 ? remainingDistance / nmps : 0
+	// const eta = atd + ete
+	const eta = now + etr
+ // debug( 'fly ete', ete )
+ debug( 'fly atd', atd )
+	// debug( 'fly eta', ata )
+
+ debug( 'fly totalDistance', totalDistance )
+ debug( 'fly coveredDistance', coveredDistance )
+ debug( 'fly remainingDistance', remainingDistance )
+
 	// const ip = origin.intermediatePointTo( destination, fraction )
 	const alongLine = turf.lineString( [ originCoords, destinationCoords ] )
 	// const ip = turf.along( alongLine, coveredDistance, turfOptions )
 	// const ip = along( origin, destination, fraction * totalDistance )
-	const ip = turf.along( alongLine, fraction * totalDistance )
+	const ip = turf.along( alongLine, coveredDistance )
  debug( 'fly elapsed', elapsed )
  debug( 'fly ete', ete )
  debug( 'fly fraction', fraction )
@@ -255,7 +262,7 @@ const launchFleet = ( fleet, now ) => {
     Object.keys( fleet ).map( k => fleet[ k ] ).map( a => {
     	const departed = !!a.atd
     	const landed = !!a.ata
-    	const ready = !!a.ata
+    	// const ready = !!a.ata
     	const launchTime = now >= a.etd
     	assert( !departed )
     	assert( !landed )
@@ -304,7 +311,7 @@ export const sim = () => {
 	}, checkTimeout )
 }
 
-// sim()
+sim()
 
 // sanity checks
 

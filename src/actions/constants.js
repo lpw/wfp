@@ -25,7 +25,7 @@ export function receivedFlight( flight = {} ) {
     }
 }
 
-export function receivedRoutes( routes = [] ) {
+export function receivedRoutes( routes = {} ) {
     return {
         type: RECEIVED_ROUTES,
         routes,
