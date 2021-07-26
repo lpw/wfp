@@ -25,7 +25,7 @@ export function promiseFleet( query = fleetQuery ) {
 	return Promise.all( [ fleetPromise, pointsPromise ] ).then( ( [ fleet, points ] ) => {
 		const rf = fleet.reduce( ( sofar, aircraft ) => {
 			const { pointId, ...aWithoutPointId } = aircraft
-			const { id, flightId, routeId, baseId, atd, ata, etd, sequence } = aircraft
+			const { id, lat, lon, flightId, routeId, baseId, atd, ata, etd, sequence } = aircraft
 			const existing = sofar[ id ]
 
 			// // if( existing && existing.atd > atd ) {  
@@ -48,7 +48,7 @@ export function promiseFleet( query = fleetQuery ) {
 			// 	!existing.atd && !atd && existing.etd & existing.etd > etd ||
 			// 	existing.etd && !etd // shouldn't happen, and shouldn't be necessary as above catches this condition
 			// )) {  
-				
+
 			// if( existing && (
 			// 	existing.atd > atd ||
 			// 	!atd && existing.etd > etd
@@ -65,10 +65,16 @@ export function promiseFleet( query = fleetQuery ) {
 					...sofar,
 					[ id ]: {
 						...aWithoutPointId,
+						baseId: baseId,
+						baseCode: points[ baseId ].code, 
+						baseLat: points[ baseId ].lat,
+						baseLon: points[ baseId ].lon,
 						originId: baseId,
 						originCode: points[ baseId ].code, 
 						originLat: points[ baseId ].lat,
 						originLon: points[ baseId ].lon,
+						lat: lat || points[ baseId ].lat,
+						lon: lon || points[ baseId ].lon,
 					}
 				}
 			} else if( sequence <= 1 || ata ) {
@@ -80,10 +86,16 @@ export function promiseFleet( query = fleetQuery ) {
 					...sofar,
 					[ id ]: {
 						...aWithoutPointId,
+						baseId: baseId,
+						baseCode: points[ baseId ].code, 
+						baseLat: points[ baseId ].lat,
+						baseLon: points[ baseId ].lon,
 						originId: pointId,
 						originCode: points[ pointId ].code, 
 						originLat: points[ pointId ].lat,
 						originLon: points[ pointId ].lon,
+						lat: lat || points[ baseId ].lat,
+						lon: lon || points[ baseId ].lon,
 					}
 				}
 			} else {  
@@ -117,10 +129,16 @@ export function promiseFleet( query = fleetQuery ) {
 					...sofar,
 					[ id ]: {
 						...existing,	
+						baseId: baseId,
+						baseCode: points[ baseId ].code, 
+						baseLat: points[ baseId ].lat,
+						baseLon: points[ baseId ].lon,
 						destinationId: pointId, 
 						destinationCode: points[ pointId ].code, 
 						destinationLat: points[ pointId ].lat, 
 						destinationLon: points[ pointId ].lon, 
+						lat: lat || points[ baseId ].lat,
+						lon: lon || points[ baseId ].lon,
 					}
 				}
 			}

@@ -96,6 +96,7 @@ class SuperviseFlyingAircraft extends Component {
             covered,
             elapsed,
             close,
+            goMap, 
         } = props
         const { showSixPack } = state
         // const sixPackSize = showSixPack ? 250 : 50
@@ -133,6 +134,7 @@ console.log( 'LANCE SuperviseFlyingAircraft render destinationCode', destination
                     <button className="selectedCommsButton" onClick={ comms }>Comms</button>
                     <button className="selectedVideoButton" onClick={ video }>Video</button>
                     <button className="selectedContingencyButton" onClick={ contingency }>Contingency</button>
+                    <button className="selectedMapButton" onClick={ () => goMap( id ) }>Map</button>
                     <button className="selectedCloseButton" onClick={ () => close( id ) }>X</button>
                 </div>
                 <div className="selectedAircraftRest">
@@ -151,7 +153,7 @@ console.log( 'LANCE SuperviseFlyingAircraft render destinationCode', destination
                         </div> }
                     </div>
                     <div className="selectedAircraftMiddleCol" >
-                        <GaugeChart textColor="black" colors={['#FF0000', '#FFFF00', '#00FF00']} percent={ level } className="selectedAircraftFuel" style={chartStyle} />
+                        <GaugeChart textColor="black" colors={['#FF0000', '#FFFF00', '#00FF00']} percent={ Math.round( level ) } className="selectedAircraftFuel" style={chartStyle} />
                         <span className={ selectedAircraftChargeClassNames }>Remaning: { Math.round( chargeMinutesRemaining ) } min</span>
                     </div>
                     <div onClick={ toggleSixPack }>

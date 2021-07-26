@@ -8,7 +8,7 @@ import * as turf from '@turf/turf'
 import socketIOClient from "socket.io-client"
 import {
     requestFleet,
-    requestPoints,
+    // requestPoints,
 } from '../actions'
 import {
 } from '../selectors'
@@ -24,32 +24,25 @@ const pathHasSelectedAircraft = ( path, selectedAircraftIds ) => oneHasSomeOther
 const removeMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftIds.filter( id => !marker.aircraftIds.includes( id ) )
 const addMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftIds.concat( marker.aircraftIds )
 
-const getMarker = ( aircraftId, fleet, points ) => {
+const getMarker = ( aircraftId, fleet, telemetryData = {} ) => {
     let marker
     const aircraft = fleet[ aircraftId ]
-    const { baseId, originId, lat, lon } = aircraft || {}
+    const aircraftTelemetry = telemetryData[ aircraftId ]
+    const aircraftWithTelemtry = { ...aircraft, ...aircraftTelemetry }
+    const { baseId, originId, lat, lon } = aircraftWithTelemtry
+    // assert( aircraft )
     if( aircraft ) {
         // const pointId = aircraft.originId || aircraft.baseId
         // let pointId 
         // let point
         let coord 
 
-        if( points.length ) {
-            if( lat && lon ) {
-                coord = [ lon, lat ]
-            } else if( aircraft.originId ) {
-                const pointId = aircraft.originId
-                const point = points[ pointId ]
-                assert( point )
-                coord = [ point.lon, point.lat ]
-            } else if( aircraft.baseId ) {
-                const pointId = aircraft.baseId
-                const point = points[ pointId ]
-                assert( point )
-                coord = [ point.lon, point.lat ]
-            } else {
-                console.warn( 'no coord/point/id for', aircraft )
-            }
+        if( lat && lon ) {
+            coord = [ lon, lat ]
+        } else if( aircraft.baseLat && aircraft.baseLon ) {
+            coord = [ aircraft.baseLon, aircraft.baseLat ]
+        } else {
+            console.warn( 'no coord/point/id for', aircraft )
         }
 
         if( coord ) {   
@@ -68,7 +61,7 @@ const getMarker = ( aircraftId, fleet, points ) => {
     return marker
 }
 
-const getMarkers = ( fleet, points ) => {
+const getMarkers = ( fleet ) => {
     const markers = Object.keys( fleet ).map( k => fleet[ k ]).reduce( ( msf, aircraft )=> {
         // const pointId = aircraft.originId || aircraft.baseId
 console.log( 'LANCE getMarkers msf', msf )
@@ -83,7 +76,7 @@ console.log( 'LANCE getMarkers msf', msf )
                     aircraftIds: colocatedMsf.aircraftIds.concat( aircraft.id ),
                 }
             }
-        } else {
+        } else if( aircraft.lat && aircraft.lon ){
             const id = Object.keys( msf ).length
             // const point = points[ pointId ]
             // toconsider: backup aircraft lat/lon with route/origin lat/lon
@@ -146,44 +139,42 @@ const getUpdatedMarkers = ( markers, data ) => {
     return newMarrkers
 }
 
-const getPaths = ( fleet, points ) => {
+const getPaths = ( fleet ) => {
     const paths = Object.keys( fleet ).map( k => fleet[ k ]).reduce( ( psf, aircraft )=> {
-        if( aircraft.originId || aircraft.baseId ) {
-            const originPointId = aircraft.originId || aircraft.baseId
-            const destinationPointId = aircraft.destinationId
-            const originPoint = points[ originPointId ]
-            const destinationPoint = points[ destinationPointId ]
-            const originCoords = originPoint && [ originPoint.lon, originPoint.lat ]
-            const destinationCoords = destinationPoint && [ destinationPoint.lon, destinationPoint.lat ]
-            if( originPointId && destinationPointId 
-                    && originPointId !== destinationPointId
-                    && originPoint && destinationPoint
-            ) {
-                // const colocatedPsf = Object.keys( psf ).map( k => psf[ k ] ).find( p => p.originPointId === originPointId && p.destinationPointId === destinationPointId )
-                const id = `${originPointId}-${destinationPointId}`
-                const colocatedPsf = psf[ id ]
-                if( colocatedPsf ) {
-                    psf = {
-                        ...psf,
-                        [ colocatedPsf.id ]: {
-                            ...colocatedPsf, // id, pointId...
-                            // name: `${colocatedPsf.name}, ${aircraft.name}`,
-                            aircraftIds: colocatedPsf.aircraftIds.concat( aircraft.id ),
-                        }
+        // const originPointId = aircraft.originId || aircraft.baseId
+        // const destinationPointId = aircraft.destinationId
+        // const originPoint = points[ originPointId ]
+        // const destinationPoint = points[ destinationPointId ]
+        // const originCoords = originPoint && [ originPoint.lon, originPoint.lat ]
+        // const destinationCoords = destinationPoint && [ destinationPoint.lon, destinationPoint.lat ]
+        const { originLat, originLon, destinationLat, destinationLon } = aircraft
+        if( typeof destinationLat === 'number' && typeof destinationLon === 'number' ) {
+            const originCoords = [ originLon, originLat ]
+            const destinationCoords = [ destinationLon, destinationLat ]
+            // const colocatedPsf = Object.keys( psf ).map( k => psf[ k ] ).find( p => p.originPointId === originPointId && p.destinationPointId === destinationPointId )
+            const id = `${originCoords}-${destinationCoords}`
+            const colocatedPsf = psf[ id ]
+            if( colocatedPsf ) {
+                psf = {
+                    ...psf,
+                    [ colocatedPsf.id ]: {
+                        ...colocatedPsf, // id, pointId...
+                        // name: `${colocatedPsf.name}, ${aircraft.name}`,
+                        aircraftIds: colocatedPsf.aircraftIds.concat( aircraft.id ),
                     }
-                } else {
-                    psf = {
-                        ...psf,
-                        [ id ]: {
-                            id,
-                            originPointId,
-                            destinationPointId,
-                            originPoint,
-                            destinationPoint,
-                            originCoords,
-                            destinationCoords,
-                            aircraftIds: [ aircraft.id ],
-                        }
+                }
+            } else {
+                psf = {
+                    ...psf,
+                    [ id ]: {
+                        id,
+                        // originPointId,
+                        // destinationPointId,
+                        // originPoint,
+                        // destinationPoint,
+                        originCoords,
+                        destinationCoords,
+                        aircraftIds: [ aircraft.id ],
                     }
                 }
             }
@@ -199,22 +190,18 @@ class Supervise extends Component {
         const { selectedAircraftIds } = props
 
         this._mapRef = React.createRef()
-        // this._markers = {}
 
         this._sources = []
         this._layers = []
 
         this.state = {
             selectedAircraftIds,
-            // fleet: {}
+            fleet: {}
         }
 
         this._initialMapRendered = false
 
         this._markers = props.markers
-console.log( 'Supervise constructor this._markers', this._markers )
-
-        this._telemetryData = {}
     }
 
     setRef = ( el, marker ) => {
@@ -229,18 +216,18 @@ console.log( 'Supervise constructor this._markers', this._markers )
         const { props, updateAircraft, _markers: markers } = this
         const {
             // markers,
-            points,
+            // points,
             requestFleet,
-            requestPoints,
+            // requestPoints,
         } = props
 
         if( markers.length <= 0 || stale() ) {
             requestFleet()
         }
 
-        if( Object.keys( points ).length <= 0 || stale() ) {
-            requestPoints()
-        }
+        // if( Object.keys( points ).length <= 0 || stale() ) {
+        //     requestPoints()
+        // }
 
         this.setupMap()
 
@@ -263,67 +250,39 @@ console.log( 'Supervise constructor this._markers', this._markers )
 console.log( 'Supervise componentWillReceiveProps this._markers', this._markers )
     }
 
-    componentDidMount() {
-        const { props, updateAircraft, _markers: markers } = this
-        const {
-            // markers,
-            points,
-            requestFleet,
-            requestPoints,
-        } = props
-
-        if( markers.length <= 0 || stale() ) {
-            requestFleet()
-        }
-
-        if( Object.keys( points ).length <= 0 || stale() ) {
-            requestPoints()
-        }
-
-        this.setupMap()
-
-        if( !this._socket ) {
-            this._socket = socketIOClient( 'http://127.0.0.1:7400', {
-                withCredentials: true,
-                // extraHeaders: {
-                //     "my-custom-header": "abcd"
-                // }
-            })
-            this._socket.on( 'cora', data => {
-              // coratype.innerHTML = 'Cora'
-              updateAircraft( data )
-            })
-        }
-    }
-
     updateAircraft = data => {
         console.log( 'LANCE updateAircraft data', data )
 
         const now = Date.now()
 
-        const { props, updateMarkers } = this
+        const { props, moveMarkers } = this
         const {
             markers,
         } = props
 
-        // this.setState({
-        //     fleet: {
-        //         [ data.id ]: data
-        //     }
-        // })
+        this.setState({
+            fleet: {
+                ...this.state.fleet,
+                [ data.id ]: {
+                    ...this.state.fleet[ data.id ],
+                    ...data,
+                    time: now,
+                }
+            }
+        })
 
         this._markers = getUpdatedMarkers( this._markers, data ) 
 
-        this._telemetryData = {
-            ...this._telemetryData,
-            [ data.id ]: {
-                ...this._telemetryData[ data.id ],
-                ...data,
-                time: now,
-            }
-        }
+        // this._telemetryData = {
+        //     ...this._telemetryData,
+        //     [ data.id ]: {
+        //         ...this._telemetryData[ data.id ],
+        //         ...data,
+        //         time: now,
+        //     }
+        // }
 
-        updateMarkers()
+        moveMarkers()
     }
 
     clickMarker = marker => {
@@ -353,6 +312,24 @@ console.log( 'Supervise componentWillReceiveProps this._markers', this._markers 
             selectedAircraftIds: selectedAircraftIds.filter( said => said !== id )
         })
     }
+
+    goMap = id => {
+        const { props } = this
+        const { name } = props
+
+        const { state } = this
+        const { fleet: telemetryData } = state
+        const aircraftTelemetry = telemetryData[ id ]
+
+        console.log( `goMap flying to ${id} with ${aircraftTelemetry}`)
+
+        if( aircraftTelemetry ) {
+            this._map.flyTo({
+                center: [ aircraftTelemetry.lon, aircraftTelemetry.lat ],
+                zoom: 22,
+            })
+        }
+    }   
 
     setupMap() {
         const { _mapRef } = this
@@ -531,15 +508,15 @@ console.log( 'LANCE line source, coordinates', source, coordinates )
         }
     }
 
-    updateMarkers = () => {
+    moveMarkers = () => {
         const { _map: map, _markers: markers } = this
         // const { selectedAircraftIds } = state
         // const { fleet, aircraftInfoSelector } = props
         // const { markers, paths, boundingBox, flyToCoord } = props
         // const { _markers: markers } = this
-console.log( 'LANCE updateMarkers', markers )
+console.log( 'LANCE moveMarkers', markers )
 
-        if( map && map.loaded() && map.isStyleLoaded() ) {
+        // if( map && map.loaded() && map.isStyleLoaded() ) { // ? todo - unloaded because of rerender?
             Object.keys( markers ).map( k => markers[ k ] ).map( m => {
                 // const aircraftInfo = aircraftInfoSelector( f.id )
                 // const points = aircraftInfo.points.filter( p => p.lat && p.lon )
@@ -548,15 +525,15 @@ console.log( 'LANCE updateMarkers', markers )
 
                 if( m.mbmarker && m.el ) {
                     m.mbmarker.setLngLat( coord )
-console.log( 'LANCE updateMarkers setLngLat id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
+console.log( 'LANCE moveMarkers setLngLat id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
                 } else if( m.el ) {
                     // m.mbmarker = new mapboxgl.Marker( m.el )
                     m.mbmarker = new mapboxgl.Marker( m.el, { anchor: 'top', offset: [ 0, -32 ] } ) // half of css height
                     m.mbmarker.setLngLat( coord ).addTo( map )
-console.log( 'LANCE updateMarkers newMarker id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
+console.log( 'LANCE moveMarkers newMarker id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
                 } else {
                     // need render
-console.log( 'LANCE updateMarkers no el id, coord, m', id, coord, m )
+console.log( 'LANCE moveMarkers no el id, coord, m', id, coord, m )
                 }
 
                 if( m.mbmarker ) {
@@ -565,7 +542,7 @@ console.log( 'LANCE updateMarkers no el id, coord, m', id, coord, m )
 
                 return null
             })
-        }
+        // }
     }
 
     renderMarker = m => {
@@ -590,16 +567,16 @@ console.log( 'LANCE updateMarkers no el id, coord, m', id, coord, m )
     }
 
     renderSelectedAircraft = id => {
-        const { props, close, _telemetryData: telemetryData } = this
-        const { fleet, points } = props
+        const { props, close, goMap, state } = this
+        const { fleet: telemetryData } = state
+        const { fleet } = props
         const aircraft = fleet[ id ]
         const aircraftTelemetry = telemetryData[ id ]
         const now = Date.now()
         const recentTelemetry = aircraftTelemetry && now - aircraftTelemetry.time < 60 * 1000
         // const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
 console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
-console.log( 'LANCE renderSelectedAircraft Object.keys( points ).length', Object.keys( points ).length )
-        if( aircraft && Object.keys( points ).length > 0 ) {
+        if( aircraft ) {
             const aircraftWithTelemtry = {
                 ...aircraft,
                 ...aircraftTelemetry,
@@ -620,16 +597,9 @@ console.log( 'LANCE renderSelectedAircraft Object.keys( points ).length', Object
                 covered,
                 elapsed,
             } = aircraftWithTelemtry
-            const originPoint = points[ originId || baseId ]
-            const destinationPoint = points[ destinationId ]
-console.log( 'LANCE renderSelectedAircraft originPoint', originPoint )
-            // if( !originPoint ) {
-            //     console.warn( `missing originPoint for ${origin}`)
-            // }
-            assert( originPoint )
-            if( destinationPoint && recentTelemetry ) {
-                const originCode = originPoint.code
-                const destinationCode = destinationPoint.code
+            const { originLat, originLon, destinationLat, destinationLon } = aircraft
+            const { originCode, destinationCode } = aircraft
+            if( destinationCode && recentTelemetry ) {
                 // return renderFlyingSelectedAircraft( id, originPoint, destinationPoint )
                 return <SuperviseFlyingAircraft 
                     key={ id } 
@@ -650,6 +620,7 @@ console.log( 'LANCE renderSelectedAircraft originPoint', originPoint )
                     covered={covered} 
                     elapsed={elapsed} 
                     close={ close } 
+                    goMap={ goMap } 
                 />
             } else if( recentTelemetry ) {
                 // return renderFlyingSelectedAircraft( id, originPoint, destinationPoint )
@@ -670,10 +641,11 @@ console.log( 'LANCE renderSelectedAircraft originPoint', originPoint )
                     covered={covered} 
                     elapsed={elapsed} 
                     close={ close } 
+                    goMap={ goMap } 
                 />
             } else {
                 // return renderParkedSelectedAircraft( id, originPoint )
-                return <SuperviseParkedAircraft key={ id } id={id} originPoint={originPoint} close={ close } fleet={ fleet }/>
+                return <SuperviseParkedAircraft key={ id } id={id} originCode={originCode} close={ close } fleet={ fleet }/>
             }
         }
     }
@@ -698,17 +670,17 @@ console.log( 'LANCE renderSelectedAircraft originPoint', originPoint )
 }
 
 const mapStateToProps = ( state, props ) => {
-    const { fleet, points } = state
+    const { fleet } = state
     const { location: { search } } = props
     const selectedAircraftIds = ( new URLSearchParams( search ).getAll( 'a' ) || [] ).map( said => +said )
     console.log( 'LANCE selectedAircraftIds', selectedAircraftIds )
 
-    const markers = getMarkers( fleet, points )
-    const paths = getPaths( fleet, points )
+    const markers = getMarkers( fleet )
+    const paths = getPaths( fleet )
     let flyToCoord
 
     if( selectedAircraftIds && selectedAircraftIds.length > 0 ) {
-        const marker = getMarker( selectedAircraftIds[ 0 ], fleet, points )
+        const marker = getMarker( selectedAircraftIds[ 0 ], fleet, {} )
         if( marker ) {
             flyToCoord = marker.coord
         }
@@ -738,7 +710,6 @@ console.log( 'mapStateToProps markers', markers )
         fleet,
         markers,
         paths,
-        points,
         selectedAircraftIds,
         boundingBox,
         flyToCoord,
@@ -749,9 +720,6 @@ const mapDispatchToProps = ( dispatch, /* ownProps */ ) => {
     return {
         requestFleet: () => {
             dispatch( requestFleet() )
-        },
-        requestPoints: () => {
-            dispatch( requestPoints() )
         },
     }
 }

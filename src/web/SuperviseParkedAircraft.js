@@ -32,34 +32,34 @@ class SuperviseParkedAircraft extends Component {
     //     this.setupMap()
     // }
 
-    renderParkedSelectedAircraft = ( id, originPoint ) => {
+    renderParkedSelectedAircraft = ( id, originCode ) => {
         const { props } = this
         const { fleet } = props
         const aircraft = fleet[ id ]
         const { name } = aircraft
         const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
-        assert( originPoint )
-console.log( 'LANCE renderParkedSelectedAircraft originPoint', originPoint )
+        assert( originCode )
+console.log( 'LANCE renderParkedSelectedAircraft originCode', originCode )
         return (
             <div key={ id } className={ selectedAircraftClassNames }>
                 <span className="selectedAircraftName">{ name }</span>
-                <span className="selectedAircraftOrigin">{ originPoint.code }</span>
+                <span className="selectedAircraftOrigin">{ originCode }</span>
             </div>
         )
     }
 
     render() {
         const { props } = this
-        const { id, fleet, originPoint, close } = props
+        const { id, fleet, originCode, close } = props
         const aircraft = fleet[ id ]
         const { name } = aircraft
         const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
-        assert( originPoint )
+        assert( originCode )
         return (
             <div key={ id } className={ selectedAircraftClassNames }>
                 <div className="selectedNameAndParked">
                     <span className="selectedAircraftNameParked">{ name }</span>
-                    <span className="selectedAircraftOriginParked">Landed at { originPoint.code }</span>
+                    <span className="selectedAircraftOriginParked">Landed at { originCode }</span>
                     <span className="selectedAircraftCloseParked">
                         <button className="selectedCloseButton" onClick={ () => close( id ) }>X</button>
                     </span>
