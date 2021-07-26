@@ -104,6 +104,46 @@ console.log( 'LANCE getMarkers msf', msf )
     return markers
 }
 
+const getUpdatedMarkers = ( markers, data ) => {
+    let newMarrkers = markers
+
+    const markerId = Object.keys( markers ).find( k => markers[ k ].aircraftIds.includes( data.id ) )
+    const marker = markers[ markerId ]
+
+    if( !marker ) {
+        console.warn( 'getUpdatedMarkers could not find aircraft', data, markers )
+    } else {
+        if( marker.aircraftIds.length < 1 ) {
+            assert( marker.aircraftIds.length > 0 )
+        } else if( marker.aircraftIds.length === 1 ) {
+            newMarrkers = {
+                ...markers,
+                [ marker.id ]: {
+                    ...marker,
+                    coord: [ data.lon, data.lat ],
+                }
+            }
+        } else if( marker.aircraftIds.length > 1 ) {
+            const id = Object.keys( markers ).length
+            newMarrkers = {
+                ...markers,
+                [ marker.id ]: {
+                    ...marker,
+                    aircraftIds: marker.aircraftIds.filter( i => i !== data.id )
+                },
+                // could check coords again for confluence
+                [ id ]: {
+                    ...marker,
+                    aircraftIds: [ data.id ],
+                    coord: [ data.lon, data.lat ],
+                }
+            }
+        }
+    }
+
+    return newMarrkers
+}
+
 const getPaths = ( fleet, points ) => {
     const paths = Object.keys( fleet ).map( k => fleet[ k ]).reduce( ( psf, aircraft )=> {
         if( aircraft.originId || aircraft.baseId ) {
@@ -157,16 +197,20 @@ class Supervise extends Component {
         const { selectedAircraftIds } = props
 
         this._mapRef = React.createRef()
-        this._markers = {}
+        // this._markers = {}
 
         this._sources = []
         this._layers = []
 
         this.state = {
             selectedAircraftIds,
+            // fleet: {}
         }
 
         this._initialMapRendered = false
+
+        this._markers = props.markers
+console.log( 'Supervise constructor this._markers', this._markers )
     }
 
     setRef = ( el, marker ) => {
@@ -178,9 +222,9 @@ class Supervise extends Component {
     }
 
     componentDidMount() {
-        const { props } = this
+        const { props, updateAircraft, _markers: markers } = this
         const {
-            markers,
+            // markers,
             points,
             requestFleet,
             requestPoints,
@@ -203,15 +247,68 @@ class Supervise extends Component {
                 //     "my-custom-header": "abcd"
                 // }
             })
-            this._socket.on( 'cora', function ( data ) {
+            this._socket.on( 'cora', data => {
               // coratype.innerHTML = 'Cora'
-              this.updateAircraft( data )
+              updateAircraft( data )
+            })
+        }
+    }
+
+    componentWillReceiveProps( nextProps ) {
+        this._markers = nextProps.markers
+console.log( 'Supervise componentWillReceiveProps this._markers', this._markers )
+    }
+
+    componentDidMount() {
+        const { props, updateAircraft, _markers: markers } = this
+        const {
+            // markers,
+            points,
+            requestFleet,
+            requestPoints,
+        } = props
+
+        if( markers.length <= 0 || stale() ) {
+            requestFleet()
+        }
+
+        if( Object.keys( points ).length <= 0 || stale() ) {
+            requestPoints()
+        }
+
+        this.setupMap()
+
+        if( !this._socket ) {
+            this._socket = socketIOClient( 'http://127.0.0.1:7400', {
+                withCredentials: true,
+                // extraHeaders: {
+                //     "my-custom-header": "abcd"
+                // }
+            })
+            this._socket.on( 'cora', data => {
+              // coratype.innerHTML = 'Cora'
+              updateAircraft( data )
             })
         }
     }
 
     updateAircraft = data => {
         console.log( 'LANCE updateAircraft data', data )
+
+        const { props, updateMarkers } = this
+        const {
+            markers,
+        } = props
+
+        // this.setState({
+        //     fleet: {
+        //         [ data.id ]: data
+        //     }
+        // })
+
+        this._markers = getUpdatedMarkers( this._markers, data ) 
+
+        updateMarkers()
     }
 
     clickMarker = marker => {
@@ -420,11 +517,11 @@ console.log( 'LANCE line source, coordinates', source, coordinates )
     }
 
     updateMarkers = () => {
-        const { _map: map, props, state } = this
+        const { _map: map, _markers: markers } = this
         // const { selectedAircraftIds } = state
         // const { fleet, aircraftInfoSelector } = props
         // const { markers, paths, boundingBox, flyToCoord } = props
-        const { markers } = props
+        // const { _markers: markers } = this
 console.log( 'LANCE updateMarkers', markers )
 
         if( map && map.loaded() && map.isStyleLoaded() ) {
@@ -434,13 +531,17 @@ console.log( 'LANCE updateMarkers', markers )
                 // const coordinates = points.map( p => [ p.lon, p.lat ] )
                 const { id, coord } = m
 
-                const source = `marker${id}`
-                // const layer = `marker${id}`
-
-console.log( 'LANCE updateMarkers', source, coord[0], coord[1] )
-
-                assert( m.mbmarker )
-                assert( m.el )
+                if( m.mbmarker && m.el ) {
+                    m.mbmarker.setLngLat( coord )
+console.log( 'LANCE updateMarkers setLngLat id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
+                } else if( m.el ) {
+                    // m.mbmarker = new mapboxgl.Marker( m.el )
+                    m.mbmarker = new mapboxgl.Marker( m.el, { anchor: 'top', offset: [ 0, -32 ] } ) // half of css height
+                    m.mbmarker.setLngLat( coord ).addTo( map )
+console.log( 'LANCE updateMarkers newMarker id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
+                } else {
+console.log( 'LANCE updateMarkers no el id, coord, m', id, coord, m )
+                }
 
                 if( m.mbmarker ) {
                     m.mbmarker.setLngLat( coord )
@@ -587,6 +688,8 @@ const mapStateToProps = ( state, props ) => {
         const northEast = new mapboxgl.LngLat( east, north )
         boundingBox = new mapboxgl.LngLatBounds( southWest, northEast )
     }
+
+console.log( 'mapStateToProps markers', markers )
 
     return {
         fleet,
