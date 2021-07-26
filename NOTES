@@ -28,6 +28,9 @@ flow:
 	option to add new route on route selector buttons on fleet page
 actions, reducers, selectors
 
+separate UI server into static assets and dynamic assets
+
+http://gasapi (ground autonomy sandbox)
 API for DB
 /apiv1 /fleet
 actions, reducers, selectors
@@ -40,6 +43,7 @@ WebDDS bridge from sim/aircraft to web UI (DDS reader, socket.io writer)
 
 Checkpointer from sim/aircraft to DB (DDS reader, DB/SQL writer)
 checkpoints into aircraft DB (DDS writer) (but DB is not source of truth, just a starting point if nothing else)
+Used for dynamic situaitons like flight, not ground
 
 Watcher (DDS reader)
 	monitors aircraft (pos, dir, speed, alt, systems, other aircraft, terrain, vertipots)
@@ -52,8 +56,21 @@ Watcher (DDS reader)
 		sim: speed, heading, alt, charge, lat/lon pos,?
 	retains no data, not source of truth
 Launcher
+	checks if flight time has occurred for aircraft
+	checks with aircraft and vertiport and ATC
+	adds aircraft to flying fleet
+	updates aircraft info (beyond the checkpointer), like pos of the origin
+	issues commands to aircraft for take-off (set speed, heading, charge, vsi, ...)
+	updates ATD for the flight
 Lander
+	issues commands to aircraft for landing (set speed, heading, charge, vsi, ...)
+	updates ATA for the flight
+	removes aircraft from flying fleet
+	updates aircraft info (beyond the checkpointer), like pos of the dest
 Flyer
+	updates aircraft info (is this just the checkpointer?)
+
+Schedulerr for flights (bookings, reservations, passengers, weights, security, personell, vertiports, aircraft)
 
 sim has API to receive commands
 /apiv1/n123 /speed, heading, alt, charge, lat+lon (also for pitch, roll, yaw from monile app); /accell
@@ -63,3 +80,17 @@ sim is source of truth
 
 mobile/phone app to simulate/generate spatial info (pitch, roll, yaw, speed? alt?) from intertial sensors 
 sends/posts commands directly to sim (source of truth)
+
+
+    this.library = path.join(__dirname, '/rticonnextdds-connector/lib/', libDir, '/', libName)
+this.library
+"/Users/lance.welsh/git/dds/node_modules/rticonnextdds-connector/rticonnextdds-connector/lib/osx-x64/librtiddsconnector.dylib"
+__dirname
+"/Users/lance.welsh/git/dds/node_modules/rticonnextdds-connector"
+libDir
+"osx-x64"
+
+"/Users/lance.welsh/git/dds/prebuilds/darwin-x64"
+/Users/lance.welsh/.nvm/versions/node/v15.11.0/bin
+
+​

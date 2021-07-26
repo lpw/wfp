@@ -10,6 +10,7 @@ export const ADDED_FLIGHT = 'ADDED_FLIGHT'
 export const ADDED_AIRCRAFT = 'ADDED_AIRCRAFT'
 export const DELETED_AIRCRAFT = 'DELETED_AIRCRAFT'
 export const FLY_AIRCRAFT = 'FLY_AIRCRAFT'
+export const UPDATE_TELEMETRY = 'UPDATE_TELEMETRY'
 
 export function receivedFlights( flights = [] ) {
     return {
@@ -87,6 +88,14 @@ export function flyAircraft( aircraftId ) {
     return {
         type: FLY_AIRCRAFT,
         aircraftId,
+    }
+}
+
+export function updateTelemetry( telemetry, time ) {
+    return {
+        type: UPDATE_TELEMETRY,
+        telemetry,
+        time,
     }
 }
 

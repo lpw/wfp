@@ -4,7 +4,7 @@ import {
 	DELETED_AIRCRAFT,
 } from '../actions'
 
-const fleet = ( state = [], action ) => {
+const fleet = ( state = {}, action ) => {
 	const { type } = action
 
 	switch ( type ) {

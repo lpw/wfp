@@ -8,9 +8,12 @@ import createRootReducer from './reducers'
 import { ConnectedRouter } from 'connected-react-router'
 import { createBrowserHistory } from 'history';
 import mapboxgl from 'mapbox-gl'	// instead of <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+import socketIOClient from "socket.io-client"
 
 import './index.css';
 import App from './web/App';
+
+import { updateTelemetry } from './actions'
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibGFuY2VwdyIsImEiOiJja2ZpamE2NGIwMHBnMzhxdTJpYXd3Z3g5In0.aC7y-RlHNxdFXi5UgpagMA';
 
@@ -49,4 +52,11 @@ ReactDOM.render(
 		</Provider>
 	</React.StrictMode>,
 	document.getElementById('root')
-);
+)
+
+const socket = socketIOClient( 'http://127.0.0.1:7400', {
+	withCredentials: true,
+})
+socket.on( 'cora', telemetry => {
+	store.dispatch( updateTelemetry( telemetry, Date.now() ) )
+})
