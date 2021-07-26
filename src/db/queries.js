@@ -406,7 +406,7 @@ export const updateRouteBearingQuery = ( routeId, bearing, f ) => connectionQuer
 		${routeId}
 `, f )
 
-export const updateAircraftQuery = ( aircraftId, charge, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi, f ) => connectionQuery( `
+export const updateAircraftQuery = ( id, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi, charge, f ) => connectionQuery( `
 	UPDATE 
 		fleet
 	SET 
@@ -422,7 +422,7 @@ export const updateAircraftQuery = ( aircraftId, charge, lat, lon, heading, spee
 		turn=${ Math.round( turn ) },
 		vsi=${ Math.round( vsi ) }
 	WHERE
-		id=${aircraftId}
+		id=${id}
 `, f )
 
 export const getLaunchInfoFlightQuery = ( flightId, f ) => connectionQuery( `

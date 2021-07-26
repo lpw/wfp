@@ -8,7 +8,7 @@ import fs from 'fs'
 import Hapi from 'hapi'
 import Inert from 'inert'
 
-import { sim } from '../sim'
+// import { sim } from '../sim'
 
 import handleRender from './handleRender'
 
@@ -23,10 +23,13 @@ import {
 	promiseTypes,
 	promiseUsers,
 	promiseFleet,
+	promiseFlyingFleet,
+	promiseLaunchingFleet,
 	promisePoints,
 	addFlightRoute,
 	landFlight,
 	promiseRoutes,
+	updateAircraft,
 } from '../db'
 
 const debug = require('debug')('wisk:server')
@@ -41,59 +44,67 @@ const noSSR = true
 
 const oneDayInMsec = 24 * 60 * 60 * 1000
 
-const tls = noSSL ? {} : {
-	key: fs.readFileSync('/etc/letsencrypt/live/w.com/privkey.pem'),
-	cert: fs.readFileSync('/etc/letsencrypt/live/w.com/fullchain.pem')
-};
+// const tls = noSSL ? {} : {
+// 	key: fs.readFileSync('/etc/letsencrypt/live/w.com/privkey.pem'),
+// 	cert: fs.readFileSync('/etc/letsencrypt/live/w.com/fullchain.pem')
+// };
 
 function connectHttp() {
 	return new Hapi.Server({
+		// debug: { request: ["*"], log: ["*"] },
 		host,
 		port,
 		routes: {
-			cors: true
+			// cors: true
+			cors: { 
+				origin: ["*"],
+	            headers: ["Access-Control-Allow-Headers", "Access-Control-Allow-Origin","Accept", "Authorization", "Content-Type", "If-None-Match", "Accept-language"],
+	            additionalHeaders: ["Access-Control-Allow-Headers: Origin, Content-Type, x-ms-request-id , Authorization"],
+	            // credentials: true
+			}
 		},
-		state: {
-			isSameSite: false,
-			isHttpOnly: false,
-			ttl: 365 * oneDayInMsec,
-			isSecure: false,
-			// encoding: 'base64json',
-			clearInvalid: true, // remove invalid cookies
-			ignoreErrors: true,
-			strictHeader: false // do allow violations of RFC 6265
-		}
+		// state: {
+		// 	isSameSite: false,
+		// 	isHttpOnly: false,
+		// 	ttl: 365 * oneDayInMsec,
+		// 	isSecure: false,
+		// 	// encoding: 'base64json',
+		// 	clearInvalid: true, // remove invalid cookies
+		// 	ignoreErrors: true,
+		// 	strictHeader: false // do allow violations of RFC 6265
+		// }
 	})
 }
 
-function connectHttps() {
-	return new Hapi.Server({
-		tls,
-		host,
-		port: 443,
-		routes: {
-			cors: true
-		},
-		state: {
-			isSameSite: false,
-			isHttpOnly: false,
-			ttl: 365 * oneDayInMsec,
-			isSecure: false,
-			// encoding: 'base64json',
-			clearInvalid: true, // remove invalid cookies
-			ignoreErrors: true,
-			strictHeader: false // do allow violations of RFC 6265
-		}
-	})
-}
+// function connectHttps() {
+// 	return new Hapi.Server({
+// 		tls,
+// 		host,
+// 		port: 443,
+// 		routes: {
+// 			cors: true
+// 		},
+// 		// security: true,
+// 		state: {
+// 			isSameSite: false,
+// 			isHttpOnly: false,
+// 			ttl: 365 * oneDayInMsec,
+// 			isSecure: false,
+// 			// encoding: 'base64json',
+// 			clearInvalid: true, // remove invalid cookies
+// 			ignoreErrors: true,
+// 			strictHeader: false // do allow violations of RFC 6265
+// 		}
+// 	})
+// }
 
 // redirect http to https
 function routeRedirect( server ) {
 	function redirect( request, reply ) {
 		return reply.redirect( `https://${request.info.host}${request.path}`)
 	}
-	server.route({ method: 'GET', path: '/', handler: redirect })
-	server.route({ method: 'GET', path: '/index.html', handler: redirect })
+	server.route( { method: 'GET', path: '/', handler: redirect, options: { cors: true } } )
+	server.route( { method: 'GET', path: '/index.html', handler: redirect, options: { cors: true } } )
 }
 
 // for SSR, server-side rendering of prerendered and loaded index.html
@@ -109,6 +120,9 @@ function routeRootSSR( path, server ) {
 				request,
 				reply, 
 			})
+		},
+		options: {
+			cors: true
 		}
 	});
 }
@@ -120,6 +134,9 @@ function routeRootCSR( path, server ) {
 		path,
 		handler: {
 			file: './build/index.html'
+		},
+		options: {
+			cors: true
 		}
 	});
 }
@@ -152,7 +169,8 @@ function routeStaticAssets( server ) {
 				path: './build/static'
 			}
 		},
-		config: {
+		options: {
+			cors: true,
 			cache: {
 				expiresIn: oneDayInMsec,
 				privacy: 'private'
@@ -166,16 +184,20 @@ const version = 'apiv1'
 
 function routeApi( server ) {
 	server.route({
-		method: ['GET', 'POST'], 
+		method: ['GET', 'POST', 'PUT'], 
 		path: `/${version}/{op}`,
+		options: {
+			cors: true
+		},
 		handler: function( request, reply ) {
 			const { params: { op }, method } = request  // query also available
 			let { payload = {} } = request
 			payload = payload || {}	// because hapi sets payload to null instead of undefined
 
-			switch( method ) {
-				case 'post': {
-					switch( op ) {
+			switch( method.toLowerCase() ) {
+				case 'post':
+				case 'put': {
+					switch( op.toLowerCase() ) {
 						case 'flights': {
 							debug( 'routeApi', method, op, typeof payload, payload )
 							const { aircraftId, originId, destinationId, altitude, speed, charge } = typeof payload === 'string' ? JSON.parse( payload ) : payload
@@ -224,7 +246,7 @@ function routeApi( server ) {
 					}
 				}
 				case 'get': {
-					switch( op ) {
+					switch( op.toLowerCase() ) {
 						case 'flights': {
 							debug( 'routeApi', op )
 							return promiseFlights().then( result => {
@@ -264,6 +286,38 @@ function routeApi( server ) {
 						case 'fleet': {
 							debug( 'routeApi', op )
 							return promiseFleet().then( result => {
+								const replyResult = {
+									status: 'ok', 
+									result, 
+								}
+								return replyResult
+							}).catch( error => {
+								console.warn( 'routeApi error', error.message ) 
+								return {
+									error: `op /${op} error ${error.message}`
+								}
+							})
+							break
+						}
+						case 'launchingfleet': {
+							debug( 'routeApi', op )
+							return promiseLaunchingFleet().then( result => {
+								const replyResult = {
+									status: 'ok', 
+									result, 
+								}
+								return replyResult
+							}).catch( error => {
+								console.warn( 'routeApi error', error.message ) 
+								return {
+									error: `op /${op} error ${error.message}`
+								}
+							})
+							break
+						}
+						case 'flyingfleet': {
+							debug( 'routeApi', op )
+							return promiseFlyingFleet().then( result => {
 								const replyResult = {
 									status: 'ok', 
 									result, 
@@ -348,13 +402,18 @@ function routeApi( server ) {
 
 function routeArgApi( server ) {
 	server.route({
-		method: ['GET', 'POST', 'DELETE'], 
+		method: ['GET', 'POST', 'PUT', 'DELETE'], 
 		path: `/${version}/{op}/{id}`,
+		options: {
+			cors: true
+		},
 		handler: function( request, reply ) {
-			const { params: { op, id }, method, payload } = request  // query also available
-			switch( method ) {
+			const { params: { op, id: idString }, method, payload } = request  // query also available
+			const id = +idString
+			switch( method.toLowerCase() ) {
+				case 'put':
 				case 'post': {
-					switch( op ) {
+					switch( op.toLowerCase() ) {
 						case 'flightroute': {
 							debug( 'routeApi', method, op, typeof payload, payload )
 							const { aircraft, origin, destination, altitude, speed } = typeof payload === 'string' ? JSON.parse( payload ) : payload
@@ -373,9 +432,27 @@ function routeArgApi( server ) {
 								}
 							})
 						}
+						case 'fleet': {
+							debug( 'routeApi', method, op, typeof payload, payload )
+							const { id: aircraftId, charge, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							assert( +aircraft === +id )  // until we decide
+							return updateAircraft( id, charge, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi ).then( result => {
+								const replyResult = {
+									status: 'ok', 
+									result, 
+								}
+								debug( 'routeApi updateAircraft then replyResult', replyResult )
+								return replyResult
+							}).catch( error => {
+								console.warn( 'routeApi error', error.message ) 
+								return {
+									error: `op /${op} error ${error.message}`
+								}
+							})
+						}
 						case 'flight': {
 							const { action } = typeof payload === 'string' ? JSON.parse( payload ) : payload
-							switch( action ) {
+							switch( action.toLowerCase() ) {
 								case 'land': {
 									debug( 'routeArgApi post flight action', id, action )
 									return landFlight( id ).then( result => {
@@ -416,7 +493,7 @@ function routeArgApi( server ) {
 					}
 				}
 				case 'delete': {
-					switch( op ) {
+					switch( op.toLowerCase() ) {
 						case 'flight': {
 							debug( 'routeArgApi post flight', id )
 							return deleteFlight( id ).then( result => {
@@ -454,7 +531,7 @@ function routeArgApi( server ) {
 					}
 				}
 				case 'get': {
-					switch( op ) {
+					switch( op.toLowerCase() ) {
 						case 'flight': {
 							return promiseFlight( id ).then( result => {
 								const replyResult = {

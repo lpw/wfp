@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import mapboxgl from 'mapbox-gl'
 // import turf from 'turf'
 import * as turf from '@turf/turf'
+import socketIOClient from "socket.io-client"
 import {
     requestFleet,
     requestPoints,
@@ -194,6 +195,23 @@ class Supervise extends Component {
         }
 
         this.setupMap()
+
+        if( !this._socket ) {
+            this._socket = socketIOClient( 'http://127.0.0.1:7400', {
+                withCredentials: true,
+                // extraHeaders: {
+                //     "my-custom-header": "abcd"
+                // }
+            })
+            this._socket.on( 'cora', function ( data ) {
+              // coratype.innerHTML = 'Cora'
+              this.updateAircraft( data )
+            })
+        }
+    }
+
+    updateAircraft = data => {
+        console.log( 'LANCE updateAircraft data', data )
     }
 
     clickMarker = marker => {
@@ -279,16 +297,16 @@ console.log( 'LANCE marker', source, coord[0], coord[1] )
                     }
                 })
 
-                // if( !m.mbmarker ) {
-                if( !m.mbmarker && m.el ) {
-                    assert( m.el )
+                if( m.mbmarker && m.el ) {
+                    m.mbmarker.setLngLat( coord )
+console.log( 'LANCE updateMap setLngLat id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
+                } else if( m.el ) {
                     // m.mbmarker = new mapboxgl.Marker( m.el )
                     m.mbmarker = new mapboxgl.Marker( m.el, { anchor: 'top', offset: [ 0, -32 ] } ) // half of css height
                     m.mbmarker.setLngLat( coord ).addTo( map )
 console.log( 'LANCE updateMap newMarker id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
                 } else {
-                    m.mbmarker.setLngLat( coord )
-console.log( 'LANCE updateMap setLngLat id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
+console.log( 'LANCE updateMap no el id, coord, m', id, coord, m )
                 }
 
                 return null
@@ -424,13 +442,14 @@ console.log( 'LANCE updateMarkers', source, coord[0], coord[1] )
                 assert( m.mbmarker )
                 assert( m.el )
 
-                m.mbmarker.setLngLat( coord )
+                if( m.mbmarker ) {
+                    m.mbmarker.setLngLat( coord )
+                }
 
                 return null
             })
         }
     }
-
 
     renderMarker = m => {
         const { setRef, clickMarker, state } = this

@@ -10,3 +10,56 @@ as needed
 ALTER TABLE pointtypes AUTO_INCREMENT = 0;
 
 and some aircraft too
+
+Pres
+keeping most everything self-contained for now (DDS separate repo for independence, vendor sw)
+
+
+Microservices
+
+UI for DB and aircraft
+(html, css, js, static)
+web: fleet, supervisor, routes, aircraft
+http://gas (ground autonomy sandbox)
+flow:
+	aircraft is default page if nothing stored
+	if stored, go to supervisor
+	options for going to fleet, adding new aircraft 9even if stored)
+	option to add new route on route selector buttons on fleet page
+actions, reducers, selectors
+
+API for DB
+/apiv1 /fleet
+actions, reducers, selectors
+
+Database (server, wb schema)
+SQL 
+tables
+
+WebDDS bridge from sim/aircraft to web UI (DDS reader, socket.io writer)
+
+Checkpointer from sim/aircraft to DB (DDS reader, DB/SQL writer)
+checkpoints into aircraft DB (DDS writer) (but DB is not source of truth, just a starting point if nothing else)
+
+Watcher (DDS reader)
+	monitors aircraft (pos, dir, speed, alt, systems, other aircraft, terrain, vertipots)
+		listens to RTI DDS
+	makes decisions about takes-offs, landings, flow control, conflicts (other aircraft and terrain), contigencies, ATC clearnces, weather, UTM, PSU, ground, etc
+		when aircraft at origin airport close to flight time, launch - set aircraft speed, heading, alt from flight route, charge (aircraft), lat+lon of origin; set atd in flight DB
+		when aircraft flying close to destination airport, land - set aircraft speed 0, alt to dest elev, charge, lat+lon (aircraft); set ata in flight DB
+	controls aircraft by sending commands
+		real: power, vectors, gear, systems, etc
+		sim: speed, heading, alt, charge, lat/lon pos,?
+	retains no data, not source of truth
+Launcher
+Lander
+Flyer
+
+sim has API to receive commands
+/apiv1/n123 /speed, heading, alt, charge, lat+lon (also for pitch, roll, yaw from monile app); /accell
+sim generates telemetry data to RTI DDS 
+checkpoints into aircraft DB (DDS writer) in sep module
+sim is source of truth
+
+mobile/phone app to simulate/generate spatial info (pitch, roll, yaw, speed? alt?) from intertial sensors 
+sends/posts commands directly to sim (source of truth)

@@ -37,6 +37,22 @@ export function promiseFleet( query = fleetQuery ) {
 			// 	// ( existing.atd && existing.etd > etd )
 			// 	( !atd && existing.etd > etd )
 			if( existing && existing.etd > etd ) {  
+			// if( existing && (
+			// 	existing.atd && atd && existing.atd > atd ||
+			// 	existing.atd && !atd ||	// shouldn't be necessary as above catches this condition
+			// 	existing.etd && etd && existing.etd > etd ||
+			// 	existing.etd && !etd // shouldn't happen, and shouldn't be necessary as above catches this condition
+			// )) {  
+			// if( existing && (
+			// 	existing.atd && existing.atd > atd ||
+			// 	!existing.atd && !atd && existing.etd & existing.etd > etd ||
+			// 	existing.etd && !etd // shouldn't happen, and shouldn't be necessary as above catches this condition
+			// )) {  
+				
+			// if( existing && (
+			// 	existing.atd > atd ||
+			// 	!atd && existing.etd > etd
+			// )) {  
 				// the existing entry is newer than the current aircraft entry/row
 				return sofar
 			} else if( !sequence ) {  
