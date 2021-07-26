@@ -34,20 +34,22 @@ const getMarker = ( aircraftId, fleet, points ) => {
         // let point
         let coord 
 
-        if( lat && lon ) {
-            coord = [ lon, lat ]
-        } else if( aircraft.originId ) {
-            const pointId = aircraft.originId
-            const point = points[ pointId ]
-            assert( point )
-            coord = [ point.lon, point.lat ]
-        } else if( aircraft.baseId ) {
-            const pointId = aircraft.baseId
-            const point = points[ pointId ]
-            assert( point )
-            coord = [ point.lon, point.lat ]
-        } else {
-            console.warn( 'no coord/point/id for', aircraft )
+        if( points.length ) {
+            if( lat && lon ) {
+                coord = [ lon, lat ]
+            } else if( aircraft.originId ) {
+                const pointId = aircraft.originId
+                const point = points[ pointId ]
+                assert( point )
+                coord = [ point.lon, point.lat ]
+            } else if( aircraft.baseId ) {
+                const pointId = aircraft.baseId
+                const point = points[ pointId ]
+                assert( point )
+                coord = [ point.lon, point.lat ]
+            } else {
+                console.warn( 'no coord/point/id for', aircraft )
+            }
         }
 
         if( coord ) {   
@@ -211,6 +213,8 @@ class Supervise extends Component {
 
         this._markers = props.markers
 console.log( 'Supervise constructor this._markers', this._markers )
+
+        this._telemetryData = {}
     }
 
     setRef = ( el, marker ) => {
@@ -295,6 +299,8 @@ console.log( 'Supervise componentWillReceiveProps this._markers', this._markers 
     updateAircraft = data => {
         console.log( 'LANCE updateAircraft data', data )
 
+        const now = Date.now()
+
         const { props, updateMarkers } = this
         const {
             markers,
@@ -307,6 +313,15 @@ console.log( 'Supervise componentWillReceiveProps this._markers', this._markers 
         // })
 
         this._markers = getUpdatedMarkers( this._markers, data ) 
+
+        this._telemetryData = {
+            ...this._telemetryData,
+            [ data.id ]: {
+                ...this._telemetryData[ data.id ],
+                ...data,
+                time: now,
+            }
+        }
 
         updateMarkers()
     }
@@ -540,6 +555,7 @@ console.log( 'LANCE updateMarkers setLngLat id, coord, m.mbmarker, m', id, coord
                     m.mbmarker.setLngLat( coord ).addTo( map )
 console.log( 'LANCE updateMarkers newMarker id, coord, m.mbmarker, m', id, coord, m.mbmarker, m )
                 } else {
+                    // need render
 console.log( 'LANCE updateMarkers no el id, coord, m', id, coord, m )
                 }
 
@@ -574,13 +590,20 @@ console.log( 'LANCE updateMarkers no el id, coord, m', id, coord, m )
     }
 
     renderSelectedAircraft = id => {
-        const { props, close } = this
+        const { props, close, _telemetryData: telemetryData } = this
         const { fleet, points } = props
         const aircraft = fleet[ id ]
+        const aircraftTelemetry = telemetryData[ id ]
+        const now = Date.now()
+        const recentTelemetry = aircraftTelemetry && now - aircraftTelemetry.time < 60 * 1000
         // const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
 console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
 console.log( 'LANCE renderSelectedAircraft Object.keys( points ).length', Object.keys( points ).length )
         if( aircraft && Object.keys( points ).length > 0 ) {
+            const aircraftWithTelemtry = {
+                ...aircraft,
+                ...aircraftTelemetry,
+            }
             const { 
                 name,
                 baseId,
@@ -596,7 +619,7 @@ console.log( 'LANCE renderSelectedAircraft Object.keys( points ).length', Object
                 distance,
                 covered,
                 elapsed,
-            } = aircraft
+            } = aircraftWithTelemtry
             const originPoint = points[ originId || baseId ]
             const destinationPoint = points[ destinationId ]
 console.log( 'LANCE renderSelectedAircraft originPoint', originPoint )
@@ -604,7 +627,7 @@ console.log( 'LANCE renderSelectedAircraft originPoint', originPoint )
             //     console.warn( `missing originPoint for ${origin}`)
             // }
             assert( originPoint )
-            if( destinationPoint ) {
+            if( destinationPoint && recentTelemetry ) {
                 const originCode = originPoint.code
                 const destinationCode = destinationPoint.code
                 // return renderFlyingSelectedAircraft( id, originPoint, destinationPoint )
@@ -615,6 +638,26 @@ console.log( 'LANCE renderSelectedAircraft originPoint', originPoint )
                     flightId={flightId}
                     originCode={originCode} 
                     destinationCode={destinationCode} 
+                    charge={charge} 
+                    altitude={altitude} 
+                    speed={speed} 
+                    atd={atd} 
+                    eta={eta} 
+                    bearing={bearing} 
+                    speed={speed} 
+                    altitude={altitude} 
+                    distance={distance} 
+                    covered={covered} 
+                    elapsed={elapsed} 
+                    close={ close } 
+                />
+            } else if( recentTelemetry ) {
+                // return renderFlyingSelectedAircraft( id, originPoint, destinationPoint )
+                return <SuperviseFlyingAircraft 
+                    key={ id } 
+                    id={id} 
+                    name={name} 
+                    flightId={flightId}
                     charge={charge} 
                     altitude={altitude} 
                     speed={speed} 
