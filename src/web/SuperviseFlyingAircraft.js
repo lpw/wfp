@@ -13,7 +13,7 @@ import {
   Variometer
 } from 'react-flight-indicators'
 import {
-    requestFleet,
+    MFleet,
     landFlight,
 } from '../actions'
 import {
@@ -131,10 +131,10 @@ console.log( 'LANCE SuperviseFlyingAircraft render destinationCode', destination
                     </span> }
                     <span className="selectedAircraftAltitude">Altitude: { altitude } ft</span>
                     <span className="selectedAircraftSpeed">Speed: { speed } kts</span>
+                    <button className="selectedMapButton" onClick={ () => goMap( id ) }>Map</button>
                     <button className="selectedCommsButton" onClick={ comms }>Comms</button>
                     <button className="selectedVideoButton" onClick={ video }>Video</button>
                     <button className="selectedContingencyButton" onClick={ contingency }>Contingency</button>
-                    <button className="selectedMapButton" onClick={ () => goMap( id ) }>Map</button>
                     <button className="selectedCloseButton" onClick={ () => close( id ) }>X</button>
                 </div>
                 <div className="selectedAircraftRest">

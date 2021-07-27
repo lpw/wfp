@@ -16,18 +16,21 @@ import {
 import './Marker.css'
 
 class Marker extends Component {
-    // constructor(props) {
-    //     super( props )
+    constructor(props) {
+        super( props )
 
-    //     this._markerRef = React.createRef()
+        // this._markerRef = React.createRef()
 
-    //     // this.state = {
-    //     //     selectedAircraftIds,
-    //     //     fleet: {}
-    //     // }
+        // this.state = {
+        //     selectedAircraftIds,
+        //     fleet: {}
+        // }
 
-    //     // this._markers = props.markers
-    // }
+        // this._markers = props.markers
+
+        // this._previousAnimationTimestamp = 0
+        this._previousCallbacjTimestamp = 0
+    }
 
     // componentDidMount() {
     //     const { props, updateAircraft, _markers: markers } = this
@@ -52,25 +55,114 @@ class Marker extends Component {
         const { id, map, aircraftData } = props
         const { lat, lon } = aircraftData
         const coords = [ lon, lat ]
-console.log( 'LANCE Marker::move', id, coords, mbMarker )
+id === -1 && console.log( 'LANCE Marker::move', id, coords, mbMarker )
 
         if( typeof lat === 'number' && typeof lon === 'number' ) {
             if( mbMarker && el ) {
-                mbMarker.setLngLat( coords )
-console.log( 'LANCE Marker::move has setLngLat coords', coords )
+id === -1 && console.log( 'LANCE Marker::move has setLngLat coords', coords )
+
+                // mbMarker.setLngLat( coords )
+
+                // function animateMarker(timestamp) {
+                //     var radius = 20;
+                     
+                //     /* 
+                //     Update the data to a new position 
+                //     based on the animation timestamp. 
+                //     The divisor in the expression `timestamp / 1000` 
+                //     controls the animation speed.
+                //     */
+                //     marker.setLngLat([
+                //     Math.cos(timestamp / 1000) * radius,
+                //     Math.sin(timestamp / 1000) * radius
+                //     ]);
+                     
+                //     /* 
+                //     Ensure the marker is added to the map. 
+                //     This is safe to call if it's already added.
+                //     */
+                //     marker.addTo(map);
+                     
+                //     // Request the next frame of the animation.
+                //     requestAnimationFrame(animateMarker);
+                // }
+
+                const expectedInterval = 10 * 1000
+                const now = Date.now()
+                const previousInterval = now - this._previousCallbacjTimestamp
+                this._previousCallbacjTimestamp = now
+id === -1 && console.log( 'LANCE Marker::move previousInterval', previousInterval )
+id === -1 && console.log( 'LANCE Marker::move expectedInterval', expectedInterval )
+                let previousAnimationTimestamp
+                let start
+
+                const curCoords = mbMarker.getLngLat()
+
+                const curLon = curCoords.lng
+                const curLat = curCoords.lat
+
+                const newLon = coords[ 0 ]
+                const newLat = coords[ 1 ]
+
+                const difLon = newLon - curLon
+                const difLat = newLat - curLat
+
+id === -1 && console.log( 'LANCE Marker::move curLon', curLon )
+id === -1 && console.log( 'LANCE Marker::move curLat', curLat )
+id === -1 && console.log( 'LANCE Marker::move newLon', newLon )
+id === -1 && console.log( 'LANCE Marker::move newLat', newLat )
+id === -1 && console.log( 'LANCE Marker::move difLon', difLon )
+id === -1 && console.log( 'LANCE Marker::move difLat', difLat )
+
+                function step( timestamp ) {
+                    if( start === undefined ) {
+                        start = timestamp
+                    }
+
+                    const elapsed = timestamp - start
+id === -1 && console.log( 'LANCE Marker::move previousAnimationTimestamp', previousAnimationTimestamp )
+id === -1 && console.log( 'LANCE Marker::move timestamp', timestamp )
+id === -1 && console.log( 'LANCE Marker::move elapsed', elapsed )
+
+                    if ( previousAnimationTimestamp !== timestamp ) {
+                        // Math.min() is used here to make sure the element stops at exactly 200px
+                        // const count = Math.min( 0.1 * elapsed, 200 )
+                        // element.style.transform = 'translateX(' + count + 'px)';
+                        const fraction = elapsed / expectedInterval
+
+                        const incLon = curLon + difLon * fraction
+                        const incLat = curLat + difLat * fraction
+                        const incCoords = [ incLon, incLat ]
+
+id === -1 && console.log( 'LANCE Marker::move fraction', fraction )
+id === -1 && console.log( 'LANCE Marker::move incLon', incLon )
+id === -1 && console.log( 'LANCE Marker::move incLat', incLat )
+                        mbMarker.setLngLat( incCoords )
+                    }
+
+                    if( elapsed < expectedInterval ) { // Stop the animation after 2 seconds
+                        previousAnimationTimestamp = timestamp
+                        window.requestAnimationFrame( step )
+                    } else {
+                        mbMarker.setLngLat( coords )
+                    }
+                }
+                     
+                requestAnimationFrame( step )
+
             } else if( el ) {
                 // m.mbmarker = new mapboxgl.Marker( m.el )
                 const mbNewMarker = new mapboxgl.Marker( el, { anchor: 'top', offset: [ 0, -32 ] } ) // half of css height
                 mbNewMarker.setLngLat( coords ).addTo( map )
                 this._mbMarker = mbNewMarker
-console.log( 'LANCE Marker::move new setLngLat coords', coords )
+id === -1 && console.log( 'LANCE Marker::move new setLngLat coords', coords )
             } else {
                 // need render
-console.log( 'LANCE Marker::move no el coords',  coords )
+id === -1 && console.log( 'LANCE Marker::move no el coords',  coords )
             }
         } else {
             // need render
-console.log( 'LANCE Marker::move no lat lon', lat, lon )
+id === -1 && console.log( 'LANCE Marker::move no lat lon', lat, lon )
         }
     }
 

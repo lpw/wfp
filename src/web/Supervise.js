@@ -327,12 +327,13 @@ class Supervise extends Component {
         // const { fleet: telemetryData } = state
         const aircraft = fleet[ id ]
 
-        console.log( `goMap flying to ${id} with ${aircraft}`)
+        console.log( `goMap flying to ${id} with ${aircraft}`, aircraft.lat, aircraft.lon )
 
         if( aircraft ) {
             this._map.flyTo({
                 center: [ aircraft.lon, aircraft.lat ],
-                zoom: 22,
+                // zoom: 22,
+                zoom: 15,
             })
         }
     }   

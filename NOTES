@@ -62,13 +62,16 @@ Launcher
 	updates aircraft info (beyond the checkpointer), like pos of the origin
 	issues commands to aircraft for take-off (set speed, heading, charge, vsi, ...)
 	updates ATD for the flight
+	conflict management (collission avoidance, DAA, strategic, tactical, well clear, see-and-avoid, ...)
 Lander
 	issues commands to aircraft for landing (set speed, heading, charge, vsi, ...)
 	updates ATA for the flight
 	removes aircraft from flying fleet
 	updates aircraft info (beyond the checkpointer), like pos of the dest
+	conflict management (collission avoidance, DAA, strategic, tactical, well clear, see-and-avoid, ...)
 Flyer
 	updates aircraft info (is this just the checkpointer?)
+	conflict management (collission avoidance, DAA, strategic, tactical, well clear, see-and-avoid, ...)
 
 Schedulerr for flights (bookings, reservations, passengers, weights, security, personell, vertiports, aircraft)
 
