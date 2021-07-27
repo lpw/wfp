@@ -423,6 +423,14 @@ console.log( 'LANCE paths', paths )
                 const sourceName = `path${id}`
                 const layerName = `path${id}`
 
+                const highlightChange = this._sources[ sourceName ] && this._layers[ layerName ] && ( this._sources[ sourceName ].highlighted !== highlighted || this._layers[ layerName ].highlighted !== highlighted )
+                if( highlightChange ) {
+                    map.removeLayer( layerName )
+                    map.removeSource( sourceName )
+                    delete this._layers[ layerName ]
+                    delete this._sources[ sourceName ]
+                }
+
                 const rendered = this._sources[ sourceName ] && this._layers[ layerName ] && this._sources[ sourceName ].rendered && this._layers[ layerName ].rendered
 
                 if( rendered ) {
@@ -510,12 +518,14 @@ console.log( 'LANCE paths', paths )
                     name: sourceName,
                     hasPath: true,
                     rendered: true,
+                    highlighted,
                 }
                 this._layers[ layerName ] = {
                     ...this._layers[ layerName ],  // retains rendered
                     name: layerName,
                     hasPath: true,
                     rendered: true,
+                    highlighted,
                 }
 
                 return null
