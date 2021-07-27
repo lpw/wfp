@@ -32,34 +32,34 @@ class SuperviseParkedAircraft extends Component {
     //     this.setupMap()
     // }
 
-    renderParkedSelectedAircraft = ( id, originCode ) => {
-        const { props } = this
-        const { fleet } = props
-        const aircraft = fleet[ id ]
-        const { name } = aircraft
-        const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
-        assert( originCode )
-console.log( 'LANCE renderParkedSelectedAircraft originCode', originCode )
-        return (
-            <div key={ id } className={ selectedAircraftClassNames }>
-                <span className="selectedAircraftName">{ name }</span>
-                <span className="selectedAircraftOrigin">{ originCode }</span>
-            </div>
-        )
-    }
+//     renderParkedSelectedAircraft = ( id, code ) => {
+//         const { props } = this
+//         const { fleet } = props
+//         const aircraft = fleet[ id ]
+//         const { name } = aircraft
+//         const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
+//         assert( code )
+// console.log( 'LANCE renderParkedSelectedAircraft code', code )
+//         return (
+//             <div key={ id } className={ selectedAircraftClassNames }>
+//                 <span className="selectedAircraftName">{ name }</span>
+//                 <span className="selectedAircraftOrigin">{ code }</span>
+//             </div>
+//         )
+//     }
 
     render() {
         const { props } = this
-        const { id, fleet, originCode, close } = props
+        const { id, fleet, code, close } = props
         const aircraft = fleet[ id ]
         const { name } = aircraft
         const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
-        assert( originCode )
+        assert( code )
         return (
             <div key={ id } className={ selectedAircraftClassNames }>
                 <div className="selectedNameAndParked">
                     <span className="selectedAircraftNameParked">{ name }</span>
-                    <span className="selectedAircraftOriginParked">Landed at { originCode }</span>
+                    <span className="selectedAircraftOriginParked">Landed at { code }</span>
                     <span className="selectedAircraftCloseParked">
                         <button className="selectedCloseButton" onClick={ () => close( id ) }>X</button>
                     </span>

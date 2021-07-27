@@ -124,7 +124,7 @@ console.log( 'LANCE SuperviseFlyingAircraft render destinationCode', destination
             <div className={ selectedAircraftClassNames }>
                 <div className="selectedNameAndPath">
                     <span className="selectedAircraftName">{ name }</span>
-                    { destinationCode && <span>
+                    { originCode && destinationCode && <span>
                         <span className="selectedAircraftOrigin">{ originCode }</span>
                         <span className="selectedAircraftArrow">&#x2192;</span>
                         <span className="selectedAircraftDestination">{ destinationCode }</span>
@@ -141,13 +141,13 @@ console.log( 'LANCE SuperviseFlyingAircraft render destinationCode', destination
                     <div className="selectedAircraftLeftCol">
                         { !distance ? null : <div className="selectedDistanceBar">
                             <span className="selectedAircraftDistance">Distance Total: { Math.round( distance ) } nm</span>
-                            <span className="selectedAircraftDistance">Complete: { Math.round( covered ) } nm</span>
+                            <span className="selectedAircraftDistance">Covered: { Math.round( covered ) } nm</span>
                             <ProgressBar bgColor={'#0000FF'} className="ProgressBar" completed={ Math.round( distancePercentComplete * 100 ) } />
                             <span className="selectedAircraftDistance">Remaning: { Math.round( distanceRemaining ) } nm</span>
                         </div> }
                         { !totalTime ? null : <div className="selectedTimeBar">
                             <span className="selectedAircraftTime">Time Total: { Math.round( totalTime / 60 ) } min</span>
-                            <span className="selectedAircraftTime">Complete: { Math.round( elapsed / 60 ) } min</span>
+                            <span className="selectedAircraftTime">Ellapsed: { Math.round( elapsed / 60 ) } min</span>
                             <ProgressBar bgColor={'#0000FF'} className="ProgressBar" completed={ Math.round( timePercentComplete * 100 ) } />
                             <span className="selectedAircraftTime">Remaning: { Math.round( timeRemaining / 60 ) } min</span>
                         </div> }

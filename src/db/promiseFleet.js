@@ -36,7 +36,7 @@ export function promiseFleet( query = fleetQuery ) {
 			// 	// ( !existing.atd && existing.etd > etd )
 			// 	// ( existing.atd && existing.etd > etd )
 			// 	( !atd && existing.etd > etd )
-			if( existing && existing.etd > etd ) {  
+			// if( existing && existing.etd > etd ) {  
 			// if( existing && (
 			// 	existing.atd && atd && existing.atd > atd ||
 			// 	existing.atd && !atd ||	// shouldn't be necessary as above catches this condition
@@ -48,19 +48,102 @@ export function promiseFleet( query = fleetQuery ) {
 			// 	!existing.atd && !atd && existing.etd & existing.etd > etd ||
 			// 	existing.etd && !etd // shouldn't happen, and shouldn't be necessary as above catches this condition
 			// )) {  
-
 			// if( existing && (
-			// 	existing.atd > atd ||
+			// 	existing.atd > atd && !existing.ata ||	// existing has left later but not landed
 			// 	!atd && existing.etd > etd
-			// )) {  
-				// the existing entry is newer than the current aircraft entry/row
+			// )) {  // the existing entry is newer than the current aircraft entry/row
+
+			/*
+			// flight1 is the existing entry, flight2 is the candidate entry
+
+			ata1 > ata2 1
+			null   ata2 1
+			ata1   null 2
+			null   null ?
+
+			// eta1 > eta2 1
+			// null   eta2 ?
+			// eta1   null ?
+			// null   null ?
+
+			atd1 > atd2 1
+			null   atd2 2
+			atd1   null 1
+			null   null ?
+
+			etd1 > etd2 1
+			null   etd2 2
+			etd1   null 1
+			null   null ?
+			*/
+
+			// const ata1 = existing && existing.ata
+			// const atd1 = existing && existing.atd
+			// const etd1 = existing && existing.etd
+
+			// const ata2 = ata
+			// const atd2 = atd
+			// const etd2 = etd
+
+			// let flight1 = false
+
+			// if( 
+			// 	ata1 && ata2 && ata1 > ata2 ||	// flight1 has landed after flight2
+			// 	!ata1 && ata2 	// flight1 has not landed but flight2 has landed
+			// ) {  
+			// 	flight1 = true
+			// } else if( // neither plan has landed, but 
+			// 	atd1 && atd2 && atd1 > atd2 ||	// flight1 took-off most recently
+			// 	atd1 && !atd2 	// flight1 took-off while flight2 has not taken-off
+			// ) {  
+			// 	flight1 = true
+			// } else if( // neither plan has taken-off, but
+			// 	etd1 && etd2 && etd1 > etd2 ||	// flight1 is estimated to leave later than flight2
+			// 	etd1 && !etd1 	// flight1 has an estimate to leave while flight2 does not have an estimate
+			// ) {  
+			// 	flight1 = true
+			// }
+
+			let flight1 = false	// presume the eixsting flight, flight1, is not better than the candidate aircraft entry
+
+			if( existing ) {
+				const ata1 = existing.ata
+				const atd1 = existing.atd
+				const etd1 = existing.etd
+
+				const ata2 = ata
+				const atd2 = atd
+				const etd2 = etd
+
+				if(
+					ata1 && ata2 && ata1 > ata2 ||	// both flights have landed, flight1 has landed after flight2,
+					!ata1 && ata2 	// flight1 has not landed but flight2 has landed
+				) {  
+					flight1 = true
+				} else if( 	// neither flight has landed, 
+					!ata1 && !ata2 && atd1 && atd2 && atd1 > atd2 ||	// both have taken-off, flight1 took-off most recently
+					!ata1 && !ata2 && atd1 && !atd2 	// light1 took-off while flight2 has not taken-off
+				) {  
+					flight1 = true
+				} else if( // neither plan has lsnded, nor taken-off,
+					!ata1 && !ata2 && !atd1 && !atd2 && etd1 && etd2 && etd1 > etd2 ||	// flight1 is estimated to leave later than flight2
+					!ata1 && !ata2 && !atd1 && !atd2 && etd1 && !etd1 	// flight1 has an estimate to leave while flight2 does not have an estimate
+				) {  
+					flight1 = true
+				}
+			}
+
+			if( flight1 ) {
 				return sofar
 			} else if( !sequence ) {  
 				// no flight
 				assert( !sequence )
-				assert( !flightId )
 				assert( !pointId )
 				assert( baseId )
+				// assert( !flightId )
+				if( flightId ) {
+					console.warn( 'surprised to get a flight with no sequence sequence' )
+				}
 				return {
 					...sofar,
 					[ id ]: {
@@ -78,7 +161,7 @@ export function promiseFleet( query = fleetQuery ) {
 					}
 				}
 			} else if( sequence <= 1 || ata ) {
-				// first point of flight (or landed)
+				// first point of flight (or landed, in which case there's no more destination, or ratherr the destination has become the origin
 				assert( sequence === 1 || ata )
 				assert( flightId )
 				assert( pointId )

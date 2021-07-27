@@ -11,6 +11,7 @@ import {
     // requestPoints,
 } from '../actions'
 import {
+    fleetData,
 } from '../selectors'
 import SuperviseFlyingAircraft from './SuperviseFlyingAircraft'
 import SuperviseParkedAircraft from './SuperviseParkedAircraft'
@@ -101,45 +102,45 @@ console.log( 'LANCE getMarkers msf', msf )
     return markers
 }
 
-const getUpdatedMarkers = ( markers, data ) => {
-    let newMarrkers = markers
+// const getUpdatedMarkers = ( markers, data ) => {
+//     let newMarrkers = markers
 
-    const markerId = Object.keys( markers ).find( k => markers[ k ].aircraftIds.includes( data.id ) )
-    const marker = markers[ markerId ]
+//     const markerId = Object.keys( markers ).find( k => markers[ k ].aircraftIds.includes( data.id ) )
+//     const marker = markers[ markerId ]
 
-    if( !marker ) {
-        console.warn( 'getUpdatedMarkers could not find aircraft', data, markers )
-    } else {
-        if( marker.aircraftIds.length < 1 ) {
-            assert( marker.aircraftIds.length > 0 )
-        } else if( marker.aircraftIds.length === 1 ) {
-            newMarrkers = {
-                ...markers,
-                [ marker.id ]: {
-                    ...marker,
-                    coord: [ data.lon, data.lat ],
-                }
-            }
-        } else if( marker.aircraftIds.length > 1 ) {
-            const id = Object.keys( markers ).length
-            newMarrkers = {
-                ...markers,
-                [ marker.id ]: {
-                    ...marker,
-                    aircraftIds: marker.aircraftIds.filter( i => i !== data.id )
-                },
-                // could check coords again for confluence
-                [ id ]: {
-                    ...marker,
-                    aircraftIds: [ data.id ],
-                    coord: [ data.lon, data.lat ],
-                }
-            }
-        }
-    }
+//     if( !marker ) {
+//         console.warn( 'getUpdatedMarkers could not find aircraft', data, markers )
+//     } else {
+//         if( marker.aircraftIds.length < 1 ) {
+//             assert( marker.aircraftIds.length > 0 )
+//         } else if( marker.aircraftIds.length === 1 ) {
+//             newMarrkers = {
+//                 ...markers,
+//                 [ marker.id ]: {
+//                     ...marker,
+//                     coord: [ data.lon, data.lat ],
+//                 }
+//             }
+//         } else if( marker.aircraftIds.length > 1 ) {
+//             const id = Object.keys( markers ).length
+//             newMarrkers = {
+//                 ...markers,
+//                 [ marker.id ]: {
+//                     ...marker,
+//                     aircraftIds: marker.aircraftIds.filter( i => i !== data.id )
+//                 },
+//                 // could check coords again for confluence
+//                 [ id ]: {
+//                     ...marker,
+//                     aircraftIds: [ data.id ],
+//                     coord: [ data.lon, data.lat ],
+//                 }
+//             }
+//         }
+//     }
 
-    return newMarrkers
-}
+//     return newMarrkers
+// }
 
 const getPaths = ( fleet ) => {
     const paths = Object.keys( fleet ).map( k => fleet[ k ]).reduce( ( psf, aircraft )=> {
@@ -193,8 +194,10 @@ class Supervise extends Component {
 
         this._mapRef = React.createRef()
 
-        this._sources = []
-        this._layers = []
+        // this._sources = []
+        // this._layers = []
+        this._sources = {}
+        this._layers = {}
 
         this.state = {
             selectedAircraftIds,
@@ -360,10 +363,10 @@ console.log( 'LANCE markers', markers )
 console.log( 'LANCE paths', paths )
 
         if( map && map.loaded() && map.isStyleLoaded() ) {
-            this._layers.map( layer => map.removeLayer( layer ) )
-            this._sources.map( source => map.removeSource( source ) )
-            this._layers = []
-            this._sources = []
+            // this._layers.map( layer => map.removeLayer( layer ) )
+            // this._sources.map( source => map.removeSource( source ) )
+            // this._layers = []
+            // this._sources = []
 
 //             Object.keys( markers ).map( k => markers[ k ] ).map( m => {
 //                 // const aircraftInfo = aircraftInfoSelector( f.id )
@@ -405,106 +408,164 @@ console.log( 'LANCE paths', paths )
 //                 return null
 //             })
 
+            Object.keys( this._layers ).map( k => this._layers[ k ] ).map( l => l.hasPath = false )
+            Object.keys( this._sources ).map( k => this._sources[ k ] ).map( s => s.hasPath = false )
+
             Object.keys( paths ).map( k => paths[ k ] ).map( p => {
                 const { id, originCoords, destinationCoords, selected } = p
                 const highlighted = oneHasSomeOther( p.aircraftIds, selectedAircraftIds )
                 // const coordinates = originCoords && destinationCoords && [ originCoords, destinationCoords ]
                 const coordinates = [ originCoords, destinationCoords ]
 
-                const source = `path${id}`
-                const layer = `path${id}`
+                // id inicorpoates coords so it's accurate reflection of lat/lon and changes
 
-                this._sources = this._sources.concat( source )
-                this._layers = this._layers.concat( layer )
+                // why do source and 
+                const sourceName = `path${id}`
+                const layerName = `path${id}`
 
-console.log( 'LANCE line source, coordinates', source, coordinates )
-                // map.addSource( source, {
-                //     'type': 'geojson',
-                //     'data': {
-                //         'type': 'Feature',
-                //         'properties': {},
-                //         'geometry': {
-                //             'type': 'LineString',
-                //             coordinates
-                //         }
-                //     }
-                // })
+                const rendered = this._sources[ sourceName ] && this._layers[ layerName ] && this._sources[ sourceName ].rendered && this._layers[ layerName ].rendered
 
-                var route = {
-                    'type': 'FeatureCollection',
-                    'features': [
-                        {
-                            'type': 'Feature',
-                            'geometry': {
-                                'type': 'LineString',
-                                'coordinates': coordinates
+                if( rendered ) {
+    console.log( 'LANCE updateMap line already rendered sourceName, coordinates', sourceName, coordinates )
+                } else {
+    console.log( 'LANCE updateMap line render sourceName, coordinates', sourceName, coordinates )
+                    // map.addSource( sourceName, {
+                    //     'type': 'geojson',
+                    //     'data': {
+                    //         'type': 'Feature',
+                    //         'properties': {},
+                    //         'geometry': {
+                    //             'type': 'LineString',
+                    //             coordinates
+                    //         }
+                    //     }
+                    // })
+
+                    var route = {
+                        'type': 'FeatureCollection',
+                        'features': [
+                            {
+                                'type': 'Feature',
+                                'geometry': {
+                                    'type': 'LineString',
+                                    'coordinates': coordinates
+                                }
                             }
+                        ]
+                    }
+
+                    // // Calculate the distance in kilometers between route start/end point.
+                    // // const lineDistance = turf.length(route.features[0]);
+                    // // const lineDistance = length(route.features[0]);
+                    // // const lineDistance = turf.distance( originCoords, destinationCoords )
+                    // const lineDistance = turf.distance( route.features[0].geometry.coordinates[ 0 ], route.features[0].geometry.coordinates[ 1 ] )
+
+                    // const arc = [];
+                     
+                    // // Number of steps to use in the arc and animation, more steps means
+                    // // a smoother arc and animation, but too many steps will result in a
+                    // // low frame rate
+                    // const steps = 500;
+                     
+                    // // Draw an arc between the `origin` & `destination` of the two points
+                    // for ( let i = 0; i < lineDistance; i += lineDistance / steps ) {
+                    //     const segment = turf.along(route.features[0], i);
+                    //     // const segment = turf.along(route.features[0].geometry.coordinates, i);
+                    //     // const segment = along(route.features[0], i);
+                    //     arc.push(segment.geometry.coordinates);
+                    // }
+                     
+                    // // Update the route with calculated arc coordinates
+                    // route.features[0].geometry.coordinates = arc;
+
+                    const originTurfPoint = new turf.point( originCoords )
+                    const destinationTurfPoint = new turf.point( destinationCoords )
+                    const greatCircle = turf.greatCircle( originTurfPoint, destinationTurfPoint )  // , {properties: {npoints: 123, name: '...'} } )
+
+                    // Update the route with calculated arc coordinates
+                    route.features[0].geometry.coordinates = greatCircle.geometry.coordinates
+
+                    map.addSource( sourceName, {
+                        'type': 'geojson',
+                        'data': route
+                    });
+     
+                    map.addLayer({
+                        'id': layerName,
+                        'type': 'line',
+                        'source': sourceName,
+                        'layout': {
+                            'line-join': 'round',
+                            'line-cap': 'round'
+                        },
+                        'paint': {
+                            'line-color': highlighted ? '#00F' : '#888',
+                            'line-width': 8
                         }
-                    ]
+                    })
                 }
 
-                // // Calculate the distance in kilometers between route start/end point.
-                // // const lineDistance = turf.length(route.features[0]);
-                // // const lineDistance = length(route.features[0]);
-                // // const lineDistance = turf.distance( originCoords, destinationCoords )
-                // const lineDistance = turf.distance( route.features[0].geometry.coordinates[ 0 ], route.features[0].geometry.coordinates[ 1 ] )
-
-                // const arc = [];
-                 
-                // // Number of steps to use in the arc and animation, more steps means
-                // // a smoother arc and animation, but too many steps will result in a
-                // // low frame rate
-                // const steps = 500;
-                 
-                // // Draw an arc between the `origin` & `destination` of the two points
-                // for ( let i = 0; i < lineDistance; i += lineDistance / steps ) {
-                //     const segment = turf.along(route.features[0], i);
-                //     // const segment = turf.along(route.features[0].geometry.coordinates, i);
-                //     // const segment = along(route.features[0], i);
-                //     arc.push(segment.geometry.coordinates);
-                // }
-                 
-                // // Update the route with calculated arc coordinates
-                // route.features[0].geometry.coordinates = arc;
-
-                const originTurfPoint = new turf.point( originCoords )
-                const destinationTurfPoint = new turf.point( destinationCoords )
-                const greatCircle = turf.greatCircle( originTurfPoint, destinationTurfPoint )  // , {properties: {npoints: 123, name: '...'} } )
-
-                // Update the route with calculated arc coordinates
-                route.features[0].geometry.coordinates = greatCircle.geometry.coordinates
-
-                map.addSource( source, {
-                    'type': 'geojson',
-                    'data': route
-                });
- 
-                map.addLayer({
-                    'id': layer,
-                    'type': 'line',
-                    'source': source,
-                    'layout': {
-                        'line-join': 'round',
-                        'line-cap': 'round'
-                    },
-                    'paint': {
-                        'line-color': highlighted ? '#00F' : '#888',
-                        'line-width': 8
-                    }
-                })
+                this._sources[ sourceName ] = {
+                    ...this._sources[ sourceName ],  // retains rendered
+                    name: sourceName,
+                    hasPath: true,
+                    rendered: true,
+                }
+                this._layers[ layerName ] = {
+                    ...this._layers[ layerName ],  // retains rendered
+                    name: layerName,
+                    hasPath: true,
+                    rendered: true,
+                }
 
                 return null
             })
 
+            // remove unrendered sources and layers (layerrs first to avoid reference dependency)
+            this._layers = Object.keys( this._layers ).map( k => this._layers[ k ] ).filter( l => {
+                if( !l.hasPath && l.rendered ) {
+                    console.log( `LANCE updateMap removing layer ${l.name}` )
+                    map.removeLayer( l.name )
+                    return false
+                } else {
+                    return true
+                }
+            }).reduce( ( a, l ) => {
+                return {
+                    ...a,
+                    [ l.name ]: {
+                        ...a[ l.name ],
+                        ...l,
+                    }
+                }
+            }, {} )
+            this._sources = Object.keys( this._sources ).map( k => this._sources[ k ] ).filter( s => {
+                if( !s.hasPath && s.rendered ) {
+                    console.log( `LANCE updateMap removing source ${s.name}` )
+                    map.removeSource( s.name )
+                    return false
+                } else {
+                    return true
+                }
+            }).reduce( ( a, s ) => {
+                return {
+                    ...a,
+                    [ s.name ]: {
+                        ...a[ s.name ],
+                        ...s,
+                    }
+                }
+            }, {} )
+
             if( !this._initialMapRendered ) {
                 if( flyToCoord && !this._initialMapRendered ) {
-    console.log( 'LANCE flyToCoord', flyToCoord, flyToCoord && flyToCoord[0], flyToCoord && flyToCoord[1] )
+    console.log( 'LANCE updateMap flyToCoord', flyToCoord, flyToCoord && flyToCoord[0], flyToCoord && flyToCoord[1] )
                     map.flyTo({
                         center: flyToCoord
                     })
                     // this._marker.setLngLat( flyToCoord ).addTo( map )
                 } else if( boundingBox ) {
-    console.log( 'LANCE fitBounds boundingBox', boundingBox )
+    console.log( 'LANCE updateMap fitBounds boundingBox', boundingBox )
                     map.fitBounds( boundingBox )
                 }
             this._initialMapRendered = true
@@ -591,16 +652,27 @@ console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
                 charge,
                 aircraftAltitude: altitude,
                 aircraftSpeed: speed,
-                atd,
+                etd,
                 eta,
+                atd,
+                ata,
                 bearing,
                 distance,
                 covered,
                 elapsed,
             } = aircraftWithTelemtry
             const { originLat, originLon, destinationLat, destinationLon } = aircraft
-            const { originCode, destinationCode } = aircraft
-            if( destinationCode && recentTelemetry ) {
+            const { baseCode, originCode, destinationCode } = aircraft
+            if( ( destinationCode && !ata ) || recentTelemetry ) {
+                if( !etd ) {
+                    console.warn( 'Supervise::renderSelectedAircraft surprised not to have an etd' )
+                }
+                if( !atd ) {
+                    console.warn( 'Supervise::renderSelectedAircraft surprised not to have an atd' )
+                }
+                if( !eta ) {
+                    console.warn( 'Supervise::renderSelectedAircraft surprised not to have an eta' )
+                }
                 // return renderFlyingSelectedAircraft( id, originPoint, destinationPoint )
                 return <SuperviseFlyingAircraft 
                     key={ id } 
@@ -623,30 +695,9 @@ console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
                     close={ close } 
                     goMap={ goMap } 
                 />
-            } else if( recentTelemetry ) {
-                // return renderFlyingSelectedAircraft( id, originPoint, destinationPoint )
-                return <SuperviseFlyingAircraft 
-                    key={ id } 
-                    id={id} 
-                    name={name} 
-                    flightId={flightId}
-                    charge={charge} 
-                    altitude={altitude} 
-                    speed={speed} 
-                    atd={atd} 
-                    eta={eta} 
-                    bearing={bearing} 
-                    speed={speed} 
-                    altitude={altitude} 
-                    distance={distance} 
-                    covered={covered} 
-                    elapsed={elapsed} 
-                    close={ close } 
-                    goMap={ goMap } 
-                />
             } else {
                 // return renderParkedSelectedAircraft( id, originPoint )
-                return <SuperviseParkedAircraft key={ id } id={id} originCode={originCode} close={ close } fleet={ fleet }/>
+                return <SuperviseParkedAircraft key={ id } id={id} code={destinationCode || originCode || baseCode} close={ close } fleet={ fleet }/>
             }
         }
     }
@@ -671,7 +722,8 @@ console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
 }
 
 const mapStateToProps = ( state, props ) => {
-    const { fleet } = state
+    // const { fleet } = state
+    const fleet = fleetData( state )
     const { location: { search } } = props
     const selectedAircraftIds = ( new URLSearchParams( search ).getAll( 'a' ) || [] ).map( said => +said )
     console.log( 'LANCE selectedAircraftIds', selectedAircraftIds )
