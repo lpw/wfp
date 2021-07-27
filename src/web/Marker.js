@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import { connect } from 'react-redux'
 import mapboxgl from 'mapbox-gl'
 // import turf from 'turf'
-import * as turf from '@turf/turf'
+// import * as turf from '@turf/turf'
 import socketIOClient from "socket.io-client"
 import {
     requestFleet,

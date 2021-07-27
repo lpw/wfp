@@ -101,7 +101,7 @@ class SuperviseFlyingAircraft extends Component {
         const { showSixPack } = state
         // const sixPackSize = showSixPack ? 250 : 50
         const distancePercentComplete = distance > 0 ? covered / distance : 0
-        const totalTime = eta > 0 ? eta - atd : 0
+        const totalTime = eta > 0 && atd > 0 ? eta - atd : 0
         const timePercentComplete = totalTime > 0 ? elapsed / totalTime : 0
         const distanceRemaining = distance - covered
         const timeRemaining = totalTime > 0 ? totalTime - elapsed : 0
@@ -141,20 +141,20 @@ console.log( 'LANCE SuperviseFlyingAircraft render destinationCode', destination
                     <div className="selectedAircraftLeftCol">
                         { !distance ? null : <div className="selectedDistanceBar">
                             <span className="selectedAircraftDistance">Distance Total: { Math.round( distance ) } nm</span>
-                            <span className="selectedAircraftDistance">Covered: { Math.round( covered ) } nm</span>
-                            <ProgressBar bgColor={'#0000FF'} className="ProgressBar" completed={ Math.round( distancePercentComplete * 100 ) } />
-                            <span className="selectedAircraftDistance">Remaning: { Math.round( distanceRemaining ) } nm</span>
+                            <span className="selectedAircraftDistance">Covered: { Math.round( Math.max( Math.min( covered, distance ), 0 ) ) } nm</span>
+                            <ProgressBar bgColor={'#0000FF'} className="ProgressBar" completed={ Math.round( Math.max( Math.min( distancePercentComplete * 100, 100 ), 0 ) ) } />
+                            <span className="selectedAircraftDistance">Remaning: { Math.round( Math.max( Math.min( distanceRemaining, distance ), 0 ) ) } nm</span>
                         </div> }
                         { !totalTime ? null : <div className="selectedTimeBar">
                             <span className="selectedAircraftTime">Time Total: { Math.round( totalTime / 60 ) } min</span>
-                            <span className="selectedAircraftTime">Ellapsed: { Math.round( elapsed / 60 ) } min</span>
-                            <ProgressBar bgColor={'#0000FF'} className="ProgressBar" completed={ Math.round( timePercentComplete * 100 ) } />
-                            <span className="selectedAircraftTime">Remaning: { Math.round( timeRemaining / 60 ) } min</span>
+                            <span className="selectedAircraftTime">Ellapsed: { Math.round( Math.max( Math.min( elapsed / 60, totalTime ), 0 ) ) } min</span>
+                            <ProgressBar bgColor={'#0000FF'} className="ProgressBar" completed={ Math.round( Math.max( Math.min( timePercentComplete * 100, 100 ), 0 ) ) } />
+                            <span className="selectedAircraftTime">Remaning: { Math.round( Math.max( Math.min( timeRemaining / 60 , totalTime / 60 ), 0 ) ) } min</span>
                         </div> }
                     </div>
                     <div className="selectedAircraftMiddleCol" >
                         <GaugeChart textColor="black" colors={['#FF0000', '#FFFF00', '#00FF00']} percent={ Math.round( level ) } className="selectedAircraftFuel" style={chartStyle} />
-                        <span className={ selectedAircraftChargeClassNames }>Remaning: { Math.round( chargeMinutesRemaining ) } min</span>
+                        <span className={ selectedAircraftChargeClassNames }>Remaning: { Math.round( Math.max( chargeMinutesRemaining, 0 ) ) } min</span>
                     </div>
                     <div onClick={ toggleSixPack }>
                         <SixPack size={ 50 } bearing={ bearing } speed={ speed } altitude={ altitude }/>

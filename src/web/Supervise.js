@@ -26,14 +26,12 @@ const pathHasSelectedAircraft = ( path, selectedAircraftIds ) => oneHasSomeOther
 const removeMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftIds.filter( id => !marker.aircraftIds.includes( id ) )
 const addMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftIds.concat( marker.aircraftIds )
 
-const getMarker = ( aircraftId, fleet, telemetryData = {} ) => {
+const getMarker = ( aircraftId, fleet ) => {
     let marker
     const aircraft = fleet[ aircraftId ]
-    const aircraftTelemetry = telemetryData[ aircraftId ]
-    const aircraftWithTelemtry = { ...aircraft, ...aircraftTelemetry }
-    const { baseId, originId, lat, lon } = aircraftWithTelemtry
     // assert( aircraft )
     if( aircraft ) {
+        const { baseId, originId, lat, lon } = aircraft
         // const pointId = aircraft.originId || aircraft.baseId
         // let pointId 
         // let point
@@ -322,17 +320,18 @@ class Supervise extends Component {
 
     goMap = id => {
         const { props } = this
-        const { name } = props
+        // const { name } = props
+        const { fleet } = props
 
-        const { state } = this
-        const { fleet: telemetryData } = state
-        const aircraftTelemetry = telemetryData[ id ]
+        // const { state } = this
+        // const { fleet: telemetryData } = state
+        const aircraft = fleet[ id ]
 
-        console.log( `goMap flying to ${id} with ${aircraftTelemetry}`)
+        console.log( `goMap flying to ${id} with ${aircraft}`)
 
-        if( aircraftTelemetry ) {
+        if( aircraft ) {
             this._map.flyTo({
-                center: [ aircraftTelemetry.lon, aircraftTelemetry.lat ],
+                center: [ aircraft.lon, aircraft.lat ],
                 zoom: 22,
             })
         }
@@ -640,19 +639,15 @@ console.log( 'LANCE paths', paths )
 
     renderSelectedAircraft = id => {
         const { props, close, goMap, state } = this
-        const { fleet: telemetryData } = state
+        // const { fleet: telemetryData } = state
         const { fleet } = props
         const aircraft = fleet[ id ]
-        const aircraftTelemetry = telemetryData[ id ]
-        const now = Date.now()
-        const recentTelemetry = aircraftTelemetry && now - aircraftTelemetry.time < 60 * 1000
+        // const aircraftTelemetry = telemetryData[ id ]
         // const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
 console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
         if( aircraft ) {
-            const aircraftWithTelemtry = {
-                ...aircraft,
-                ...aircraftTelemetry,
-            }
+            const now = Date.now()
+            const recentTelemetry = now - aircraft.telemetryTime < 60 * 1000
             const { 
                 name,
                 baseId,
@@ -660,8 +655,8 @@ console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
                 originId,
                 destinationId,
                 charge,
-                aircraftAltitude: altitude,
-                aircraftSpeed: speed,
+                altitude,
+                speed,
                 etd,
                 eta,
                 atd,
@@ -670,7 +665,7 @@ console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
                 distance,
                 covered,
                 elapsed,
-            } = aircraftWithTelemtry
+            } = aircraft
             const { originLat, originLon, destinationLat, destinationLon } = aircraft
             const { baseCode, originCode, destinationCode } = aircraft
             if( ( destinationCode && !ata ) || recentTelemetry ) {

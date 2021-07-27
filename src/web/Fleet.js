@@ -72,8 +72,8 @@ class Fleet extends Component {
             name,
             originId,
             destinationId,
-            aircraftAltitude: altitude,
-            aircraftSpeed: speed,
+            altitude,
+            speed,
         } = aircraft  // distance, pointCound, duration - depends
         const originPoint = points[ originId ]
         const destinationPoint = points[ destinationId ]

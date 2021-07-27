@@ -10,12 +10,13 @@ const telemetry = ( state = {}, action ) => {
 	switch ( type ) {
 
 		case UPDATE_TELEMETRY: {
-			const { telemetry } = action
+			const { telemetry, time: telemetryTime } = action
 			return {
 				...state,
 				[ telemetry.id ]: {
 					...state[ telemetry.id ],
-					...telemetry
+					...telemetry,
+					telemetryTime
 				}
 			}
 		}

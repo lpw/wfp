@@ -178,7 +178,8 @@ export const deleteFlightQuery = ( id, f ) => connectionQuery( `DELETE FROM flig
 // 	WHERE flights.atd IS NOT NULL AND flights.ata IS NULL
 // 	ORDER BY flights.ata DESC, routes_points.sequence ASC
 // `, f )
-
+		// fleet.speed as aircraftSpeed, 
+		// fleet.altitude as aircraftAltitude, 
 const fleetQueryText = ( where = '' ) => `
 	SELECT 
 		fleet.id, 
@@ -188,8 +189,8 @@ const fleetQueryText = ( where = '' ) => `
 		fleet.lon,
 		fleet.charge, 
 		fleet.heading, 
-		fleet.speed as aircraftSpeed, 
-		fleet.altitude as aircraftAltitude, 
+		fleet.speed, 
+		fleet.altitude, 
 		fleet.pitch, 
 		fleet.yaw, 
 		fleet.roll, 
