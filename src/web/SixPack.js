@@ -48,13 +48,13 @@ class SixPack extends Component {
         return (
             <div className="">
                 <div className="topRowSixPack">
-                    <HeadingIndicator size={ size } className="oneOfSixPack" heading={ bearing } showBox={false} />
                     <Airspeed size={ size } className="oneOfSixPack" speed={ speed } showBox={false} />
+                    <HeadingIndicator size={ size } className="oneOfSixPack" heading={ bearing } showBox={false} />
                     <Altimeter size={ size } className="oneOfSixPack" altitude={ altitude } showBox={false} />
                 </div>
                 <div className="bottomRowoneOfSixPack">
-                    <AttitudeIndicator size={ size } className="oneOfSixPack" roll={0} pitch={0} showBox={false} />
                     <TurnCoordinator size={ size } className="oneOfSixPack" turn={0} showBox={false} />
+                    <AttitudeIndicator size={ size } className="oneOfSixPack" roll={0} pitch={0} showBox={false} />
                     <Variometer size={ size } className="oneOfSixPack" vario={0} showBox={false} />
                 </div>
             </div>

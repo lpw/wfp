@@ -1,18 +1,31 @@
 import {
 	launchFlightQuery,
-	getLaunchInfoFlightQuery,
-	updateAircraftQuery,
+	launchFlightNowQuery,
+	// getLaunchInfoFlightQuery,
+	// updateAircraftQuery,
 } from './queries';
 
-export function launchFlight( flightId ) {
-	const launchFlightPromise = new Promise( function( resolve, reject ) {
-		launchFlightQuery( flightId, function ( error ) {
+export function launchFlight( flightId, atd ) {
+	return new Promise( function( resolve, reject ) {
+		launchFlightQuery( flightId, atd, function ( error ) {
 			if ( error ) {
 				return reject( error ) // throw
 			}
 			resolve()
 		})
 	})
+}
+
+export function launchFlightNow( flightId ) {
+	return new Promise( function( resolve, reject ) {
+		launchFlightNowQuery( flightId, function ( error ) {
+			if ( error ) {
+				return reject( error ) // throw
+			}
+			resolve()
+		})
+	})
+}
 
 	// const launchAircrafttPromise = new Promise( function( resolve, reject ) {
 	// 	flightQuery( flightId, function ( error, rows ) {
@@ -63,22 +76,21 @@ export function launchFlight( flightId ) {
 	// 	})
 	// })
 
-	const launchAircrafttPromise = new Promise( function( resolve, reject ) {
-		getLaunchInfoFlightQuery( flightId, function ( error, rows ) {
-			if ( error ) {
-				return reject( error ) // throw
-			}
-			// could transition elevation -> altitiude
-			const { aircraft, lat, lon, bearing, speed, altitude } = rows[ 0 ]
-			const rechargedCapacity = 100000
-			updateAircraftQuery( aircraft, rechargedCapacity, lat, lon, bearing, speed, altitude, 0, 0, 0, 0, 0, function ( error ) {
-				if ( error ) {
-					return reject( error ) // throw
-				}
-				resolve()
-			})
-		})
-	})
+	// const launchAircrafttPromise = new Promise( function( resolve, reject ) {
+	// 	getLaunchInfoFlightQuery( flightId, function ( error, rows ) {
+	// 		if ( error ) {
+	// 			return reject( error ) // throw
+	// 		}
+	// 		// could transition elevation -> altitiude
+	// 		const { aircraft, lat, lon, bearing, speed, altitude } = rows[ 0 ]
+	// 		const rechargedCapacity = 100000
+	// 		updateAircraftQuery( aircraft, rechargedCapacity, lat, lon, bearing, speed, altitude, 0, 0, 0, 0, 0, function ( error ) {
+	// 			if ( error ) {
+	// 				return reject( error ) // throw
+	// 			}
+	// 			resolve()
+	// 		})
+	// 	})
+	// })
 
-	return Promise.all( [ launchFlightPromise, launchAircrafttPromise ] )
-}
+	// return Promise.all( [ launchFlightPromise, launchAircrafttPromise ] )

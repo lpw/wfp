@@ -1,9 +1,10 @@
 import {
-	// addRouteToRoutesQuery,
-	// addRouteToFlightsQuery,
+	addRouteToRoutesQuery,
+	addRouteToFlightsQuery,
 	addPointToPointsQuery,
 	addPointToRouteQuery,
 	getLastInsertIdQuery,
+	pointsQuery,
 	pointTypesQuery,
 } from './queries'
 

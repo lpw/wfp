@@ -29,7 +29,7 @@ class Marker extends Component {
         // this._markers = props.markers
 
         // this._previousAnimationTimestamp = 0
-        this._previousCallbacjTimestamp = 0
+        this._previousCallTimestamp = 0
     }
 
     // componentDidMount() {
@@ -48,6 +48,23 @@ class Marker extends Component {
         const { id, clickMarker } = props
         clickMarker( id )
     }
+
+    // can't figure out how to tell this when to move direct vs animate (goMap vs socket data)
+    // moveNoAnimation = () => {
+    //     const { _el: el, _mbMarker: mbMarker, props, _animationFrame: animationFrame } = this
+    //     const { aircraftData } = props
+    //     const { lat, lon } = aircraftData
+    //     const coords = [ lon, lat ]
+
+    //     cancelAnimationFrame( animationFrame )
+    //     this._animationFrame = null
+
+    //     if( typeof lat === 'number' && typeof lon === 'number' ) {
+    //         if( mbMarker && el ) {
+    //             mbMarker.setLngLat( coords )
+    //         }
+    //     }
+    // }
 
     move = () => {
         // const { _elRef: { current: el }, _mbMarker: mbMarker, props } = this
@@ -87,10 +104,12 @@ id === -1 && console.log( 'LANCE Marker::move has setLngLat coords', coords )
                 //     requestAnimationFrame(animateMarker);
                 // }
 
+                cancelAnimationFrame( this._animationFrame )
+
                 const expectedInterval = 10 * 1000
                 const now = Date.now()
-                const previousInterval = now - this._previousCallbacjTimestamp
-                this._previousCallbacjTimestamp = now
+                const previousInterval = now - this._previousCallTimestamp
+                this._previousCallTimestamp = now
 id === -1 && console.log( 'LANCE Marker::move previousInterval', previousInterval )
 id === -1 && console.log( 'LANCE Marker::move expectedInterval', expectedInterval )
                 let previousAnimationTimestamp
@@ -114,7 +133,7 @@ id === -1 && console.log( 'LANCE Marker::move newLat', newLat )
 id === -1 && console.log( 'LANCE Marker::move difLon', difLon )
 id === -1 && console.log( 'LANCE Marker::move difLat', difLat )
 
-                function step( timestamp ) {
+                const step = ( timestamp ) => {
                     if( start === undefined ) {
                         start = timestamp
                     }
@@ -128,7 +147,7 @@ id === -1 && console.log( 'LANCE Marker::move elapsed', elapsed )
                         // Math.min() is used here to make sure the element stops at exactly 200px
                         // const count = Math.min( 0.1 * elapsed, 200 )
                         // element.style.transform = 'translateX(' + count + 'px)';
-                        const fraction = elapsed / expectedInterval
+                        const fraction = Math.max( Math.min( elapsed / expectedInterval, 1 ), 0 )
 
                         const incLon = curLon + difLon * fraction
                         const incLat = curLat + difLat * fraction
@@ -142,7 +161,7 @@ id === -1 && console.log( 'LANCE Marker::move incLat', incLat )
 
                     if( elapsed < expectedInterval ) { // Stop the animation after 2 seconds
                         previousAnimationTimestamp = timestamp
-                        window.requestAnimationFrame( step )
+                        this._animationFrame = window.requestAnimationFrame( step )
                     } else {
                         mbMarker.setLngLat( coords )
                     }
@@ -167,6 +186,7 @@ id === -1 && console.log( 'LANCE Marker::move no lat lon', lat, lon )
     }
 
     setRef = ( el ) => {
+        // ? Uncaught DOMException: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
         const { move, props } = this
         const { id } = props
         console.log( 'LANCE setRef id el', id, el )
@@ -182,7 +202,7 @@ id === -1 && console.log( 'LANCE Marker::move no lat lon', lat, lon )
     }
 
     render = () => {
-        const { setRef, clickMarker, props, move } = this
+        const { setRef, clickMarker, props } = this
         const { selected, name, aircraftData, id } = props
         const { lat, lon  } = aircraftData
         const markerClassNames = classNames( 

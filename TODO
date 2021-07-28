@@ -1,3 +1,24 @@
+Time Total: 5 min Ellapsed: 8 min
+and still ont tjere
+293 to LA but 510 covered?!
+lander
+initial zoom
+
+NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+
+contigency post striaght to sim instead of db
+
+or position as source of truth to calc covered remaining etc
+
+routes:
+put in heading/bearing
+
+cliimd on take-off, decend on land
+
+launch should ause rerender to draw route lines for newly launched flights
+
+create database
+
 add ETA and heading into Supervise
 
 client-side animation/extrapolation from trends (with confirm highlights)

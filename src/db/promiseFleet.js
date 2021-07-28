@@ -125,9 +125,9 @@ export function promiseFleet( query = fleetQuery ) {
 					!ata1 && !ata2 && atd1 && !atd2 	// light1 took-off while flight2 has not taken-off
 				) {  
 					flight1 = true
-				} else if( // neither plan has lsnded, nor taken-off,
+				} else if( // neither plan has landed, nor taken-off,
 					!ata1 && !ata2 && !atd1 && !atd2 && etd1 && etd2 && etd1 > etd2 ||	// flight1 is estimated to leave later than flight2
-					!ata1 && !ata2 && !atd1 && !atd2 && etd1 && !etd1 	// flight1 has an estimate to leave while flight2 does not have an estimate
+					!ata1 && !ata2 && !atd1 && !atd2 && etd1 && !etd2 	// flight1 has an estimate to leave while flight2 does not have an estimate
 				) {  
 					flight1 = true
 				}
@@ -220,6 +220,7 @@ export function promiseFleet( query = fleetQuery ) {
 						destinationCode: points[ pointId ].code, 
 						destinationLat: points[ pointId ].lat, 
 						destinationLon: points[ pointId ].lon, 
+						destinationElevation: points[ pointId ].elevation, 
 						lat: lat || points[ baseId ].lat,
 						lon: lon || points[ baseId ].lon,
 					}

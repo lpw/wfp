@@ -327,7 +327,20 @@ export const addPointToRouteQuery = ( routeId, sequence, pointId, altitude, spee
 		('${routeId}', '${sequence}', '${pointId}', '${altitude}', '${speed}')
 `, f )
 
-export const launchFlightQuery = ( flightId, f ) => connectionQuery( `
+export const launchFlightQuery = ( flightId, atd, f ) => connectionQuery( `
+	UPDATE 
+		\`flights\`
+	SET 
+		\`atd\`
+	= 
+		FROM_UNIXTIME(${ atd })
+	WHERE
+		id 
+	=
+		${flightId}
+`, f )
+
+export const launchFlightNowQuery = ( flightId, f ) => connectionQuery( `
 	UPDATE 
 		\`flights\`
 	SET 
@@ -340,7 +353,20 @@ export const launchFlightQuery = ( flightId, f ) => connectionQuery( `
 		${flightId}
 `, f )
 
-export const landFlightQuery = ( flightId, f ) => connectionQuery( `
+export const landFlightQuery = ( flightId, ata, f ) => connectionQuery( `
+	UPDATE 
+		\`flights\`
+	SET 
+		\`ata\`
+	= 
+		FROM_UNIXTIME(${ ata })
+	WHERE
+		id 
+	=
+		${flightId}
+`, f )
+
+export const landFlightNowQuery = ( flightId, f ) => connectionQuery( `
 	UPDATE 
 		\`flights\`
 	SET 
@@ -452,7 +478,28 @@ export const getLandInfoFlightQuery = ( flightId, f ) => connectionQuery( `
 		points.id=routes.destination 
 `, f )
 
-export const updateAircraftLandQuery = ( aircraftId, lat, lon, elevation, f ) => connectionQuery( `
+// export const updateAircraftLandQuery = ( aircraftId, lat, lon, elevation, f ) => connectionQuery( `
+// 	UPDATE 
+// 		fleet
+// 	SET 
+// 		altitude=${ Math.round( elevation ) },
+// 		lat=${ lat },
+// 		lon=${ lon },
+// 		speed=${ 0 }
+// 	WHERE
+// 		id=${aircraftId}
+// `, f )
+
+export const routesQuery = ( f ) => connectionQuery( `
+	SELECT 
+		routes.*, points.code as destinationCode
+	FROM
+		routes, points
+	WHERE
+		points.id=routes.destination 
+`, f )
+
+export const updateLandingAircraftQuery = ( aircraftId, lat, lon, elevation, f ) => connectionQuery( `
 	UPDATE 
 		fleet
 	SET 
@@ -464,12 +511,4 @@ export const updateAircraftLandQuery = ( aircraftId, lat, lon, elevation, f ) =>
 		id=${aircraftId}
 `, f )
 
-export const routesQuery = ( f ) => connectionQuery( `
-	SELECT 
-		routes.*, points.code as destinationCode
-	FROM
-		routes, points
-	WHERE
-		points.id=routes.destination 
-`, f )
 

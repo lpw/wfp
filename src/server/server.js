@@ -30,6 +30,10 @@ import {
 	landFlight,
 	promiseRoutes,
 	updateAircraft,
+	launchFlight,
+	updateLandingAircraft,
+	updateRouteDistance,
+	updateRouteBearing,
 } from '../db'
 
 const debug = require('debug')('wisk:server')
@@ -51,18 +55,17 @@ const oneDayInMsec = 24 * 60 * 60 * 1000
 
 function connectHttp() {
 	return new Hapi.Server({
-		// debug: { request: ["*"], log: ["*"] },
 		host,
 		port,
 		routes: {
-			// cors: true
-			cors: { 
-				origin: ["*"],
-	            headers: ["Access-Control-Allow-Headers", "Access-Control-Allow-Origin","Accept", "Authorization", "Content-Type", "If-None-Match", "Accept-language"],
-	            additionalHeaders: ["Access-Control-Allow-Headers: Origin, Content-Type, x-ms-request-id , Authorization"],
-	            // credentials: true
-			}
+			cors: true
 		},
+		// cors: { 
+		// 	origin: ["*"],
+		// 	headers: ["Access-Control-Allow-Headers", "Access-Control-Allow-Origin","Accept", "Authorization", "Content-Type", "If-None-Match", "Accept-language"],
+		// 	additionalHeaders: ["Access-Control-Allow-Headers: Origin, Content-Type, x-ms-request-id , Authorization"],
+		// 	// credentials: true
+		// },
 		// state: {
 		// 	isSameSite: false,
 		// 	isHttpOnly: false,
@@ -433,29 +436,68 @@ function routeArgApi( server ) {
 							})
 						}
 						case 'fleet': {
-							debug( 'routeApi', method, op, typeof payload, payload )
-							const { id: aircraftId, charge, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi } = typeof payload === 'string' ? JSON.parse( payload ) : payload
-							assert( +aircraft === +id )  // until we decide
-							return updateAircraft( id, charge, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi ).then( result => {
-								const replyResult = {
-									status: 'ok', 
-									result, 
-								}
-								debug( 'routeApi updateAircraft then replyResult', replyResult )
-								return replyResult
-							}).catch( error => {
-								console.warn( 'routeApi error', error.message ) 
-								return {
-									error: `op /${op} error ${error.message}`
-								}
-							})
-						}
-						case 'flight': {
-							const { action } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							const { action, lat, lon, altitude, speed, heading, pitch, yaw, roll, turn, vsi, charge } = typeof payload === 'string' ? JSON.parse( payload ) : payload
 							switch( action.toLowerCase() ) {
 								case 'land': {
-									debug( 'routeArgApi post flight action', id, action )
-									return landFlight( id ).then( result => {
+									debug( 'routeApi', method, op, typeof payload, payload )
+									const { id, lat, lon, altitude } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+									return updateLandingAircraft( id, lat, lon, altitude ).then( result => {
+										const replyResult = {
+											status: 'ok', 
+											result, 
+										}
+										debug( 'routeApi updateLandingAircraft then replyResult', replyResult )
+										return replyResult
+									}).catch( error => {
+										console.warn( 'routeApi error', error.message ) 
+										return {
+											error: `op /${op} error ${error.message}`
+										}
+									})
+								}
+								default: {
+									debug( 'routeApi', method, op, typeof payload, payload )
+									const { id: aircraftId, charge, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+									assert( +aircraftId === +id )  // until we decide
+									return updateAircraft( id, charge, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi ).then( result => {
+										const replyResult = {
+											status: 'ok', 
+											result, 
+										}
+										debug( 'routeApi updateAircraft then replyResult', replyResult )
+										return replyResult
+									}).catch( error => {
+										console.warn( 'routeApi error', error.message ) 
+										return {
+											error: `op /${op} error ${error.message}`
+										}
+									})
+								}
+							}
+						}
+						case 'flight': {
+							const { action, atd, ata } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							switch( action.toLowerCase() ) {
+								case 'launch': {
+									debug( 'routeArgApi post flight action', id, atd, action )
+									return launchFlight( id, atd ).then( result => {
+										const replyResult = {
+											status: 'ok', 
+											result, 
+										}
+										debug( 'routeArgApi post flight then replyResult', replyResult )
+										return replyResult
+									}).catch( error => {
+										debug( 'routeArgApi post flight error', error.message )
+										console.warn( 'routeArgApi post flight error', error.message ) 
+										return {
+											error: `routeArgApi post flight/${id} error ${error.message}`
+										}
+									})
+								}
+								case 'land': {
+									debug( 'routeArgApi post flight action', id, ata, action )
+									return landFlight( id, ata ).then( result => {
 										const replyResult = {
 											status: 'ok', 
 											result, 
@@ -487,6 +529,52 @@ function routeArgApi( server ) {
 											error: `routeArgApi post flight/${id} error ${error.message}`
 										}
 									})
+								}
+							}
+						}
+						case 'route': {
+							const { action, distance, bearing } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							switch( action.toLowerCase() ) {
+								case 'distance': {
+									debug( 'routeArgApi post route action', id, action )
+									return updateRouteDistance( id, distance ).then( result => {
+										const replyResult = {
+											status: 'ok', 
+											result, 
+										}
+										debug( 'routeArgApi post route then replyResult', replyResult )
+										return replyResult
+									}).catch( error => {
+										debug( 'routeArgApi post route error', error.message )
+										console.warn( 'routeArgApi post route error', error.message ) 
+										return {
+											error: `routeArgApi post route/${id} error ${error.message}`
+										}
+									})
+								}
+								case 'bearing': {
+									debug( 'routeArgApi post route action', id, action )
+									return updateRouteBearing( id, bearing ).then( result => {
+										const replyResult = {
+											status: 'ok', 
+											result, 
+										}
+										debug( 'routeArgApi post route then replyResult', replyResult )
+										return replyResult
+									}).catch( error => {
+										debug( 'routeArgApi post route error', error.message )
+										console.warn( 'routeArgApi post route error', error.message ) 
+										return {
+											error: `routeArgApi post route/${id} error ${error.message}`
+										}
+									})
+								}
+								default: {
+									debug( 'routeArgApi post route error', 'unknown action' )
+									console.warn( 'routeArgApi post route error', 'unknown action' ) 
+									return {
+										error: `routeArgApi post route/${id} error ${'unknown action'}`
+									}
 								}
 							}
 						}
@@ -547,24 +635,32 @@ function routeArgApi( server ) {
 								}
 							})
 						}
-						case 'route': {
-							return promiseRoute( id ).then( result => {
-								const replyResult = {
-									status: 'ok', 
-									result, 
-								}
-								debug( 'routeArgApi route promiseRoute get then replyResult', replyResult )
-								return replyResult
-							}).catch( error => {
-								console.warn( 'routeArgApi promiseRoute get error', error.message ) 
-								return {
-									error: `routeArgApi promiseRoute/${id} get error ${error.message}`
-								}
-							})
+						// case 'route': {
+						// 	return promiseRoute( id ).then( result => {
+						// 		const replyResult = {
+						// 			status: 'ok', 
+						// 			result, 
+						// 		}
+						// 		debug( 'routeArgApi route promiseRoute get then replyResult', replyResult )
+						// 		return replyResult
+						// 	}).catch( error => {
+						// 		console.warn( 'routeArgApi promiseRoute get error', error.message ) 
+						// 		return {
+						// 			error: `routeArgApi promiseRoute/${id} get error ${error.message}`
+						// 		}
+						// 	})
+						// }
+						default: {
+							console.warn( 'routeArgApi unknown op', op )
+							debug( 'routeArgApi unknown op', op )
+							return {
+								error: `method ${method} unknown op ${op}`
+							}
 						}
 					}
 				}
 				default: {
+					console.warn( 'routeArgApi unknown method', method )
 					debug( 'routeArgApi unknown method', method )
 					return {
 						error: `method /${method} unknown method`
@@ -582,18 +678,18 @@ function startServer( server ) {
 	})
 }
 
-if( !noSSL ) {
-	const httpsServer = connectHttps()
+// if( !noSSL ) {
+// 	const httpsServer = connectHttps()
 
-	httpsServer.register( Inert ).then( () => {
-		routeStaticAssets( httpsServer )
-		routeRootAny( httpsServer )
-		routeIndexHtml( httpsServer )
-		routeApi( httpsServer )
-		routeArgApi( httpsServer )
-		startServer( httpsServer )
-	} )
-}
+// 	httpsServer.register( Inert ).then( () => {
+// 		routeStaticAssets( httpsServer )
+// 		routeRootAny( httpsServer )
+// 		routeIndexHtml( httpsServer )
+// 		routeApi( httpsServer )
+// 		routeArgApi( httpsServer )
+// 		startServer( httpsServer )
+// 	} )
+// }
 
 const httpServer = connectHttp()
 

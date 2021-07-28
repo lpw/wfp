@@ -1,4 +1,8 @@
-create database
+ellapsed as source of truth to calc position (and covered remaining etc)
+
+leader out the nose
+
+Cesium
 
 populate users
 INSERT INTO users (name) VALUES ('Lance');
@@ -14,8 +18,11 @@ and some aircraft too
 Pres
 keeping most everything self-contained for now (DDS separate repo for independence, vendor sw)
 
+Identify sources of truths (db vs inflight/mem-fleet)
 
 Microservices
+
+lander, launcher, and flyer might be helping the sim aircraft more than the real aircraft where those services will be more about monitoring than controlling
 
 UI for DB and aircraft
 (html, css, js, static)

@@ -333,7 +333,7 @@ class Supervise extends Component {
             this._map.flyTo({
                 center: [ aircraft.lon, aircraft.lat ],
                 // zoom: 22,
-                zoom: 15,
+                zoom: 12  // 22, 15, 10, ...
             })
         }
     }   
@@ -347,7 +347,7 @@ class Supervise extends Component {
                 container: _mapRef.current,
                 style: 'mapbox://styles/mapbox/streets-v11',
                 center: [-122.486052, 37.830348],
-                zoom: 15
+                zoom: 15  // 22, 15, ...
             });
             this._map.on( 'load', () => this.updateMap() )
             // this._marker = fleet.map( f => new mapboxgl.Marker( this._markerRef[ f.name ].current ) ).reduce( ( a, m ) => ({ [ ]}))
@@ -713,6 +713,8 @@ console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
         // const { routeIndex } = state
         const { markers } = props
         const { selectedAircraftIds } = state
+
+        console.log( 'LANCE Supervise::render' )
 
         return (
             <div className="supervise">
