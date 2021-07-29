@@ -14,7 +14,8 @@ import {
 } from 'react-flight-indicators'
 import {
     MFleet,
-    landFlight,
+    // landFlight,
+    landAircraft,
 } from '../actions'
 import {
 } from '../selectors'
@@ -63,11 +64,13 @@ class SuperviseFlyingAircraft extends Component {
     }
 
     contingency = () => {
+        // const now = Date.now() / 1000
         const { props } = this
-        const { name, destinationCode, flightId, landFlight } = props
+        const { name, destinationCode, id, landAircraft } = props  // flightId
         const answer = window.confirm( `Contingency Panel for ${name}\n\nLand at ${destinationCode} immediately?` )
         if( answer ) {
-            landFlight( flightId )
+            // landFlight( flightId, now )
+            landAircraft( id )
         }
     }   
 
@@ -92,7 +95,7 @@ class SuperviseFlyingAircraft extends Component {
             speed,
             atd,
             eta,
-            bearing,
+            heading,
             distance,
             covered,
             elapsed,
@@ -167,11 +170,11 @@ console.log( 'LANCE SuperviseFlyingAircraft render destinationCode', destination
                         <span className={ selectedAircraftChargeClassNames }>Remaning: { Math.round( Math.max( chargeRemaining / 60, 0 ) ) } min</span>
                     </div>
                     <div onClick={ toggleSixPack }>
-                        <SixPack size={ 50 } bearing={ bearing } speed={ speed } altitude={ altitude }/>
+                        <SixPack size={ 50 } heading={ heading } speed={ speed } altitude={ altitude }/>
                     </div>
                 </div>
                 <div className={ largeSixPackClassNames }>
-                    <SixPack size={ 250 } bearing={ bearing } speed={ speed } altitude={ altitude }/>
+                    <SixPack size={ 250 } heading={ heading } speed={ speed } altitude={ altitude }/>
                 </div>
             </div>
         )
@@ -188,8 +191,11 @@ const mapStateToProps = ( state, props ) => {
 
 const mapDispatchToProps = ( dispatch, /* ownProps */ ) => {
     return {
-        landFlight: flightId => {
-            dispatch( landFlight( flightId ) )
+        // landFlight: ( flightId, ata ) => {
+        //     dispatch( landFlight( flightId, ata ) )
+        // },
+        landAircraft: ( aircraftId ) => {
+            dispatch( landAircraft( aircraftId ) )
         },
     }
 }

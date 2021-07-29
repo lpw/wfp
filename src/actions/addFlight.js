@@ -3,12 +3,13 @@ import fetch from 'isomorphic-fetch'
 import { getPrefix } from '../utils'
 import { requestFleet } from './'
 
-export function addFlight( aircraftId, originId, destinationId, altitude, speed, charge ) {
+// export function addFlight( aircraftId, originId, destinationId, altitude, speed, charge ) {
+export function addFlight( aircraftId, routeId ) {
 	return( dispatch, getState ) => {
         const prefix = getPrefix()
 		const url = `${prefix}/apiv1/flights`
 		const method = 'POST'
-		const payload = { aircraftId, originId, destinationId, altitude, speed, charge }
+		const payload = { aircraftId, routeId }
 
 		return fetch( url, {
 			method,

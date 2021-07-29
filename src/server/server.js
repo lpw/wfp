@@ -203,8 +203,8 @@ function routeApi( server ) {
 					switch( op.toLowerCase() ) {
 						case 'flights': {
 							debug( 'routeApi', method, op, typeof payload, payload )
-							const { aircraftId, originId, destinationId, altitude, speed, charge } = typeof payload === 'string' ? JSON.parse( payload ) : payload
-							return addFlight( aircraftId, originId, destinationId, altitude, speed, charge ).then( result => {
+							const { aircraftId, routeId } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							return addFlight( aircraftId, routeId ).then( result => {
 								const replyResult = {
 									status: 'ok', 
 									result, 

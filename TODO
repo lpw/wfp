@@ -4,6 +4,10 @@ and still ont tjere
 lander
 initial zoom
 
+AircraftFlight -> AircraftFlying
+
+combining markers should depend on zoom level
+
 NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
 
 contigency post striaght to sim instead of db
@@ -34,6 +38,10 @@ mobile page for adding aircraft and flight
 contigency land destination
 
 Bounding box only from selected aircraft (or flyTo if one)
+
+make sequence part of key with ir ini routes_points table
+
+handle A2A flights
 
 phones as aircraft
 tailnum, location (gps?)

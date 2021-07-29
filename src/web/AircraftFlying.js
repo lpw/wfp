@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
-// import { requestAircraftFlight } from '../actions'
+// import { requestAircraftFlying } from '../actions'
 import {
-    // aircraftFlightFromState,
+    // aircraftFlyingFromState,
 } from '../selectors'
-// import './AircraftFlight.css' imported from fleet
+// import './AircraftFlying.css' imported from fleet
 
-class AircraftFlight extends Component {
+class AircraftFlying extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -34,7 +34,7 @@ class AircraftFlight extends Component {
             schedule,
             history,
          } = this
-        const { id, name, origin, destination, altitude, speed, maintenance } = props
+        const { id, name, originCode, destinationCode, maintenance } = props
         const { aircraft } = state
 
         if( aircraft ) {
@@ -76,9 +76,9 @@ class AircraftFlight extends Component {
                     <span className="aircraftRowName">{ name }</span>
                     <button className="aircraftRowButtonHistory" onClick={ history }>Flights</button>
                     <button className="aircraftRowButtonMaintenance" onClick={ () => maintenance( id ) }>Maintenance</button>
-                    <span className="aircraftRowOrigin">{ origin.code }</span>
+                    <span className="aircraftRowOrigin">{ originCode }</span>
                     <span className="aircraftRowArrow">&#x2192;</span>
-                    <span className="aircraftRowDestination">{ destination.code }</span>
+                    <span className="aircraftRowDestination">{ destinationCode }</span>
                 </div>
                 <button className="aircraftRowRightButton" onClick={supervise} disabled={ this.state.disabled }>Supervise</button>
             </div>
@@ -88,7 +88,7 @@ class AircraftFlight extends Component {
 
 const mapStateToProps = state => {
     // const { userId } = state
-    // const aircraftFlight = aircraftFlightFromState( state )
+    // const aircraftFlying = aircraftFlyingFromState( state )
 
     return {
     }
@@ -96,8 +96,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        // requestAircraftFlight: () => {
-        //     dispatch( requestAircraftFlight() )
+        // requestAircraftFlying: () => {
+        //     dispatch( requestAircraftFlying() )
         // },
     }
 }
@@ -105,4 +105,4 @@ const mapDispatchToProps = dispatch => {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(AircraftFlight)
+)(AircraftFlying)

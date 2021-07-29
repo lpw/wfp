@@ -50,16 +50,16 @@ class SuperviseParkedAircraft extends Component {
 
     render() {
         const { props } = this
-        const { id, fleet, code, close } = props
+        const { id, fleet, locationCode, close } = props
         const aircraft = fleet[ id ]
         const { name } = aircraft
         const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
-        assert( code )
+        assert( locationCode )
         return (
             <div key={ id } className={ selectedAircraftClassNames }>
                 <div className="selectedNameAndParked">
                     <span className="selectedAircraftNameParked">{ name }</span>
-                    <span className="selectedAircraftOriginParked">Landed at { code }</span>
+                    <span className="selectedAircraftOriginParked">Landed at { locationCode }</span>
                     <span className="selectedAircraftCloseParked">
                         <button className="selectedCloseButton" onClick={ () => close( id ) }>X</button>
                     </span>

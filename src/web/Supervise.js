@@ -662,7 +662,7 @@ console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
                 eta,
                 atd,
                 ata,
-                bearing,
+                heading,
                 distance,
                 covered,
                 elapsed,
@@ -692,7 +692,7 @@ console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
                     speed={speed} 
                     atd={atd} 
                     eta={eta} 
-                    bearing={bearing} 
+                    heading={heading} 
                     speed={speed} 
                     altitude={altitude} 
                     distance={distance} 
@@ -703,7 +703,7 @@ console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
                 />
             } else {
                 // return renderParkedSelectedAircraft( id, originPoint )
-                return <SuperviseParkedAircraft key={ id } id={id} code={destinationCode || originCode || baseCode} close={ close } fleet={ fleet }/>
+                return <SuperviseParkedAircraft key={ id } id={id} locationCode={destinationCode || originCode || baseCode} close={ close } fleet={ fleet }/>
             }
         }
     }

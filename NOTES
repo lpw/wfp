@@ -20,6 +20,15 @@ keeping most everything self-contained for now (DDS separate repo for independen
 
 Identify sources of truths (db vs inflight/mem-fleet)
 
+contingency goes direct to airplane 
+unlike requester which schedules into databases then goes via launcher
+
+no checkpointer needed - use flyer
+
+launder/launcher/flyer all communicate to/from database to/from aircraft
+
+database is intent (and history), sim/aircraft is reality
+
 Microservices
 
 lander, launcher, and flyer might be helping the sim aircraft more than the real aircraft where those services will be more about monitoring than controlling

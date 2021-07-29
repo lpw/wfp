@@ -37,18 +37,19 @@ class AircraftParked extends Component {
 
     launch = () => {
         const { props, destinationRef } = this
-        const { id, originId, addFlight, routesFrom } = props  
+        const { id, addFlight } = props  
 
         // const speed = speedRef.current.value
         // const altitude = altitudeRef.current.value
         // const destination = getIdFromText( destinationRef.current.value, points )
 
         const { value } = destinationRef.current || {}
-        const route = routesFrom.find( r => r.id === +value )
-        const { destination, altitude, speed } = route || {}
+        const routeId = +value
+        // const route = routesFrom.find( r => r.id === +value )
+        // const { destination, altitude, speed } = route || {}
 
-        if( speed && altitude && destination ) {
-            addFlight( id, originId, destination, altitude, speed )
+        if( routeId ) {
+            addFlight( id, routeId )
         }
     }
 
@@ -61,7 +62,7 @@ class AircraftParked extends Component {
             schedule,
             history,
          } = this
-        const { id, name, originCode, routesFrom, maintenance } = props
+        const { id, name, locationCode, routesFrom, maintenance } = props
         const { disabled } = state 
                     // <button className="aircraftRowButtonSchedule" onClick={ schedule } disabled={ true }>Schedule</button>
                     // <input type="text" onKeyUp={check} onBlur={check} className="aircraftRowDestination" ref={this.destinationRef} placeholder="Destination..." />
@@ -73,7 +74,7 @@ class AircraftParked extends Component {
                     <span className="aircraftRowName">{ name }</span>
                     <button className="aircraftRowButtonHistory" onClick={ history }>Flights</button>
                     <button className="aircraftRowButtonMaintenance" onClick={ () => maintenance( id ) }>Maintenance</button>
-                    <span className="aircraftRowOrigin">{ originCode }</span>
+                    <span className="aircraftRowOrigin">{ locationCode }</span>
                     <span className="aircraftRowArrow">&#x2192;</span>
                     <select onChange={check} className="aircraftRowDestination" ref={this.destinationRef}>
                         <option value="">Destination...</option>
@@ -96,8 +97,11 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        addFlight: ( aircraft, origin, destination, altitude, speed ) => {
-            dispatch( addFlight( aircraft, origin, destination, altitude, speed ) )
+        // addFlight: ( aircraft, origin, destination, altitude, speed ) => {
+        //     dispatch( addFlight( aircraft, origin, destination, altitude, speed ) )
+        // },
+        addFlight: ( aircraft, routeId ) => {
+            dispatch( addFlight( aircraft, routeId ) )
         },
     }
 }

@@ -1,14 +1,11 @@
 import fetch from 'isomorphic-fetch'
-import { getPrefix } from '../utils'
-// import { requestFleet } from './'
 
-export function landFlight( id, ata ) {
+export function landAircraft( id ) {
 	return( dispatch, getState ) => {
-        const prefix = getPrefix()
-		const url = `${prefix}/apiv1/flight/${id}`
+		const url = `http://localhost:7401/apiv1/fleet/${id}`
 		const method = 'POST'
 		const action = 'land'
-		const payload = { action, ata }
+		const payload = { action }
 
 		return fetch( url, {
 			method,
@@ -18,7 +15,7 @@ export function landFlight( id, ata ) {
 			if( response.status === 200 ) {
 				return response.json()
 			} else {
-				throw new Error( `action landFlight route not 200 ${response.status}` )
+				throw new Error( `action landAircraft route not 200 ${response.status}` )
 			}
 		})
 		.then( response => {
@@ -26,12 +23,12 @@ export function landFlight( id, ata ) {
 				// // could change local state directly, but for now just reget the whole fleet
 				// dispatch( requestFleet() )
 			} else {
-				console.warn( `action landFlight route 200 but status not ok ${response.status}` )
-				throw new Error( `action landFlight route 200 but status not ok ${response.status}` )
+				console.warn( `action landAircraft route 200 but status not ok ${response.status}` )
+				throw new Error( `action landAircraft route 200 but status not ok ${response.status}` )
 			}
 		})
 		.catch( error => {
-			console.error( `action landFlight route caught error ${error}` )
+			console.error( `action landAircraft route caught error ${error}` )
 			// handleApiError()  // retry, etc.
 		})
 	}

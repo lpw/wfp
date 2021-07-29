@@ -207,7 +207,7 @@ const fleetQueryText = ( where = '' ) => `
 		flights.covered,
 		routes.id as routeId, 
 		routes.distance, 
-		routes.bearing, 
+		routes.bearing as heading, 
 		routes_points.sequence,
 		routes.altitude as routeAltitude,
 		routes.speed as routeSpeed,
@@ -311,12 +311,20 @@ export const deleteAircraftQuery = ( id, f ) => connectionQuery( `
 	DELETE FROM flights where aircraft=${id}; 
 `, f )
 
-export const addFlightQuery = ( aircraftId, routeId, altitude, speed, f ) => connectionQuery( `
+// export const addFlightQuery = ( aircraftId, routeId, altitude, speed, f ) => connectionQuery( `
+// 	INSERT INTO 
+// 		\`flights\`
+// 		(\`aircraft\`, \`route\`, \`altitude\`, \`speed\`, \`etd\`)
+// 	VALUES 
+// 		('${aircraftId}', '${routeId}', '${altitude}', '${speed}', NOW())
+// `, f )
+
+export const addFlightQuery = ( aircraftId, routeId, f ) => connectionQuery( `
 	INSERT INTO 
 		\`flights\`
-		(\`aircraft\`, \`route\`, \`altitude\`, \`speed\`, \`etd\`)
+		(\`aircraft\`, \`route\`, \`etd\`)
 	VALUES 
-		('${aircraftId}', '${routeId}', '${altitude}', '${speed}', NOW())
+		('${aircraftId}', '${routeId}', NOW())
 `, f )
 
 export const addPointToRouteQuery = ( routeId, sequence, pointId, altitude, speed, f ) => connectionQuery( `
@@ -452,18 +460,18 @@ export const updateAircraftQuery = ( id, lat, lon, heading, speed, altitude, pit
 		id=${id}
 `, f )
 
-export const getLaunchInfoFlightQuery = ( flightId, f ) => connectionQuery( `
-	SELECT 
-		aircraft, points.lat, points.lon, bearing, flights.speed, flights.altitude
-	FROM
-		flights, routes, points
-	WHERE
-		flights.id=${flightId} 
-	AND
-		routes.id=flights.route 
-	AND
-		points.id=routes.origin 
-`, f )
+// export const getLaunchInfoFlightQuery = ( flightId, f ) => connectionQuery( `
+// 	SELECT 
+// 		aircraft, points.lat, points.lon, bearing, flights.speed, flights.altitude
+// 	FROM
+// 		flights, routes, points
+// 	WHERE
+// 		flights.id=${flightId} 
+// 	AND
+// 		routes.id=flights.route 
+// 	AND
+// 		points.id=routes.origin 
+// `, f )
 
 export const getLandInfoFlightQuery = ( flightId, f ) => connectionQuery( `
 	SELECT 

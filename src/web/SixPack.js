@@ -40,7 +40,7 @@ class SixPack extends Component {
 
     render() {
         const { props } = this
-        const { size, bearing, speed, altitude } = props
+        const { size, heading, speed, altitude } = props
 
                     // <AttitudeIndicator size={ size } className="oneOfSixPack" roll={(Math.random() - 0.5) * 120} pitch={(Math.random() - 0.5) * 40} showBox={false} />
                     // <TurnCoordinator size={ size } className="oneOfSixPack" turn={(Math.random() - 0.5) * 120} showBox={false} />
@@ -49,7 +49,7 @@ class SixPack extends Component {
             <div className="">
                 <div className="topRowSixPack">
                     <Airspeed size={ size } className="oneOfSixPack" speed={ speed } showBox={false} />
-                    <HeadingIndicator size={ size } className="oneOfSixPack" heading={ bearing } showBox={false} />
+                    <HeadingIndicator size={ size } className="oneOfSixPack" heading={ heading } showBox={false} />
                     <Altimeter size={ size } className="oneOfSixPack" altitude={ altitude } showBox={false} />
                 </div>
                 <div className="bottomRowoneOfSixPack">
