@@ -66,13 +66,45 @@ class Marker extends Component {
     //     }
     // }
 
-    move = () => {
+    moveNA = () => {
         // const { _elRef: { current: el }, _mbMarker: mbMarker, props } = this
         const { _el: el, _mbMarker: mbMarker, props } = this
         const { id, map, aircraftData } = props
         const { lat, lon } = aircraftData
         const coords = [ lon, lat ]
 id === -1 && console.log( 'LANCE Marker::move', id, coords, mbMarker )
+
+        assert( this._mbMarker )
+
+        if( typeof lat === 'number' && typeof lon === 'number' ) {
+            if( mbMarker && el ) {
+id === -1 && console.log( 'LANCE Marker::move has setLngLat coords', coords )
+
+                mbMarker.setLngLat( coords )
+
+            } else if( el ) {
+                // m.mbmarker = new mapboxgl.Marker( m.el )
+                const mbNewMarker = new mapboxgl.Marker( el, { anchor: 'top', offset: [ 0, -32 ] } ) // half of css height
+                mbNewMarker.setLngLat( coords ).addTo( map )
+                this._mbMarker = mbNewMarker
+id === -1 && console.log( 'LANCE Marker::move new setLngLat coords', coords )
+            } else {
+                // need render
+id === -1 && console.log( 'LANCE Marker::move no el coords',  coords )
+            }
+        } else {
+            // need render
+id === -1 && console.log( 'LANCE Marker::move no lat lon', lat, lon )
+        }
+    }
+
+    move = () => {
+        // const { _elRef: { current: el }, _mbMarker: mbMarker, props } = this
+        const { _el: el, _mbMarker: mbMarker, props } = this
+        const { id, map, aircraftData } = props
+        const { lat, lon } = aircraftData
+        const coords = [ lon, lat ]
+id === 0 && console.log( 'LANCE Marker::move', id, coords, mbMarker )
 
         if( typeof lat === 'number' && typeof lon === 'number' ) {
             if( mbMarker && el ) {
@@ -170,11 +202,12 @@ id === -1 && console.log( 'LANCE Marker::move incLat', incLat )
                 requestAnimationFrame( step )
 
             } else if( el ) {
+                assert( 0 )
                 // m.mbmarker = new mapboxgl.Marker( m.el )
                 const mbNewMarker = new mapboxgl.Marker( el, { anchor: 'top', offset: [ 0, -32 ] } ) // half of css height
                 mbNewMarker.setLngLat( coords ).addTo( map )
                 this._mbMarker = mbNewMarker
-id === -1 && console.log( 'LANCE Marker::move new setLngLat coords', coords )
+id === 0 && console.log( 'LANCE Marker::move new setLngLat coords', coords )
             } else {
                 // need render
 id === -1 && console.log( 'LANCE Marker::move no el coords',  coords )
@@ -191,7 +224,40 @@ id === -1 && console.log( 'LANCE Marker::move no lat lon', lat, lon )
         const { id } = props
         console.log( 'LANCE setRef id el', id, el )
         this._el = el
-        move()
+        // move()
+    }
+
+    componentDidMount() {
+        const { _el: el, _mbMarker: mbMarker, props } = this
+        const { id, map, aircraftData } = props
+        const { lat, lon } = aircraftData
+        const coords = [ lon, lat ]
+
+        assert( this._el )  // refs happen before mount
+
+        // m.mbmarker = new mapboxgl.Marker( m.el )
+        const mbNewMarker = new mapboxgl.Marker( this._el, { anchor: 'top', offset: [ 0, -32 ] } ) // half of css height
+        mbNewMarker.setLngLat( coords )
+
+        // without timeout, on main thread, React gives remove node error
+        setTimeout( () => {
+            mbNewMarker.addTo( map )
+        }, 100 )
+
+        this._mbMarker = mbNewMarker
+
+id === 0 && console.log( 'LANCE Marker::componentDidMmount new setLngLat coords', coords )
+    }
+
+    componentWillUnmount() {
+        const { _el: el, _mbMarker: mbMarker, props } = this
+        const { map } = props
+
+        assert( mbMarker )  // refs happen before mount
+
+        if( mbMarker ) {
+            map.removeLayer( mbMarker )
+        }
     }
 
     componentDidUpdate() {

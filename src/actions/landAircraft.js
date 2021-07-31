@@ -10,6 +10,7 @@ export function landAircraft( id ) {
 		return fetch( url, {
 			method,
 			body: JSON.stringify( payload ),
+			headers: {"Content-Type": "application/json"}
 		})
 		.then( response => {
 			if( response.status === 200 ) {

@@ -13,6 +13,7 @@ export function addFlightRoute( aircraft, origin, destination, altitude, speed )
 		return fetch( url, {
 			method,
 			body: JSON.stringify( payload ),
+			headers: {"Content-Type": "application/json"}
 		})
 		.then( response => {
 			if( response.status === 200 ) {

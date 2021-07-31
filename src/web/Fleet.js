@@ -32,18 +32,32 @@ class Fleet extends Component {
         }
     }
 
+    history = id => {
+        const { props } = this
+        const { fleet } = props
+        const { name } = fleet[ id ] || {}
+        const answer = window.alert( `History Panel (past flights, etc.) for ${name}` )
+    }   
+
+    schedule = id => {
+        const { props } = this
+        const { fleet } = props
+        const { name } = fleet[ id ] || {}
+        const answer = window.alert( `Schedule Panel (reserve new flights, etc.) for ${name}` )
+    }   
+
     maintenance = id => {
         const { props } = this
         const { fleet, deleteAircraft } = props
         const { name } = fleet[ id ] || {}
-        const answer = window.confirm( `Maintenance Panel for ${name}\n\nScrap this aircraft?` )
+        const answer = window.confirm( `Maintenance Panel\n(hours, inspetions, ADs, certificates, squawks, etc...)\nfor ${name}\n\nScrap this aircraft ?!` )
         if( answer ) {
             deleteAircraft( id )
         }
     }   
 
     renderAircraftParked = aircraft => {
-        const { props, maintenance } = this
+        const { props, maintenance, schedule, history } = this
         const { routes } = props
         const {
             id,
@@ -67,11 +81,13 @@ class Fleet extends Component {
                 locationCode={locationCode}
                 routesFrom={routesFrom} 
                 maintenance={maintenance}
+                history={history}
+                schedule={schedule}
             />
     }
 
     renderAircraftFlying = aircraft => {
-        const { maintenance } = this
+        const { maintenance, schedule, history } = this
         const { 
             id,
             name,
@@ -89,6 +105,8 @@ class Fleet extends Component {
                 originCode={originCode}
                 destinationCode={destinationCode}
                 maintenance={maintenance}
+                history={history}
+                schedule={schedule}
             />
     }
 

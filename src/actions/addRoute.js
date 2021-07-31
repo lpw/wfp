@@ -13,7 +13,7 @@ export function addRoute( id, path, altitude, speed ) {
 		return fetch( url, {
 			method,
 			body: JSON.stringify( payload ),
-			// headers,
+			headers: {"Content-Type": "application/json"}
 		})
 		.then( response => {
 			if( response.status === 200 ) {

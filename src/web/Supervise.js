@@ -633,6 +633,9 @@ console.log( 'LANCE paths', paths )
         //     'mapboxgl-marker-anchor-top',
         //     { markerAndNamesSelected } 
         // )
+                // mbNewMarker.setLngLat( coords ).addTo( map )
+            // <div ref={ e => new mapboxgl.Marker( e ).addTo( map ) } />
+            // <div ref={ e => {} } />
         return (
             <Marker key={ id } id={ id } airraftId={ airraftId } name={ m.name } selected={ markerAndNamesSelected } map={ map } clickMarker={ clickMarker }/>
         )
@@ -716,13 +719,13 @@ console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
 
         console.log( 'LANCE Supervise::render' )
 
+                // <div id="mapbox" className="supervise-mapContainer" ref={this._mapRef}></div>
+                // { Object.keys( markers ).map( k => markers[ k ] ).map( renderMarker ) }
         return (
             <div className="supervise">
                 <div className="supervise-body">
                     { updateMap() }
                 </div>
-                <div id="mapbox" className="supervise-mapContainer" ref={this._mapRef}></div>
-                { Object.keys( markers ).map( k => markers[ k ] ).map( renderMarker ) }
                 { selectedAircraftIds.map( renderSelectedAircraft ) }
             </div>
         )

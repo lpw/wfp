@@ -1,3 +1,4 @@
+import assert from 'assert'
 import {
 	routesQuery,
 	// pointsQuery,
@@ -32,7 +33,49 @@ export function promiseRoutes() {
 			}
 
 			const routes = rows.reduce( ( s, r ) => {
-				const existingRoutes = s[ r.origin ] || []
+				const { 
+					sequence, 
+					id, 
+					pointId, 
+					pointCode,
+					altitude,
+					speed,
+					distance,
+					bearing,
+				} = r 
+
+				if( sequence === 1 ) {
+					return {
+						...s,
+						[ id ] : {
+							id,
+							altitude,
+							speed,
+							distance,
+							bearing,
+							originId: pointId,
+							originCode: pointCode,
+						}
+					}
+				} else if( sequence > 1 ) {
+					assert( r.id === s[ id ].id )
+					assert( r.altitude === s[ id ].altitude )
+					assert( r.speed === s[ id ].speed )
+					assert( r.distance === s[ id ].distance )
+					assert( r.bearing === s[ id ].bearing )
+					return {
+						...s,
+						[ id ] : {
+							...s[ id ],
+							destinationId: pointId,
+							destinationCode: pointCode,
+						}
+					}
+				}
+			}, {} )
+
+			const routesByOrigin = Object.keys( routes ).map( k => routes[ k ] ).reduce( ( s, r ) => {
+				const existingRoutes = s[ r.originId ] || []
 				const routeFound = existingRoutes.find( e => sameFunc( e, r ) )
 
 				if( routeFound ) {
@@ -40,12 +83,12 @@ export function promiseRoutes() {
 				} else {
 					return {
 						...s,
-						[ r.origin ]: existingRoutes.concat( r ).sort( sortFunc )
+						[ r.originId ]: existingRoutes.concat( r ).sort( sortFunc )
 					}
 				}
 			}, {} )
 
-			resolve( routes )
+			resolve( routesByOrigin )
 		})
 	})
 

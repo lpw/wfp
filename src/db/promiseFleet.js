@@ -30,6 +30,9 @@ const sortFlightsAndRoutePoints = ( frp1, frp2 ) => {
 	const { etd: etd1, atd: atd1, eta: eta1, ata: ata1, seq: seq1 } = frp1
 	const { etd: etd2, atd: atd2, eta: eta2, ata: ata2, seq: seq2 } = frp2
 
+	const { flightId: flightId1 } = frp1
+	const { flightId: flightId2 } = frp2
+
 	if( atd1 && atd2 ) {
 		// both have departed
 		if( !ata1 && !ata2 ) {
@@ -214,12 +217,13 @@ const getAircraftWithBestFlightAndRoutePoints = ( id, fleetWithFlightsAndRoutePo
 	return aircraftWithBestFlightAndRoutePoints
 }
 
-export function promiseFleet( query = fleetQuery ) {
+export function promiseFleet( query = fleetQuery, filterFunc = () => true ) {
 	const fleetPromise = new Promise( function( resolve, reject ) {
 		query( function ( error, rows ) {
 			if ( error ) {
 				return reject( error ) // throw
 			}
+			// resolve( rows.filter( filterFunc ) ) too early, no pointIds yet
 			resolve( rows )
 		})
 	})
@@ -232,9 +236,10 @@ export function promiseFleet( query = fleetQuery ) {
 			const { pointId, ...aWithoutPointId } = aircraft
 			const { id, lat, lon, flightId, routeId, baseId, atd, ata, etd, sequence } = aircraft
 			const existing = sofar[ id ]
+			const aircraftWithBestFlightAndRoutePoints = getAircraftWithBestFlightAndRoutePoints( id, fleetWithFlightsAndRoutePoints, points )
 			const moreFar = {
 				...sofar,
-				[ id ]: getAircraftWithBestFlightAndRoutePoints( id, fleetWithFlightsAndRoutePoints, points )
+				...filterFunc( aircraftWithBestFlightAndRoutePoints ) && { [ id ]: aircraftWithBestFlightAndRoutePoints }
 			}
 			return moreFar
 		}, {} )
@@ -245,8 +250,8 @@ export function promiseFleet( query = fleetQuery ) {
 	})
 }
 
-export const promiseLaunchingFleet = () => promiseFleet( launchingFlightQuery )
-export const promiseFlyingFleet = () => promiseFleet( flyingFleetQuery )
+export const promiseLaunchingFleet = () => promiseFleet( launchingFlightQuery, a => a.originId && a.destinationId )
+export const promiseFlyingFleet = () => promiseFleet( flyingFleetQuery, a => a.destinationId )
 
 // 		const rf = fleet.reduce( ( sofar, aircraft ) => {
 // 			const { pointId, ...aWithoutPointId } = aircraft

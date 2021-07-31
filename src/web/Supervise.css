@@ -36,7 +36,8 @@
 
 .supervise-mapContainer {
   position: relative;
-  height: 400px;
+  /*height: 400px;*/
+  height: 40px;
   width: 100%;
 }
 

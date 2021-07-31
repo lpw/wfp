@@ -29,6 +29,8 @@
 .aircraftRowButtonSchedule {
 	margin: 0 2% 0 0;
 	width: 100px;
+	opacity:  0.5;
+	pointer-events: none;
 }
 
 .aircraftRowButtonHistory {
@@ -45,6 +47,8 @@
 	pointer-events: none;
 }
 
+.aircraftRow:hover .aircraftRowButtonHistory,
+.aircraftRow:hover .aircraftRowButtonSchedule,
 .aircraftRow:hover .aircraftRowButtonMaintenance {
 	opacity:  1;
 	pointer-events: auto;
@@ -52,6 +56,7 @@
 
 .aircraftRow:hover .aircraftRowRightButton {
 	opacity:  1;
+	pointer-events: auto;
 }
 
 .aircraftRow:hover .aircraftRowName {

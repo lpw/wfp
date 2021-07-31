@@ -58,5 +58,7 @@ const socket = socketIOClient( 'http://127.0.0.1:7400', {
 	withCredentials: true,
 })
 socket.on( 'cora', telemetry => {
-	store.dispatch( updateTelemetry( telemetry, Date.now() ) )
+	setTimeout( () => {	// trying to prevent React node remove error
+		store.dispatch( updateTelemetry( telemetry, Date.now() ) )
+	}, 1 )
 })

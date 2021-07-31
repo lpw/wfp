@@ -14,7 +14,7 @@ export function addFlight( aircraftId, routeId ) {
 		return fetch( url, {
 			method,
 			body: JSON.stringify( payload ),
-			// headers,
+			headers: {"Content-Type": "application/json"}
 		})
 		.then( response => {
 			if( response.status === 200 ) {

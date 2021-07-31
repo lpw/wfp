@@ -28,10 +28,10 @@ class AircraftParked extends Component {
 
         const { value } = destinationRef.current || {}
         const route = routesFrom.find( r => r.id === +value )
-        const { destination, altitude, speed } = route || {}
+        const { destinationId, altitude, speed } = route || {}
       
         this.setState ( {
-            disabled: !speed || !altitude || !destination
+            disabled: !speed || !altitude || !destinationId
         } )
     }
 
@@ -59,12 +59,9 @@ class AircraftParked extends Component {
             state,
             launch,
             check,
-            schedule,
-            history,
          } = this
-        const { id, name, locationCode, routesFrom, maintenance } = props
+        const { id, name, locationCode, routesFrom, maintenance, schedule, history } = props
         const { disabled } = state 
-                    // <button className="aircraftRowButtonSchedule" onClick={ schedule } disabled={ true }>Schedule</button>
                     // <input type="text" onKeyUp={check} onBlur={check} className="aircraftRowDestination" ref={this.destinationRef} placeholder="Destination..." />
                     // <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowButton aircraftRowAltitude" ref={this.altitudeRef} placeholder="Altitude..." />
                     // <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowButton aircraftRowSpeed" ref={this.speedRef} placeholder="Speed..." />
@@ -72,7 +69,8 @@ class AircraftParked extends Component {
             <div className="aircraftRow">
                  <div className="aircraftRowFields">
                     <span className="aircraftRowName">{ name }</span>
-                    <button className="aircraftRowButtonHistory" onClick={ history }>Flights</button>
+                    <button className="aircraftRowButtonSchedule" onClick={ () => schedule( id ) }>Schedule</button>
+                    <button className="aircraftRowButtonHistory" onClick={ () => history( id ) }>History</button>
                     <button className="aircraftRowButtonMaintenance" onClick={ () => maintenance( id ) }>Maintenance</button>
                     <span className="aircraftRowOrigin">{ locationCode }</span>
                     <span className="aircraftRowArrow">&#x2192;</span>

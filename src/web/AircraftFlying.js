@@ -31,10 +31,8 @@ class AircraftFlying extends Component {
             props, 
             state,
             supervise,
-            schedule,
-            history,
          } = this
-        const { id, name, originCode, destinationCode, maintenance } = props
+        const { id, name, originCode, destinationCode, schedule, history, maintenance } = props
         const { aircraft } = state
 
         if( aircraft ) {
@@ -67,14 +65,14 @@ class AircraftFlying extends Component {
         //         <button className="aircraftRowButton aircraftRowRightButton" onClick={supervise} disabled={ this.state.disabled }>Supervise</button>
         //     </div>
         // )
-                    // <button className="aircraftRowButtonSchedule" onClick={ schedule } disabled={ true }>Schedule</button>
                     // <span className="aircraftRowAltitude">{ altitude } ft</span>
                     // <span className="aircraftRowSpeed">{ speed } kts</span>
         return (
             <div className="aircraftRow">
                  <div className="aircraftRowFields">
                     <span className="aircraftRowName">{ name }</span>
-                    <button className="aircraftRowButtonHistory" onClick={ history }>Flights</button>
+                    <button className="aircraftRowButtonSchedule" onClick={ () => schedule( id ) }>Schedule</button>
+                    <button className="aircraftRowButtonHistory" onClick={ () => history( id ) }>History</button>
                     <button className="aircraftRowButtonMaintenance" onClick={ () => maintenance( id ) }>Maintenance</button>
                     <span className="aircraftRowOrigin">{ originCode }</span>
                     <span className="aircraftRowArrow">&#x2192;</span>
