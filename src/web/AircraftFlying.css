@@ -29,24 +29,31 @@
 .aircraftRowButtonSchedule {
 	margin: 0 2% 0 0;
 	width: 100px;
+	/*
 	opacity:  0.5;
 	pointer-events: none;
+	*/
 }
 
 .aircraftRowButtonHistory {
 	margin: 0 2% 0 0;
 	width: 100px;
+	/*
 	opacity:  0.5;
 	pointer-events: none;
+	*/
 }
 
 .aircraftRowButtonMaintenance {
 	margin: 0 2% 0 0;
 	width: 100px;
+	/*
 	opacity:  0.5;
 	pointer-events: none;
+	*/
 }
 
+/*
 .aircraftRow:hover .aircraftRowButtonHistory,
 .aircraftRow:hover .aircraftRowButtonSchedule,
 .aircraftRow:hover .aircraftRowButtonMaintenance {
@@ -55,6 +62,19 @@
 }
 
 .aircraftRow:hover .aircraftRowRightButton {
+	opacity:  1;
+	pointer-events: auto;
+}
+*/
+
+.aircraftRow .aircraftRowRightButton,
+.aircraftRow .aircraftRowFields {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+.aircraftRow:hover .aircraftRowRightButton,
+.aircraftRow:hover .aircraftRowFields {
 	opacity:  1;
 	pointer-events: auto;
 }
@@ -124,7 +144,9 @@
 	/*padding: 0;*/
 	width: 100px;
 	/*opacity: 0;*/
+	/*
 	opacity:  0.5;
+	*/
 }
 
 input {

@@ -114,7 +114,7 @@ class SuperviseFlyingAircraft extends Component {
         const chargeCapacity = 4 * 60 * 60  // from sim
 
         const chargeLossPerSecondPer100Kts = 1
-        const chargeRemaining = charge * 100 / ( chargeLossPerSecondPer100Kts * speed )
+        const chargeRemaining = speed > 0 ? charge * 100 / ( chargeLossPerSecondPer100Kts * speed ) : 0
         const chargeLevel = charge / chargeCapacity
         const notEnough = timeRemaining > chargeRemaining
 

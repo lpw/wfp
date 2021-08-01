@@ -3,6 +3,8 @@ landing
 update/reload supervisor flying -> landing, 
 and fleet pate status
 
+combine telemetry into fleet in reducer instead of selector
+
 separate telemetry table for fligths with added ?
 
 marker lagging behind
@@ -152,4 +154,7 @@ ALTER TABLE fleet
   ADD vsi DOUBLE,
   ADD charge DOUBLE
 ;
+
+write article on using React.createPortal for creating detached dom nodes for Mapbox GL Markers in React
+
 

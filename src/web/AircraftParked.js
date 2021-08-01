@@ -79,7 +79,7 @@ class AircraftParked extends Component {
                         { routesFrom.map( r => <option key={r.id} value={r.id}>{r.destinationCode} {r.altitude}&#183;ft {r.speed}&#183;kts</option> ) }
                     </select>
                 </div>
-                <button className="aircraftRowButton aircraftRowRightButton" onClick={launch} disabled={ disabled }>Request</button>
+                <button className="aircraftRowRightButton" onClick={launch} disabled={ disabled }>Request</button>
             </div>
         )
     }
