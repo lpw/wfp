@@ -2,6 +2,7 @@ import {
 	RECEIVED_FLEET,
 	ADDED_AIRCRAFT,
 	DELETED_AIRCRAFT,
+	UPDATE_TELEMETRY,
 } from '../actions'
 
 const fleet = ( state = {}, action ) => {
@@ -25,6 +26,18 @@ const fleet = ( state = {}, action ) => {
 					id,
 					name,
 					base,
+				}
+			}
+		}
+
+		case UPDATE_TELEMETRY: {
+			const { telemetry, time: telemetryTime } = action
+			return {
+				...state,
+				[ telemetry.id ]: {
+					...state[ telemetry.id ],
+					...telemetry,
+					telemetryTime
 				}
 			}
 		}

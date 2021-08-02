@@ -11,7 +11,7 @@ import {
     // requestPoints,
 } from '../actions'
 import {
-    fleetData,
+    // fleetData,
 } from '../selectors'
 import SuperviseFlyingAircraft from './SuperviseFlyingAircraft'
 import SuperviseParkedAircraft from './SuperviseParkedAircraft'
@@ -78,10 +78,13 @@ console.log( 'LANCE getMarkers msf', msf )
                 }
             }
         } else if( aircraft.lat && aircraft.lon ){
-            const id = Object.keys( msf ).length
+            // const id = Object.keys( msf ).length + 1
             // const point = points[ pointId ]
             // toconsider: backup aircraft lat/lon with route/origin lat/lon
             const coord = [ aircraft.lon, aircraft.lat ]
+            // const id = `${aircraft.lon}_${aircraft.lat}`
+            // const id = Object.keys( msf ).length + 1
+            const id = aircraft.name  // unique key for Marker identity
             msf = {
                 ...msf,
                 [ id ]: {
@@ -624,7 +627,7 @@ console.log( 'LANCE paths', paths )
         const { setRef, clickMarker, state, _map: map } = this
         const { selectedAircraftIds } = state
         const { id, aircraftIds } = m
-        const airraftId = aircraftIds[ 0 ]
+        const aircraftId = aircraftIds[ 0 ]
         const markerAndNamesSelected = markerHasSelectedAircraft( m, selectedAircraftIds )
         // const markerClassNames = classNames( 
         //     'markerAndNames', 
@@ -636,9 +639,23 @@ console.log( 'LANCE paths', paths )
                 // mbNewMarker.setLngLat( coords ).addTo( map )
             // <div ref={ e => new mapboxgl.Marker( e ).addTo( map ) } />
             // <div ref={ e => {} } />
-        return (
-            <Marker key={ id } id={ id } airraftId={ airraftId } name={ m.name } selected={ markerAndNamesSelected } map={ map } clickMarker={ clickMarker }/>
-        )
+        // return (
+        //     id && aircraftId && m.name && map && <Marker key={ id } id={ id } aircraftId={ aircraftId } name={ m.name } selected={ markerAndNamesSelected } map={ map } clickMarker={ clickMarker }/>
+        // )
+        // if( typeof id === 'number' && aircraftId && m.name && map ) {
+                // <Marker key={ id } id={ id } aircraftId={ aircraftId } name={ m.name } selected={ markerAndNamesSelected } map={ map } clickMarker={ clickMarker }/>
+        if( id && aircraftId && m.name && map ) {
+            console.log( 'LANCE Supervise::renderMarker rendering marker', id, aircraftId, m.name )
+            return (
+                <Marker key={ id } id={ id } aircraftId={ aircraftId } name={ m.name } selected={ markerAndNamesSelected } map={ map } clickMarker={ clickMarker }/>
+            )
+        } else {
+            assert( 0 )
+            console.log( 'LANCE Supervise::renderMarker skipping marker', id, aircraftId, m.name )
+            return (
+                null
+            )
+        }
     }
 
     renderSelectedAircraft = id => {
@@ -651,7 +668,7 @@ console.log( 'LANCE paths', paths )
 console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
         if( aircraft ) {
             const now = Date.now()
-            const recentTelemetry = now - aircraft.telemetryTime < 60 * 1000
+            // const recentTelemetry = now - aircraft.telemetryTime < 60 * 1000
             const { 
                 name,
                 baseId,
@@ -672,7 +689,7 @@ console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
             } = aircraft
             const { originLat, originLon, destinationLat, destinationLon } = aircraft
             const { baseCode, originCode, destinationCode } = aircraft
-            if( ( destinationCode && !ata ) || recentTelemetry ) {
+            if( ( destinationCode && !ata ) ) { // || recentTelemetry ) {
                 if( !etd ) {
                     console.warn( 'Supervise::renderSelectedAircraft surprised not to have an etd' )
                 }
@@ -733,8 +750,8 @@ console.log( 'LANCE renderSelectedAircraft id, fleet[ id ]', id, fleet[ id ] )
 }
 
 const mapStateToProps = ( state, props ) => {
-    // const { fleet } = state
-    const fleet = fleetData( state )
+    const { fleet } = state
+    // const fleet = fleetData( state )
     const { location: { search } } = props
     const selectedAircraftIds = ( new URLSearchParams( search ).getAll( 'a' ) || [] ).map( said => +said )
     console.log( 'LANCE selectedAircraftIds', selectedAircraftIds )

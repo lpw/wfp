@@ -12,7 +12,7 @@ import {
     // requestPoints,
 } from '../actions'
 import {
-    aircraftDataFromId,
+    // aircraftDataFromId,
 } from '../selectors'
 import './Marker.css'
 
@@ -22,10 +22,9 @@ class Marker extends Component {
 
         // this._markerRef = React.createRef()
 
-        // this.state = {
-        //     selectedAircraftIds,
-        //     fleet: {}
-        // }
+        this.state = {
+            mapLoaded: false,
+        }
 
         // this._markers = props.markers
 
@@ -37,6 +36,8 @@ class Marker extends Component {
     }
 
     componentDidMount() {
+        const { move, props, mbMarkerLayer, _elContainer, _elPortal } = this
+        const { id } = props
         // const { props, updateAircraft, _markers: markers } = this
         // const {
         //     // markers,
@@ -45,7 +46,10 @@ class Marker extends Component {
         //     // requestPoints,
         // } = props
         // this._elContainer.appendChild( this._elPortal )
+        // this._elContainer = document.createElement( 'div' )
         this._elContainer.appendChild( this._elPortal )
+        console.log( 'LANCE Marker::componentDidMount id mbMarkerLayer', id, mbMarkerLayer, _elContainer, _elPortal )
+        move()
     }
 
     clickMarker = () => {
@@ -105,6 +109,23 @@ id === -1 && console.log( 'LANCE Marker::move no lat lon', lat, lon )
         }
     }
 
+    checkMap = () => {
+        const { props } = this
+        const { map } = props
+        if( map && map.loaded() && map.isStyleLoaded() ) {
+console.log( 'LANCE Marker::checkMap true' )
+            this.setState({
+                mapLoaded: true
+            })
+        } else {
+console.log( 'LANCE Marker::checkMap false' )
+            clearTimeout( this._checkMapTimer )
+            this._checkMapTimer = setTimeout( () => {
+                this.checkMap()
+            }, 1000 )
+        }
+    }
+
     move = () => {
         // const { _elRef: { current: el }, _mbMarker: mbMarker, props } = this
         // const { _el: el, _mbMarker: mbMarker, props } = this
@@ -113,14 +134,18 @@ id === -1 && console.log( 'LANCE Marker::move no lat lon', lat, lon )
         const { id, map, aircraftData } = props
         const { lat, lon } = aircraftData
         const coords = [ lon, lat ]
-id === 0 && console.log( 'LANCE Marker::move', id, coords, mbMarker )
+console.log( 'LANCE Marker::move', id, coords, mbMarker )
 
         if( typeof lat !== 'number' || typeof lon !== 'number' ) {
-id === -1 && console.log( 'LANCE Marker::move no lat lon', lat, lon )
+console.log( 'LANCE Marker::move no lat lon', lat, lon )
         } else if( !map || !map.loaded()|| !map.isStyleLoaded() ) {
-id === 0 && console.log( 'LANCE Marker::move no lat lon', lat, lon )
+console.log( 'LANCE Marker::move no map' )
+            clearTimeout( this._checkMapTimer )
+            this._checkMapTimer = setTimeout( () => {
+                this.checkMap()
+            }, 1000 )
         } else if( !el ) {
-id === -1 && console.log( 'LANCE Marker::move no el for coords',  coords )
+console.log( 'LANCE Marker::move no el for coords',  coords )
             assert( el )  // shouldn't happen
         } else if( !mbMarker ) {
             assert( !mbMarker && el )
@@ -134,10 +159,10 @@ id === -1 && console.log( 'LANCE Marker::move no el for coords',  coords )
             // }, 100 )
 
             this._mbMarker = mbNewMarker
-id === 0 && console.log( 'LANCE Marker::move new setLngLat coords', coords )
+console.log( 'LANCE Marker::move new setLngLat coords', coords )
         } else {
             assert( mbMarker && el )
-id === -1 && console.log( 'LANCE Marker::move has setLngLat coords', coords )
+console.log( 'LANCE Marker::move has setLngLat coords', coords )
 
             // mbMarker.setLngLat( coords )
 
@@ -262,33 +287,36 @@ id === -1 && console.log( 'LANCE Marker::move incLat', incLat )
 
 //         this._mbMarker = mbNewMarker
 
-// id === 0 && console.log( 'LANCE Marker::componentDidMmount new setLngLat coords', coords )
+// console.log( 'LANCE Marker::componentDidMmount new setLngLat coords', coords )
 //     }
 
     componentWillUnmount() {
         const { props, _mbMarkerLayer: mbMarkerLayer } = this
-        const { map } = props
+        const { map, id } = props
+        console.log( 'LANCE Marker::componentWillUnmount id mbMarkerLayer', id, mbMarkerLayer )
 
-        assert( mbMarkerLayer )  // refs happen before mount
+        // assert( mbMarkerLayer )  // refs happen before mount
 
         if( mbMarkerLayer ) {
             // if( map.getLayer( mbMarkerLayer ) ) {
             //     map.removeLayer( mbMarkerLayer )
             // }
+        } else {
+            console.warn( 'Marker::componentWillUnmount no mbMarkerLayer' )
         }
     }
 
     componentDidUpdate() {
         const { move, props } = this
-        const { id } = props
-        console.log( 'LANCE componentDidUpdate id el', id, this._el )
+        const { id, name } = props
+        console.log( 'LANCE Marker::componentDidUpdate id el', id, name, this._elPortal, this._elContainer )
         move()
     }
 
     render = () => {
         const { clickMarker, props } = this
-        const { selected, name, aircraftData, id } = props
-        const { lat, lon  } = aircraftData
+        const { selected, name } = props
+        // const { lat, lon  } = aircraftData
         const markerClassNames = classNames( 
             'markerAndNames', 
             { markerAndNamesSelected: selected } 
@@ -297,7 +325,7 @@ id === -1 && console.log( 'LANCE Marker::move incLat', incLat )
             // 'mapboxgl-marker-anchor-top',
         )
 
-console.log( 'LANCE Marker::render id name', id, name )
+console.log( 'LANCE Marker::render name', name )
 
             // <Marker key={ m.id } className={ markerClassNames } ref={ el => setRef( el, m ) } onClick={ () => clickMarker( m ) }>
 //         const jsx = (
@@ -336,16 +364,20 @@ console.log( 'LANCE this._elPortal', this._elPortal )
 }
 
 const mapStateToProps = ( state, props ) => {
-    const { airraftId } = props
+    const { aircraftId } = props
+    const { fleet } = state
     // const { telemetry: stateTelemetryAll } = state
     // const stateTelemetry = stateTelemetryAll[ id ]
     // const telemetry = { 
     //     ...propTelemetry,
     //     ...stateTelemetry,
     // }
-    const aircraftData = aircraftDataFromId( state, airraftId )
+    // const aircraftData = aircraftDataFromId( state, aircraftId )
+    const aircraftData = fleet[ aircraftId ]
 
-console.log( 'Marker::mapStateToProps id aircraftData', airraftId, aircraftData )
+    assert( aircraftData )
+
+console.log( 'Marker::mapStateToProps id aircraftData', aircraftId, aircraftData )
 
     return {
         aircraftData,
