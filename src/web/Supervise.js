@@ -56,7 +56,7 @@ const getMarker = ( aircraftId, fleet ) => {
         }
     }
 
-    console.log( 'LANCE marker', marker )
+    // console.log( 'LANCE marker', marker )
 
     return marker
 }
@@ -64,27 +64,33 @@ const getMarker = ( aircraftId, fleet ) => {
 const getMarkers = ( fleet ) => {
     const markers = Object.keys( fleet ).map( k => fleet[ k ]).reduce( ( msf, aircraft )=> {
         // const pointId = aircraft.originId || aircraft.baseId
-console.log( 'LANCE getMarkers msf', msf )
+// console.log( 'LANCE getMarkers msf', msf )
         // const colocatedMsf = Object.keys( msf ).map( k => msf[ k ] ).find( m => m.pointId === pointId )
         // const colocatedMsf = Object.keys( msf ).map( k => msf[ k ] ).find( m => m.lat === aircraft.lat && m.lon === aircraft.lon )
         const colocatedMsf = Object.keys( msf ).map( k => msf[ k ] ).find( m => m.coord[1] === aircraft.lat && m.coord[0] === aircraft.lon )
         if( colocatedMsf ) {
+            const { [ colocatedMsf.id ]: ignoreOldId, ...msfWithoutColo } = msf
+            const id = `${colocatedMsf.id}_${aircraft.id}`
+            const newName = `${colocatedMsf.name}, ${aircraft.name}`
+            const newAircraftIds = colocatedMsf.aircraftIds.concat( aircraft.id )
             msf = {
-                ...msf,
-                [ colocatedMsf.id ]: {
+                ...msfWithoutColo,
+                [ id ]: {
                     ...colocatedMsf, // id, pointId...
-                    name: `${colocatedMsf.name}, ${aircraft.name}`,
-                    aircraftIds: colocatedMsf.aircraftIds.concat( aircraft.id ),
+                    id,
+                    name: newName,
+                    aircraftIds: newAircraftIds
                 }
             }
-        } else if( aircraft.lat && aircraft.lon ){
+        } else if( aircraft.lat && aircraft.lon ) {
             // const id = Object.keys( msf ).length + 1
             // const point = points[ pointId ]
             // toconsider: backup aircraft lat/lon with route/origin lat/lon
             const coord = [ aircraft.lon, aircraft.lat ]
             // const id = `${aircraft.lon}_${aircraft.lat}`
             // const id = Object.keys( msf ).length + 1
-            const id = aircraft.name  // unique key for Marker identity
+            const id = aircraft.id  // unique key for Marker identity
+            assert( id )
             msf = {
                 ...msf,
                 [ id ]: {
@@ -99,7 +105,6 @@ console.log( 'LANCE getMarkers msf', msf )
         }
         return msf
     }, {})
-
     return markers
 }
 
@@ -650,8 +655,8 @@ console.log( 'LANCE paths', paths )
                 <Marker key={ id } id={ id } aircraftId={ aircraftId } name={ m.name } selected={ markerAndNamesSelected } map={ map } clickMarker={ clickMarker }/>
             )
         } else {
-            assert( 0 )
             console.log( 'LANCE Supervise::renderMarker skipping marker', id, aircraftId, m.name )
+            assert( 0 )
             return (
                 null
             )

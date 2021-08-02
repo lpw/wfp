@@ -23,6 +23,18 @@ initial zoom
 
 AircraftFlight -> AircraftFlying
 
+Don't coracast too much like:
+  originLat: 33.942501,
+  originLon: -118.407997,
+  destinationLat: 37.618999,
+  destinationLon: -122.375,
+  destinationElevation: 13,
+  routeId: 58,
+  flightId: 197,
+  name
+  destCode
+  origCode
+  
 combining markers should depend on zoom level
 
 NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
