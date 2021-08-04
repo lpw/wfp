@@ -30,6 +30,7 @@ import {
 	landFlight,
 	promiseRoutes,
 	updateAircraft,
+	updateFlight,
 	launchFlight,
 	updateLandingAircraft,
 	updateRouteDistance,
@@ -455,11 +456,16 @@ function routeArgApi( server ) {
 										}
 									})
 								}
+								case 'update':
 								default: {
 									debug( 'routeApi', method, op, typeof payload, payload )
-									const { id: aircraftId, charge, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+									// const { id: aircraftId, timestamp, lat, lon, altitude, speed, heading, charge /*, pitch, yaw, roll, turn, vsi */ } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+									const { id: aircraftId } = typeof payload === 'string' ? JSON.parse( payload ) : payload
 									assert( +aircraftId === +id )  // until we decide
-									return updateAircraft( id, charge, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi ).then( result => {
+									// return updateAircraft( id, charge, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi ).then( result => {
+									// return updateAircraft( id, timestamp, lat, lon, altitude, speed, heading, charge, /*, pitch, yaw, roll, turn, vsi */ ).then( result => {
+									// return updateAircraft( id, payload ).then( result => {
+									return updateAircraft( payload ).then( result => {
 										const replyResult = {
 											status: 'ok', 
 											result, 
@@ -512,15 +518,16 @@ function routeArgApi( server ) {
 										}
 									})
 								}
+								case 'update':
 								default: {
-									const { path, altitude, speed } = typeof payload === 'string' ? JSON.parse( payload ) : payload
-									debug( 'routeArgApi post flight action, path, altitude, speed', id, action, path, altitude, speed )
-									return addRoute( id, path, altitude, speed ).then( result => {
+									const { id: flightId } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+									assert( +flightId === +id )  // until we decide
+									return updateFlight( payload ).then( result => {
 										const replyResult = {
 											status: 'ok', 
 											result, 
 										}
-										debug( 'routeArgApi post flight then replyResult', replyResult )
+										debug( 'routeApi updateFlight then replyResult', replyResult )
 										return replyResult
 									}).catch( error => {
 										debug( 'routeArgApi post flight error', error.message )

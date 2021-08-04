@@ -2,9 +2,11 @@ import {
 	updateAircraftQuery,
 } from './queries';
 
-export function updateAircraft( id, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi, charge ) {
+// export function updateAircraft( id, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi, charge ) {
+export function updateAircraft( payload ) {
+	// const { id, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi, charge } = payload
 	return new Promise( function( resolve, reject ) {
-		updateAircraftQuery( id, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi, charge, function ( error ) {
+		updateAircraftQuery( payload, function ( error ) {
 			if ( error ) {
 				return reject( error ) // throw
 			}

@@ -29,6 +29,8 @@ launder/launcher/flyer all communicate to/from database to/from aircraft
 
 database is intent (and history), sim/aircraft is reality
 
+open, welcome, want changes to database schema, structures, process arch, etc
+
 Microservices
 
 lander, launcher, and flyer might be helping the sim aircraft more than the real aircraft where those services will be more about monitoring than controlling
@@ -86,8 +88,9 @@ Lander
 	updates aircraft info (beyond the checkpointer), like pos of the dest
 	conflict management (collission avoidance, DAA, strategic, tactical, well clear, see-and-avoid, ...)
 Flyer
-	updates aircraft info (is this just the checkpointer?)
 	conflict management (collission avoidance, DAA, strategic, tactical, well clear, see-and-avoid, ...)
+Checkpointer
+	updates aircraft info (is this just the checkpointer?)
 
 Schedulerr for flights (bookings, reservations, passengers, weights, security, personell, vertiports, aircraft)
 

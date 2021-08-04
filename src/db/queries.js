@@ -397,23 +397,36 @@ export const flightsQuery = f => connectionQuery( `
 		flights
 `, f )
 
-export const updateFlightQuery = ( flightId, eta, elapsed, coveredDistance, f ) => connectionQuery( `
+// export const updateFlightQuery = ( flightId, eta, elapsed, coveredDistance, f ) => connectionQuery( `
+// 	UPDATE 
+// 		\`flights\`
+// 	SET 
+// 		\`eta\`
+// 	= 
+// 		FROM_UNIXTIME(${ eta }),
+// 		\`elapsed\`
+// 	= 
+// 		${ Math.round( elapsed ) },
+// 		\`covered\`
+// 	= 
+// 		${ Math.round( coveredDistance ) }
+// 	WHERE
+// 		id 
+// 	=
+// 		${flightId}
+// `, f )
+export const updateFlightQuery = ( { id, timestamp, elapsed, covered, eta }, f ) => connectionQuery( `
 	UPDATE 
 		\`flights\`
 	SET 
-		\`eta\`
-	= 
-		FROM_UNIXTIME(${ eta }),
-		\`elapsed\`
-	= 
-		${ Math.round( elapsed ) },
-		\`covered\`
-	= 
-		${ Math.round( coveredDistance ) }
+		\`timestamp\`=${ Math.round( timestamp ) },
+		\`elapsed\`=${ Math.round( elapsed ) },
+		\`covered\`=${ Math.round( covered ) },
+		\`eta\`=FROM_UNIXTIME(${ eta })
 	WHERE
 		id 
 	=
-		${flightId}
+		${id}
 `, f )
 
 export const updateRouteDistanceQuery = ( routeId, distance, f ) => connectionQuery( `
@@ -442,7 +455,27 @@ export const updateRouteBearingQuery = ( routeId, bearing, f ) => connectionQuer
 		${routeId}
 `, f )
 
-export const updateAircraftQuery = ( id, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi, charge, f ) => connectionQuery( `
+// export const updateAircraftQuery = ( id, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi, charge, f ) => connectionQuery( `
+// 	UPDATE 
+// 		fleet
+// 	SET 
+// 		charge=${ Math.round( charge ) },
+// 		lat=${ lat },
+// 		lon=${ lon },
+// 		heading=${ Math.round( heading ) },
+// 		speed=${ Math.round( speed ) },
+// 		altitude=${ Math.round( altitude ) },
+// 		pitch=${ Math.round( pitch ) },
+// 		yaw=${ Math.round( yaw ) },
+// 		roll=${ Math.round( roll ) },
+// 		turn=${ Math.round( turn ) },
+// 		vsi=${ Math.round( vsi ) }
+// 	WHERE
+// 		id=${id}
+// `, f )
+// 		updateAircraftQuery( payload, function ( error ) {
+// export const updateAircraftQuery = ( { id, lat, lon, heading, speed, altitude, pitch, yaw, roll, turn, vsi, charge, f ) => connectionQuery( `
+export const updateAircraftQuery = ( { id, timestamp, lat, lon, altitude, speed, heading, charge }, f ) => connectionQuery( `
 	UPDATE 
 		fleet
 	SET 
@@ -451,12 +484,7 @@ export const updateAircraftQuery = ( id, lat, lon, heading, speed, altitude, pit
 		lon=${ lon },
 		heading=${ Math.round( heading ) },
 		speed=${ Math.round( speed ) },
-		altitude=${ Math.round( altitude ) },
-		pitch=${ Math.round( pitch ) },
-		yaw=${ Math.round( yaw ) },
-		roll=${ Math.round( roll ) },
-		turn=${ Math.round( turn ) },
-		vsi=${ Math.round( vsi ) }
+		altitude=${ Math.round( altitude ) }
 	WHERE
 		id=${id}
 `, f )

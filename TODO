@@ -34,7 +34,9 @@ Don't coracast too much like:
   name
   destCode
   origCode
-  
+
+remove speed and altitude from flights tables
+
 combining markers should depend on zoom level
 
 NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
