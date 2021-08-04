@@ -1,4 +1,6 @@
-landing
+x landing
+
+add routes
 
 update/reload supervisor flying -> landing, 
 and fleet pate status
@@ -10,8 +12,7 @@ separate telemetry table for fligths with added ?
 marker lagging behind
 
 nonclickable n128 in msp
-
-add routes
+wrong routes highlighted when clicked
 
 Different charge levels for newly departed aircraft
 
@@ -36,6 +37,10 @@ Don't coracast too much like:
   origCode
 
 remove speed and altitude from flights tables
+
+update db when db event like to ld
+
+Math.round eta, timestamp?
 
 combining markers should depend on zoom level
 

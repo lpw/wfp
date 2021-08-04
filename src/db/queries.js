@@ -415,14 +415,14 @@ export const flightsQuery = f => connectionQuery( `
 // 	=
 // 		${flightId}
 // `, f )
-export const updateFlightQuery = ( { id, timestamp, elapsed, covered, eta = 'NULL' }, f ) => connectionQuery( `
+export const updateFlightQuery = ( { id, timestamp, elapsed, covered, eta }, f ) => connectionQuery( `
 	UPDATE 
 		\`flights\`
 	SET 
-		\`timestamp\`=${ Math.round( timestamp ) },
+		\`timestamp\`=FROM_UNIXTIME(${timestamp}),
 		\`elapsed\`=${ Math.round( elapsed ) },
 		\`covered\`=${ Math.round( covered ) },
-		\`eta\`=FROM_UNIXTIME(${ eta })
+		\`eta\`=${eta ? 'FROM_UNIXTIME(' + eta + ')' : 'NULL'}
 	WHERE
 		id 
 	=
