@@ -415,7 +415,7 @@ export const flightsQuery = f => connectionQuery( `
 // 	=
 // 		${flightId}
 // `, f )
-export const updateFlightQuery = ( { id, timestamp, elapsed, covered, eta }, f ) => connectionQuery( `
+export const updateFlightQuery = ( { id, timestamp, elapsed, covered, eta = 'NULL' }, f ) => connectionQuery( `
 	UPDATE 
 		\`flights\`
 	SET 
