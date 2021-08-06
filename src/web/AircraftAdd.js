@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 // import TextInput from 'react-autocomplete-input';
 import { getIdFromText } from '../utils'
-import { addAircraft } from '../actions'
+import { addAircraft, requestPoints } from '../actions'
 // import './AircraftAdd.css' using AircraftFlight, which is imported from fleet
 
 class AircraftAdd extends Component {
@@ -17,14 +17,14 @@ class AircraftAdd extends Component {
         }
 	}
 
-    // componentDidMount() {
-    //     const { props } = this
-    //     const { points, requestPoints } = props
+    componentDidMount() {
+        const { props } = this
+        const { points, requestPoints } = props
 
-    //     if( Object.keys( points ).length <= 0 || stale() ) {
-    //         requestPoints()
-    //     }
-    // }
+        if( Object.keys( points ).length <= 0 ) {   // || stale() ) {
+            requestPoints()
+        }
+    }
 
     addAircraft = () => {
         const { props, nameRef, originRef } = this
@@ -51,6 +51,10 @@ class AircraftAdd extends Component {
         // const point = Object.keys( points ).find( k => points[ k ].code.toUpperCase() === pointName.toUpperCase() )
         const point = getIdFromText( pointName, points )
 
+        if( point ) {
+            originRef.current.value = points[ point ].code
+        }
+
         this.setState ( {
             addEnabled: name && point
         } )
@@ -76,6 +80,7 @@ class AircraftAdd extends Component {
             <div className="aircraftRow">
                 <div className="aircraftRowFields">
                     <input type="text" onKeyUp={checkAdd} onBlur={checkAdd} className="aircraftRowName" ref={this.nameRef} placeholder="Aircraft identifier..." />
+                    <span className="aircraftRowButtonSchedule"></span>
                     <span className="aircraftRowButtonHistory"></span>
                     <span className="aircraftRowButtonMaintenance"></span>
                     <input type="text" onKeyUp={checkAdd} onBlur={checkAdd} className="aircraftRowOrigin" ref={this.originRef} placeholder="Location..." />
@@ -89,10 +94,10 @@ class AircraftAdd extends Component {
 }
 
 const mapStateToProps = state => {
-    // const { points } = state
+    const { points } = state
 
     return {
-    //     points
+        points
     }
 }
 
@@ -101,9 +106,9 @@ const mapDispatchToProps = ( dispatch, /* ownProps */ ) => {
         addAircraft: ( name, pointId ) => {
             dispatch( addAircraft( name, pointId ) )
         },
-        // requestPoints: ( name, pointId ) => {
-        //     dispatch( requestPoints( name, pointId ) )
-        // },
+        requestPoints: ( name, pointId ) => {
+            dispatch( requestPoints( name, pointId ) )
+        },
     }
 }
 

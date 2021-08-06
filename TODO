@@ -1,10 +1,15 @@
 x landing
 
-add routes
+x undefined in fialog adding route
+x ETA 1:03 for everything
 
-request routes, fleet, etc on start in index.js instead of mounts
+x add routes
 
-add routes at bottom, error checking
+x request routes, fleet, etc on start in index.js instead of mounts
+
+x add routes at bottom, error checking
+
+? distance (or total remaining time) not showing up progress bar
 
 update/reload supervisor flying -> landing, 
 and fleet pate status

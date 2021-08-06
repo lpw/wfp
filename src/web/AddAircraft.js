@@ -79,6 +79,10 @@ class AddAircraft extends Component {
         // const point = Object.keys( points ).find( k => points[ k ].code.toUpperCase() === pointName.toUpperCase() )
         const point = getIdFromText( pointName, points )
 
+        if( point ) {
+            originRef.current.value = points[ point ].code
+        }
+
         this.setState ( {
             addEnabled: name && point
         } )

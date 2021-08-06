@@ -129,6 +129,11 @@ class SuperviseFlyingAircraft extends Component {
           width: "180px",
         }
 
+        const etaDate = new Date( eta * 1000 )
+        const etaHours = etaDate.getUTCHours()
+        const etaMinutes = etaDate.getUTCMinutes()
+        const etaString = `${('0' + etaHours).slice(-2)}:${('0' + etaMinutes).slice(-2)}Z`
+
         // assert( originCode && destinationCode )
 console.log( 'LANCE SuperviseFlyingAircraft render originCode', originCode )
 console.log( 'LANCE SuperviseFlyingAircraft render destinationCode', destinationCode )
@@ -142,6 +147,7 @@ console.log( 'LANCE SuperviseFlyingAircraft render destinationCode', destination
                         <span className="selectedAircraftArrow">&#x2192;</span>
                         <span className="selectedAircraftDestination">{ destinationCode }</span>
                     </span> }
+                    <span className="selectedAircraftAltitude">ETA: { etaString }</span>
                     <span className="selectedAircraftAltitude">Altitude: { altitude } ft</span>
                     <span className="selectedAircraftSpeed">Speed: { speed } kts</span>
                     <button className="selectedMapButton" onClick={ () => goMap( id ) }>Map</button>

@@ -277,7 +277,7 @@ export const pointQuery = ( pointId, f ) => connectionQuery( `
 export const addAircraftQuery =  ( aircraftName, pointId, f ) => connectionQuery( `
 	INSERT INTO 
 		\`fleet\`
-		(\`name\`, \'base\')
+		(\`name\`, \`base\`)
 	VALUES 
 		('${aircraftName}', ${pointId})
 `, f )

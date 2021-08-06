@@ -5,7 +5,7 @@ import { getIdFromText } from '../utils'
 import { requestPoints, addRoute } from '../actions'
 import './AddRoute.css'
 
-const stale = () => true // TBD what determines when to refetch flight  - always for now
+const stale = () => false // TBD what determines when to refetch flight  - always for now
 
 class AddRoute extends Component {
 	constructor(props) {
@@ -66,11 +66,8 @@ class AddRoute extends Component {
         const speed = speedRef.current.value
 
         if( originId && destinationId && altitude && speed ) {
-            const origin = points[ originId ].code
-            const destination = points[ destinationId ].code
-
-            const originCode = origin.code
-            const destinationCode = destination.code
+            const originCode = points[ originId ].code
+            const destinationCode = points[ destinationId ].code
 
             window.alert( `Route added from ${originCode} to ${destinationCode}` )
 

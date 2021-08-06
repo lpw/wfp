@@ -5,13 +5,13 @@
 }
 
 .routeRowFields {
-	width:  70%;
+	width:  50%;
 	display: flex;
 	justify-content: space-between;
 }
 
 .routeRowLocations {
-	width:  50%;
+	width:  60%;
 	display: flex;
 	/*justify-content: space-between;*/
 }

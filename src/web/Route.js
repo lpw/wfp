@@ -59,6 +59,7 @@ class Route extends Component {
                     <div className="routeRowAltitude">{ altitude }&#183;ft</div>
                     <div className="routeRowSpeed">{ speed }&#183;kts</div>
                 </div>
+                <button className="routeRowRightButton" disabled="true">Waypoints</button>
                 <button className="routeRowRightButton" onClick={remove}>Delete</button>
             </div>
         )

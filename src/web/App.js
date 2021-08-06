@@ -2,6 +2,7 @@ import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 import './App.css'
 // import AppHeader from './AppHeader'
+import Footer from './Footer'
 import Fleet from './Fleet'
 // import Flights from './Flights'
 // import Flight from './Flight'
@@ -33,6 +34,7 @@ function App( props ) {
                 <Route path="/flight" component={AddFlight} />
                 <Route component={AddFlight} />
             </Switch>
+            <Footer />
         </div>
     )
 }

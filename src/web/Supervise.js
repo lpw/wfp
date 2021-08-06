@@ -655,8 +655,11 @@ console.log( 'LANCE paths', paths )
                 <Marker key={ id } id={ id } aircraftId={ aircraftId } name={ m.name } selected={ markerAndNamesSelected } map={ map } clickMarker={ clickMarker }/>
             )
         } else {
-            console.log( 'LANCE Supervise::renderMarker skipping marker', id, aircraftId, m.name )
-            assert( 0 )
+            console.log( 'LANCE Supervise::renderMarker skipping marker', id, aircraftId, m.name, map )
+            assert( id )
+            assert( aircraftId )
+            assert( m.name )
+            // assert( map )
             return (
                 null
             )
