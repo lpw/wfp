@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { deleteAircraft, addFlight } from '../actions'
-import { getIdFromText } from '../utils'
 import {
     // aircraftParkedFromState,
 } from '../selectors'

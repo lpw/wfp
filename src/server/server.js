@@ -35,6 +35,7 @@ import {
 	updateLandingAircraft,
 	updateRouteDistance,
 	updateRouteBearing,
+	removeRoute,
 } from '../db'
 
 const debug = require('debug')('wisk:server')
@@ -227,6 +228,23 @@ function routeApi( server ) {
 							debug( 'routeApi', method, op, typeof payload, payload )
 							const { name, pointId } = typeof payload === 'string' ? JSON.parse( payload ) : payload
 							return addAircraft( name, pointId ).then( result => {
+								const replyResult = {
+									status: 'ok', 
+									result, 
+								}
+								debug( 'routeApi addAircraft then replyResult', replyResult )
+								return replyResult
+							}).catch( error => {
+								console.warn( 'routeApi error', error.message ) 
+								return {
+									error: `op /${op} error ${error.message}`
+								}
+							})
+						}
+						case 'routes': {
+							debug( 'routeApi', method, op, typeof payload, payload )
+							// const { name, pointId } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							return addRoute( payload ).then( result => {
 								const replyResult = {
 									status: 'ok', 
 									result, 
@@ -622,6 +640,30 @@ function routeArgApi( server ) {
 									error: `routeArgApi deleteAircraft/${id} error ${error.message}`
 								}
 							})
+						}
+						case 'routes': {
+							debug( 'routeArgApi delete routes', id )
+							return removeRoute( id ).then( result => {
+								const replyResult = {
+									status: 'ok', 
+									result, 
+								}
+								debug( 'routeArgApi delete routes then replyResult', replyResult )
+								return replyResult
+							}).catch( error => {
+								debug( 'routeArgApi delete routes error', error.message )
+								console.warn( 'routeArgApi delete routes error', error.message ) 
+								return {
+									error: `routeArgApi delete routes/${id} error ${error.message}`
+								}
+							})
+						}
+						default: {
+							debug( 'routeArgApi delete  error' )
+							console.warn( 'routeArgApi delete  error' ) 
+							return {
+								error: `routeArgApi delete /${id} error`
+							}
 						}
 					}
 				}

@@ -8,7 +8,7 @@ import './AddAircraft.css'
 
 // const storedAircraft = getLocalStorage( 'aircraft' )
 
-const stale = () => true // TBD what determines when to refetch flight  - always for now
+const stale = () => false // TBD what determines when to refetch flight  - always for now
 
 class AddAircraft extends Component {
 	constructor(props) {

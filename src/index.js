@@ -13,7 +13,12 @@ import socketIOClient from "socket.io-client"
 import './index.css';
 import App from './web/App';
 
-import { updateTelemetry } from './actions'
+import {
+	updateTelemetry,
+	requestPoints,
+	requestFleet,
+	requestRoutes,
+} from './actions'
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibGFuY2VwdyIsImEiOiJja2ZpamE2NGIwMHBnMzhxdTJpYXd3Z3g5In0.aC7y-RlHNxdFXi5UgpagMA';
 
@@ -57,8 +62,18 @@ ReactDOM.render(
 const socket = socketIOClient( 'http://127.0.0.1:7400', {
 	withCredentials: true,
 })
+
+store.dispatch( requestPoints() )
+store.dispatch( requestFleet() )
+store.dispatch( requestRoutes() )
+
 socket.on( 'cora', telemetry => {
-	setTimeout( () => {	// trying to prevent React node remove error
-		store.dispatch( updateTelemetry( telemetry, Date.now() ) )
-	}, 1 )
+	// setTimeout( () => {	// trying to prevent React node remove error
+	if( telemetry.change ) {
+		store.dispatch( requestPoints() )
+		store.dispatch( requestFleet() )
+		store.dispatch( requestRoutes() )
+	}
+	store.dispatch( updateTelemetry( telemetry, Date.now() ) )
+	// }, 1 )
 })

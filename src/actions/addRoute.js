@@ -1,14 +1,14 @@
 // import assert from 'assert'
 import fetch from 'isomorphic-fetch'
 import { getPrefix } from '../utils'
-import { requestFlight } from './'
+import { requestRoutes } from './'
 
-export function addRoute( id, path, altitude, speed ) {
+export function addRoute( origin, destination, altitude, speed ) {
 	return( dispatch, getState ) => {
         const prefix = getPrefix()
-		const url = `${prefix}/apiv1/flight/${id}`
+		const url = `${prefix}/apiv1/routes`
 		const method = 'POST'
-		const payload = { path, altitude, speed }
+		const payload = { origin, destination, altitude, speed }
 
 		return fetch( url, {
 			method,
@@ -27,7 +27,7 @@ export function addRoute( id, path, altitude, speed ) {
 				// const { id } = response.result
 				// assert( id !== undefined )
 				// dispatch( addedNewRoute( id ) )
-	            dispatch( requestFlight( id ) )
+	            dispatch( requestRoutes() )
 			} else {
 				console.warn( `action addRoute 200 but status not ok ${response.status}` )
 				throw new Error( `action addRoute 200 but status not ok ${response.status}` )

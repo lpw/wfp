@@ -1,0 +1,13 @@
+.routes {
+  margin: 2%;
+  /*display: flex;*/
+  /*flex-direction: column;*/
+  /*justify-content: space-between;*/
+  /*align-items: xxx;*/
+}
+
+.routes >div:nth-of-type(odd) {
+  background-color: #e8e8e8;
+}
+
+

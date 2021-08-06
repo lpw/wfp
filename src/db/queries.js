@@ -290,7 +290,7 @@ export const addFleetPointQuery = ( aircraftId, pointId, f ) => connectionQuery(
 		('${aircraftId}', '${pointId}')
 `, f )
 
-export const addRouteQuery = ( origin, destination, altitude, speed, f ) => connectionQuery( `
+export const addRouteQuery = ( { origin, destination, altitude, speed }, f ) => connectionQuery( `
 	INSERT INTO 
 		\`routes\`
 		(\`origin\`, \`destination\`, \`altitude\`, \`speed\`)
@@ -560,4 +560,24 @@ export const updateLandingAircraftQuery = ( aircraftId, lat, lon, elevation, f )
 		id=${aircraftId}
 `, f )
 
+export const addRouteToRoutesQuery = ( altitude = 0, speed = 0, f ) => connectionQuery( `
+	INSERT INTO 
+		routes 
+		(\`altitude\`, \`speed\`) 
+	VALUES 
+		(${altitude}, ${speed})
+`, f )
+
+export const removeRouteQuery = ( routeId, f ) => connectionQuery( `
+	UPDATE 
+		\`routes\`
+	SET 
+		\`removed\`
+	= 
+		1
+	WHERE
+		id 
+	=
+		${routeId}
+`, f )
 

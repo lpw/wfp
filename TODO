@@ -2,6 +2,10 @@ x landing
 
 add routes
 
+request routes, fleet, etc on start in index.js instead of mounts
+
+add routes at bottom, error checking
+
 update/reload supervisor flying -> landing, 
 and fleet pate status
 

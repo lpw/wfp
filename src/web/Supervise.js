@@ -18,7 +18,7 @@ import SuperviseParkedAircraft from './SuperviseParkedAircraft'
 import Marker from './Marker'
 import './Supervise.css'
 
-const stale = () => true // TBD what determines when to refetch stages and status of supervise  - always for now
+const stale = () => false // TBD what determines when to refetch stages and status of supervise  - always for now
 
 const oneHasSomeOther = ( one, other ) => one.some( id => other.includes( id ) )
 const markerHasSelectedAircraft = ( marker, selectedAircraftIds ) => oneHasSomeOther( marker.aircraftIds, selectedAircraftIds )

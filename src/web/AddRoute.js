@@ -1,55 +1,123 @@
 import assert from 'assert'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { addRoute } from '../actions'
+import { getIdFromText } from '../utils'
+import { requestPoints, addRoute } from '../actions'
 import './AddRoute.css'
 
-// obsolete, or have to change description to path and add speed
+const stale = () => true // TBD what determines when to refetch flight  - always for now
 
 class AddRoute extends Component {
 	constructor(props) {
-		super(props);
-        this.descriptionRef = React.createRef()
-		this.altitudeRef = React.createRef()
+		super(props)
+
+        this.originRef = React.createRef()
+        this.destinationRef = React.createRef()
+        this.altitudeRef = React.createRef()
+		this.speedRef = React.createRef()
+
+        this.state = {
+            disabled: true
+        }
 	}
 
-    addRoute = () => {
-        const { props, descriptionRef, altitudeRef } = this
-        const { addRoute, id } = props
+    componentDidMount() {
+        const { props } = this
+        const { points, requestPoints } = props
 
-        const description = descriptionRef.current.value
-        const altitude = altitudeRef.current.value || 0
+        if( Object.keys( points ).length <= 0 || stale() ) {
+            requestPoints()
+        }
+    }
 
-        assert( id )
+    check = () => {
+        const { props, originRef, destinationRef, altitudeRef, speedRef, } = this
+        const { points } = props
 
-        if( description ) {
-	        addRoute( id, description, altitude )
+        const originId = getIdFromText( originRef.current.value, points )
+        const destinationId = getIdFromText( destinationRef.current.value, points )
+
+        const altitude = altitudeRef.current.value
+        const speed = speedRef.current.value
+
+        if( originId ) {
+            originRef.current.value = points[ originId ].code
+        }
+
+        if( destinationId ) {
+            destinationRef.current.value = points[ destinationId ].code
+        }
+
+        const enabled = originId && destinationId && altitude && speed
+
+        this.setState({
+            disabled: !enabled
+        })
+    }
+
+    add = () => {
+        const { props, originRef, destinationRef, altitudeRef, speedRef, } = this
+        const { add, points } = props
+
+        const originId = getIdFromText( originRef.current.value, points )
+        const destinationId = getIdFromText( destinationRef.current.value, points )
+
+        const altitude = altitudeRef.current.value
+        const speed = speedRef.current.value
+
+        if( originId && destinationId && altitude && speed ) {
+            const origin = points[ originId ].code
+            const destination = points[ destinationId ].code
+
+            const originCode = origin.code
+            const destinationCode = destination.code
+
+            window.alert( `Route added from ${originCode} to ${destinationCode}` )
+
+            add( originId, destinationId, altitude, speed )
+
+            originRef.current.value = ''
+            destinationRef.current.value = ''
         }
     }
 
     render() {
-        const { addRoute } = this
+        const { add, check, state } = this
+        const { disabled } = state
 
         return (
-            <div className="AddRoute">
-                <input type="text" placeholder="route from skyvector -> foreflight URL format..." className="AddRouteName" ref={this.descriptionRef} />
-                <input type="number" placeholder="altitude..." className="AddRouteAltitude" ref={this.altitudeRef} />
-            	<button onClick={addRoute}>Add</button>
+            <div className="routeRow">
+                <div className="routeRowFields">
+                    <div className="routeRowLocations">
+                        <input type="text" placeholder="to..." className="routeRowOrigin" onKeyUp={check} ref={this.originRef} />
+                        <div className="routeRowArrow">&#x2192;</div>
+                        <input type="text" placeholder="from..." className="routeRowDestination" onKeyUp={check} ref={this.destinationRef} />
+                    </div>
+                    <input type="number" placeholder="altitude..." className="routeRowAltitude" onKeyUp={check} ref={this.altitudeRef} />
+                    <input type="number" placeholder="speed..." className="routeRowSpeed" onKeyUp={check} ref={this.speedRef} />
+                </div>
+                <button className="routeRowRightButton" disabled={disabled} onClick={add}>Add</button>
             </div>
         )
     }
 }
 
 const mapStateToProps = state => {
+    const { points } = state
+
     return {
+        points,
     }
 }
 
 const mapDispatchToProps = ( dispatch, /* ownProps */ ) => {
     return {
-        addRoute: ( id, description, altitude ) => {
-            dispatch( addRoute( id, description, altitude ) )
-        }
+        add: ( origin, destination, altitude, speed ) => {
+            dispatch( addRoute( origin, destination, altitude, speed ) )
+        },
+        requestPoints: () => {
+            dispatch( requestPoints() )
+        },
     }
 }
 

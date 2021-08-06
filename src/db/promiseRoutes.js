@@ -42,6 +42,7 @@ export function promiseRoutes() {
 					speed,
 					distance,
 					bearing,
+					removed,
 				} = r 
 
 				if( sequence === 1 ) {
@@ -55,6 +56,7 @@ export function promiseRoutes() {
 							bearing,
 							originId: pointId,
 							originCode: pointCode,
+							removed,
 						}
 					}
 				} else if( sequence > 1 ) {

@@ -8,6 +8,7 @@ import Fleet from './Fleet'
 import Supervise from './Supervise'
 import AddFlight from './AddFlight'
 import AddAircraft from './AddAircraft'
+import Routes from './Routes'
 
 // Currentl FLMS, MVS, stub planes are routes but will ultimately be separate processes (will share database)
 
@@ -18,6 +19,7 @@ function App( props ) {
     return (
         <div className="App">
             <Switch location={props.location} >
+                <Route path="/routes" component={Routes} />
                 <Route path="/fleet" component={Fleet} />
                 <Route path="/flms" component={Fleet} />
                 <Route path="/fms" component={Fleet} />
