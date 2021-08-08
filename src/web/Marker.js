@@ -16,6 +16,42 @@ import {
 } from '../selectors'
 import './Marker.css'
 
+
+function ease({
+  startValue = 0,
+  endValue = 1,
+  durationMs = 200,
+  onStep,
+  onComplete = () => {},
+}) {
+  const raf = window.requestAnimationFrame || (func => window.setTimeout(func, 16));
+  
+  const stepCount = durationMs / 16;
+  const valueIncrement = (endValue - startValue) / stepCount;
+  const sinValueIncrement = Math.PI / stepCount;
+  
+  let currentValue = startValue;
+  let currentLinearValue = startValue;
+  let currentSinValue = 0;
+  
+  function step() {
+    currentSinValue += sinValueIncrement;
+    currentValue += valueIncrement * (Math.sin(currentSinValue) ** 2) * 2;
+    currentLinearValue += valueIncrement 
+
+    if (currentSinValue < Math.PI) {
+      // onStep(currentValue);
+      onStep( currentLinearValue )
+      raf(step);
+    } else {
+      onStep(endValue);
+      onComplete();
+    }
+  }
+
+  return raf(step);
+}
+
 class Marker extends Component {
     constructor(props) {
         super( props )
@@ -127,10 +163,11 @@ console.log( 'LANCE Marker::checkMap false' )
     }
 
     move = () => {
+        const now = Date.now()
         // const { _elRef: { current: el }, _mbMarker: mbMarker, props } = this
         // const { _el: el, _mbMarker: mbMarker, props } = this
         // const { _elContainer: el, _mbMarker: mbMarker, props } = this
-        const { _elPortal: el, _mbMarker: mbMarker, props } = this
+        const { _elPortal: el, _mbMarker: mbMarker, props, _previousCallTimestamp: previousCallTimestamp } = this
         const { id, map, aircraftData } = props
         const { lat, lon } = aircraftData
         const coords = [ lon, lat ]
@@ -192,14 +229,18 @@ console.log( 'LANCE Marker::move has setLngLat coords', coords )
 
             cancelAnimationFrame( this._animationFrame )
 
-            const expectedInterval = 10 * 1000
-            const now = Date.now()
-            const previousInterval = now - this._previousCallTimestamp
+            // const expectedInterval = 10 * 1000
+            // const expectedInterval = 1 * 1000
+            const expectedInterval = previousCallTimestamp ? ( now - previousCallTimestamp ) : 1000
+console.log( 'LANCE Marker::move expectedInterval', expectedInterval )
             this._previousCallTimestamp = now
-id === -1 && console.log( 'LANCE Marker::move previousInterval', previousInterval )
-id === -1 && console.log( 'LANCE Marker::move expectedInterval', expectedInterval )
-            let previousAnimationTimestamp
-            let start
+//             const now = Date.now()
+//             const previousInterval = now - this._previousCallTimestamp
+//             this._previousCallTimestamp = now
+// id === -1 && console.log( 'LANCE Marker::move previousInterval', previousInterval )
+// id === -1 && console.log( 'LANCE Marker::move expectedInterval', expectedInterval )
+//             let previousAnimationTimestamp
+//             let start
 
             const curCoords = mbMarker.getLngLat()
 
@@ -212,49 +253,69 @@ id === -1 && console.log( 'LANCE Marker::move expectedInterval', expectedInterva
             const difLon = newLon - curLon
             const difLat = newLat - curLat
 
-id === -1 && console.log( 'LANCE Marker::move curLon', curLon )
-id === -1 && console.log( 'LANCE Marker::move curLat', curLat )
-id === -1 && console.log( 'LANCE Marker::move newLon', newLon )
-id === -1 && console.log( 'LANCE Marker::move newLat', newLat )
-id === -1 && console.log( 'LANCE Marker::move difLon', difLon )
-id === -1 && console.log( 'LANCE Marker::move difLat', difLat )
+// id === -1 && console.log( 'LANCE Marker::move curLon', curLon )
+// id === -1 && console.log( 'LANCE Marker::move curLat', curLat )
+// id === -1 && console.log( 'LANCE Marker::move newLon', newLon )
+// id === -1 && console.log( 'LANCE Marker::move newLat', newLat )
+// id === -1 && console.log( 'LANCE Marker::move difLon', difLon )
+// id === -1 && console.log( 'LANCE Marker::move difLat', difLat )
 
-            const step = ( timestamp ) => {
-                if( start === undefined ) {
-                    start = timestamp
-                }
+//             const step = ( timestamp ) => {
+//                 if( start === undefined ) {
+//                     start = timestamp
+//                 }
 
-                const elapsed = timestamp - start
-id === -1 && console.log( 'LANCE Marker::move previousAnimationTimestamp', previousAnimationTimestamp )
-id === -1 && console.log( 'LANCE Marker::move timestamp', timestamp )
-id === -1 && console.log( 'LANCE Marker::move elapsed', elapsed )
+//                 const elapsed = timestamp - start
+// id === -1 && console.log( 'LANCE Marker::move previousAnimationTimestamp', previousAnimationTimestamp )
+// id === -1 && console.log( 'LANCE Marker::move timestamp', timestamp )
+// id === -1 && console.log( 'LANCE Marker::move elapsed', elapsed )
 
-                if ( previousAnimationTimestamp !== timestamp ) {
-                    // Math.min() is used here to make sure the element stops at exactly 200px
-                    // const count = Math.min( 0.1 * elapsed, 200 )
-                    // element.style.transform = 'translateX(' + count + 'px)';
-                    const fraction = Math.max( Math.min( elapsed / expectedInterval, 1 ), 0 )
+//                 if ( previousAnimationTimestamp !== timestamp ) {
+//                     // Math.min() is used here to make sure the element stops at exactly 200px
+//                     // const count = Math.min( 0.1 * elapsed, 200 )
+//                     // element.style.transform = 'translateX(' + count + 'px)';
+//                     const fraction = Math.max( Math.min( elapsed / expectedInterval, 1 ), 0 )
+//                     const easedFraction = Math.sin( fraction / 2 * Math.PI ) * Math.PI / 2
+//                     const incLon = curLon + difLon * easedFraction
+//                     const incLat = curLat + difLat * easedFraction
+//                     const incCoords = [ incLon, incLat ]
 
+// id === -1 && console.log( 'LANCE Marker::move fraction', fraction )
+// id === -1 && console.log( 'LANCE Marker::move incLon', incLon )
+// id === -1 && console.log( 'LANCE Marker::move incLat', incLat )
+//                     mbMarker.setLngLat( incCoords )
+//                 }
+
+//                 if( elapsed < expectedInterval ) { // Stop the animation after 2 seconds
+//                     previousAnimationTimestamp = timestamp
+//                     this._animationFrame = window.requestAnimationFrame( step )
+//                 } else {
+//                     mbMarker.setLngLat( coords )
+//                 }
+//             }
+
+            this._animationFrame = ease({
+                startValue: 0,
+                endValue: 1,
+                durationMs: expectedInterval,
+                onStep: fraction => {
                     const incLon = curLon + difLon * fraction
                     const incLat = curLat + difLat * fraction
                     const incCoords = [ incLon, incLat ]
 
-id === -1 && console.log( 'LANCE Marker::move fraction', fraction )
-id === -1 && console.log( 'LANCE Marker::move incLon', incLon )
-id === -1 && console.log( 'LANCE Marker::move incLat', incLat )
+console.log( 'LANCE Marker::move fraction', fraction )
+// console.log( 'LANCE Marker::move incLon', incLon )
+// console.log( 'LANCE Marker::move incLat', incLat )
+
                     mbMarker.setLngLat( incCoords )
                 }
-
-                if( elapsed < expectedInterval ) { // Stop the animation after 2 seconds
-                    previousAnimationTimestamp = timestamp
-                    this._animationFrame = window.requestAnimationFrame( step )
-                } else {
-                    mbMarker.setLngLat( coords )
-                }
-            }
-                 
-            // mbMarker.setLngLat( coords )
-            this._animationFrame = requestAnimationFrame( step )
+                // onComplete: () => {
+                //     document.querySelector('#search').focus();
+                // }
+            })
+                         
+            // // mbMarker.setLngLat( coords )
+            // this._animationFrame = requestAnimationFrame( step )
         }
     }
 

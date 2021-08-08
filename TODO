@@ -9,29 +9,62 @@ x request routes, fleet, etc on start in index.js instead of mounts
 
 x add routes at bottom, error checking
 
+x AircraftFlight -> AircraftFlying
+
 ? distance (or total remaining time) not showing up progress bar
 
-update/reload supervisor flying -> landing, 
-and fleet pate status
+x update/reload supervisor flying -> landing, 
+? and fleet pate status
 
-combine telemetry into fleet in reducer instead of selector
+x combine telemetry into fleet in reducer instead of selector
+
+x update db when db event like to ld
+
+x NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+
+x contigency post striaght to sim instead of db
+
+x routes: put in heading/bearing
+
+x hide markers on initial render
+
+? source of truth to calc covered remaining etc
+
+? marker lagging behind
+
+? nonclickable n128 in msp
+? wrong routes highlighted when clicked
+
+? Different charge levels for newly departed aircraft
+
+? Time Total: 5 min Ellapsed: 8 min
+  and still ont tjere
+  293 to LA but 510 covered?!
+  lander
+  initial zoom
+
+? launch should cause rerender to draw route lines for newly launched flights
+
+? zooming/selecting causes aircraft to return to orig and reanimate back to current pos
+
+T addd aircraft + route (then lunch) -> supervise (add to localStorage)
+
+from then on, -> supervise
+
+cleanup
+convert to async/await from promises
+
+mobile page for adding aircraft and flight
+monile phone progressive UI
+phones as aircraft
+  tailnum, location (gps?)
+  dest, alt, speed
+  INS? Instruments?
+  MX?
+
+Bounding box only from selected aircraft (or flyTo if one)
 
 separate telemetry table for fligths with added ?
-
-marker lagging behind
-
-nonclickable n128 in msp
-wrong routes highlighted when clicked
-
-Different charge levels for newly departed aircraft
-
-Time Total: 5 min Ellapsed: 8 min
-and still ont tjere
-293 to LA but 510 covered?!
-lander
-initial zoom
-
-AircraftFlight -> AircraftFlying
 
 Don't coracast too much like:
   originLat: 33.942501,
@@ -47,24 +80,9 @@ Don't coracast too much like:
 
 remove speed and altitude from flights tables
 
-update db when db event like to ld
-
-Math.round eta, timestamp?
-
 combining markers should depend on zoom level
 
-NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
-
-contigency post striaght to sim instead of db
-
-or position as source of truth to calc covered remaining etc
-
-routes:
-put in heading/bearing
-
-cliimd on take-off, decend on land
-
-launch should ause rerender to draw route lines for newly launched flights
+climd on take-off, decend on land
 
 create database
 
@@ -76,29 +94,15 @@ add route to supervisor
 
 event generator
 
-route selection and route editor
-
-mobile page for adding aircraft and flight
-
-contigency land destination
-
-Bounding box only from selected aircraft (or flyTo if one)
+route and waypoint editor
 
 make sequence part of key with ir ini routes_points table
 
+foreign keys in db, cleanup
+
 handle A2A flights
 
-phones as aircraft
-tailnum, location (gps?)
-dest, alt, speed
-INS? Instruments?
-MX?
-
 threshold for combining points
-
-hide markers on initial render
-
-monile phone progressive UI
 
 Supervise parked aircraft?
 
@@ -118,14 +122,7 @@ map /flights /flights?a=123&a=456 (commas, array, etc) /supervise /mvs /map
 instruments /flights/123 /flight/123 (show map? nah, above)
 
 launch chages fleet point to destination
-back to fleet from supervise?
 convert array into map?  And if so, on server response or in reducer?
-
-convert to async/await from promises
-airctaft status/location
-distance
-
-andd new points/locations
 
 editing functionality:
 explicit ordering of stages for rearranging

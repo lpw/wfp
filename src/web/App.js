@@ -7,7 +7,7 @@ import Fleet from './Fleet'
 // import Flights from './Flights'
 // import Flight from './Flight'
 import Supervise from './Supervise'
-import AddFlight from './AddFlight'
+import Add from './Add'
 import AddAircraft from './AddAircraft'
 import Routes from './Routes'
 
@@ -15,7 +15,7 @@ import Routes from './Routes'
 
 function App( props ) {
             // <AppHeader />
-                // <Route path="/add" component={AddFlight} />
+                // <Route path="/add" component={Add} />
                 // <Route path="/supervise/:id" component={Supervise} />
     return (
         <div className="App">
@@ -31,8 +31,8 @@ function App( props ) {
                 <Route path="/supervisor" component={Supervise} />
                 <Route path="/mvs" component={Supervise} />
                 <Route path="/aircraft" component={AddAircraft} />
-                <Route path="/flight" component={AddFlight} />
-                <Route component={AddFlight} />
+                <Route path="/flight" component={Add} />
+                <Route component={Add} />
             </Switch>
             <Footer />
         </div>

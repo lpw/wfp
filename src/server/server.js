@@ -36,6 +36,7 @@ import {
 	updateRouteDistance,
 	updateRouteBearing,
 	removeRoute,
+	addAircraftRouteFly,
 } from '../db'
 
 const debug = require('debug')('wisk:server')
@@ -249,7 +250,25 @@ function routeApi( server ) {
 									status: 'ok', 
 									result, 
 								}
-								debug( 'routeApi addAircraft then replyResult', replyResult )
+								debug( 'routeApi addRoute then replyResult', replyResult )
+								return replyResult
+							}).catch( error => {
+								console.warn( 'routeApi error', error.message ) 
+								return {
+									error: `op /${op} error ${error.message}`
+								}
+							})
+						}
+						// case 'aircraftRouteFly': {
+						case 'aircraftroutefly': {
+							debug( 'routeApi', method, op, typeof payload, payload )
+							// const { name, pointId } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							return addAircraftRouteFly( payload ).then( result => {
+								const replyResult = {
+									status: 'ok', 
+									result, 
+								}
+								debug( 'routeApi aircraftRouteFly then replyResult', replyResult )
 								return replyResult
 							}).catch( error => {
 								console.warn( 'routeApi error', error.message ) 

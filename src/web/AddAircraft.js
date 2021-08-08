@@ -100,10 +100,8 @@ class AddAircraft extends Component {
 
         return (
             <div className="addAircraft">
-                <h1 className="addFlightName">Add Aircraft to Fleet</h1>
                 <input type="text" onKeyUp={checkAdd} onBlur={checkAdd} className="addAircraftField addAircraftName" ref={this.nameRef} placeholder="Aircraft identifier, name, tail-number, etc..." />
                 <input type="text" onKeyUp={checkAdd} onBlur={checkAdd} className="addAircraftField addAircraftOrigin" ref={this.originRef} placeholder="Location (for now, airport like KSJC, KSFO, KSAC, etc.)......" />
-                <button className="addAircraftButton" onClick={addAircraft} disabled={ !this.state.addEnabled }>Add</button>
             </div>
         )
     }

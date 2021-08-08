@@ -1,7 +1,8 @@
+/*
 .addAircraft {
   display: flex;
-  flex-direction: column;
-  /*justify-content: space-around;*/
+  flex-direction: row;
+  justify-content: space-around;
   align-items: center;
   justify-content: center;
   margin: 5%;
@@ -9,9 +10,9 @@
 
 .addAircraftField {
   margin-bottom: 10px;
-  /*width: 100%;*/
   text-align:  center;
 }
 
 .addAircraftButton {
 }
+*/
