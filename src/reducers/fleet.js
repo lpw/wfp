@@ -1,8 +1,8 @@
 import {
 	RECEIVED_FLEET,
-	ADDED_AIRCRAFT,
-	DELETED_AIRCRAFT,
 	UPDATE_TELEMETRY,
+	// ADDED_AIRCRAFT,
+	// DELETED_AIRCRAFT,
 } from '../actions'
 
 const fleet = ( state = {}, action ) => {
@@ -14,20 +14,6 @@ const fleet = ( state = {}, action ) => {
 			const { fleet } = action
 
 			return fleet 
-		}
-
-		case ADDED_AIRCRAFT: {
-			const { aircraftId: id, aircraftName: name, pointId: base } = action
-
-			return {
-				...state, 
-				[ id ]: {
-					...state[ id ],
-					id,
-					name,
-					base,
-				}
-			}
 		}
 
 		case UPDATE_TELEMETRY: {
@@ -42,11 +28,25 @@ const fleet = ( state = {}, action ) => {
 			}
 		}
 
-		case DELETED_AIRCRAFT: {
-			const { aircraftId } = action
+	// 	case ADDED_AIRCRAFT: {
+	// 		const { aircraftId: id, aircraftName: name, pointId: base } = action
 
-			return state.filter( f => f.id !== aircraftId )
-		}
+	// 		return {
+	// 			...state, 
+	// 			[ id ]: {
+	// 				...state[ id ],
+	// 				id,
+	// 				name,
+	// 				base,
+	// 			}
+	// 		}
+	// 	}
+
+	// 	case DELETED_AIRCRAFT: {
+	// 		const { aircraftId } = action
+
+	// 		return state.filter( f => f.id !== aircraftId )
+	// 	}
 
 		default:
 			return state

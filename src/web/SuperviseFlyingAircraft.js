@@ -60,7 +60,7 @@ class SuperviseFlyingAircraft extends Component {
     video = () => {
         const { props } = this
         const { name } = props
-        window.alert( `Video Panel for ${name}` )
+        window.alert( `Onboard View (video, model) for ${name}` )
     }
 
     contingency = () => {
@@ -152,7 +152,7 @@ console.log( 'LANCE SuperviseFlyingAircraft render destinationCode', destination
                     <span className="selectedAircraftSpeed">Speed: { speed } kts</span>
                     <button className="selectedMapButton" onClick={ () => goMap( id ) }>Map</button>
                     <button className="selectedCommsButton" onClick={ comms }>Comms</button>
-                    <button className="selectedVideoButton" onClick={ video }>Video</button>
+                    <button className="selectedVideoButton" onClick={ video }>Onboard</button>
                     <button className="selectedContingencyButton" onClick={ contingency }>Contingency</button>
                     <button className="selectedCloseButton" onClick={ () => close( id ) }>X</button>
                 </div>

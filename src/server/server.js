@@ -455,24 +455,6 @@ function routeArgApi( server ) {
 				case 'put':
 				case 'post': {
 					switch( op.toLowerCase() ) {
-						case 'flightroute': {
-							debug( 'routeApi', method, op, typeof payload, payload )
-							const { aircraft, origin, destination, altitude, speed } = typeof payload === 'string' ? JSON.parse( payload ) : payload
-							assert( +aircraft === +id )  // until we decide
-							return addFlightRoute( +id, origin, destination, altitude, speed ).then( result => {
-								const replyResult = {
-									status: 'ok', 
-									result, 
-								}
-								debug( 'routeApi addFlightRoute then replyResult', replyResult )
-								return replyResult
-							}).catch( error => {
-								console.warn( 'routeApi error', error.message ) 
-								return {
-									error: `op /${op} error ${error.message}`
-								}
-							})
-						}
 						case 'fleet': {
 							const { action, lat, lon, altitude, speed, heading, pitch, yaw, roll, turn, vsi, charge } = typeof payload === 'string' ? JSON.parse( payload ) : payload
 							switch( action.toLowerCase() ) {
@@ -626,23 +608,6 @@ function routeArgApi( server ) {
 				}
 				case 'delete': {
 					switch( op.toLowerCase() ) {
-						case 'flight': {
-							debug( 'routeArgApi post flight', id )
-							return deleteFlight( id ).then( result => {
-								const replyResult = {
-									status: 'ok', 
-									result, 
-								}
-								debug( 'routeArgApi delete flight then replyResult', replyResult )
-								return replyResult
-							}).catch( error => {
-								debug( 'routeArgApi delete flight error', error.message )
-								console.warn( 'routeArgApi delete flight error', error.message ) 
-								return {
-									error: `routeArgApi delete flight/${id} error ${error.message}`
-								}
-							})
-						}
 						case 'fleet': {
 							debug( 'routeArgApi post flight', id )
 							return deleteAircraft( id ).then( result => {

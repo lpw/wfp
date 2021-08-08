@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { requestFleet, requestRoutes, deleteAircraft } from '../actions'
 import AircraftParked from './AircraftParked'
 import AircraftFlying from './AircraftFlying'
-import AddAircraft from './AircraftAdd'
+import AircraftAdd from './AircraftAdd'
 // import { getCodeFromPath } from '../utils'
 import {
     // fleetFromState,
@@ -50,7 +50,7 @@ class Fleet extends Component {
         const { props } = this
         const { fleet, deleteAircraft } = props
         const { name } = fleet[ id ] || {}
-        const answer = window.confirm( `Maintenance Panel\n(hours, inspetions, ADs, certificates, squawks, etc...)\nfor ${name}\n\nScrap this aircraft ?!` )
+        const answer = window.confirm( `Maintenance Panel\n(hours, inspections, ADs, certificates, squawks, analytics, etc...)\nfor ${name}\n\nScrap this aircraft ?!` )
         if( answer ) {
             deleteAircraft( id )
         }
@@ -128,7 +128,7 @@ class Fleet extends Component {
         return (
             <div className="fleet">
                 { renderFleet( fleet ) }
-                <AddAircraft  />
+                <AircraftAdd  />
             </div>
         )
     }

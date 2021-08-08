@@ -1,7 +1,7 @@
 // import assert from 'assert'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { requestRoutes, addRoute, deleteRoute } from '../actions'
+import { requestRoutes } from '../actions'
 import AddRoute from './AddRoute'
 import Route from './Route'
 // import { getCodeFromPath } from '../utils'
@@ -102,12 +102,6 @@ const mapDispatchToProps = dispatch => {
     return {
         requestRoutes: () => {
             dispatch( requestRoutes() )
-        },
-        requestRoutes: () => {
-            dispatch( requestRoutes() )
-        },
-        deleteRoute: ( id ) => {
-            dispatch( deleteRoute( id ) )
         },
     }
 }

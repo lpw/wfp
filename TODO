@@ -49,9 +49,18 @@ x hide markers on initial render
 
 T addd aircraft + route (then lunch) -> supervise (add to localStorage)
 
-from then on, -> supervise
+script/slides/readme/present
 
 cleanup
+
+deploy on gas
+
+Bounding box only from selected aircraft (or flyTo if one)
+
+database integrity, watcher
+
+aircraft now jumps forward (not back anymore?) sometimes (map not ready?)
+
 convert to async/await from promises
 
 mobile page for adding aircraft and flight
@@ -61,8 +70,6 @@ phones as aircraft
   dest, alt, speed
   INS? Instruments?
   MX?
-
-Bounding box only from selected aircraft (or flyTo if one)
 
 separate telemetry table for fligths with added ?
 
