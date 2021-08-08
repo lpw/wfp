@@ -8,7 +8,8 @@
 }
 
 .addName {
-  width: 30%;
+  width: 50%;
+  text-align: center;
 }
   
 .add >* {
@@ -24,11 +25,19 @@
 .addRowFields {
   display: flex;
   flex-direction: row;
+  width: 100%;
   /*justify-content: space-around;*/
   /*align-items: center;*/
-  /*justify-content: center;*/
+  justify-content: center;
   /*margin: 5%;*/
 }
 
 .addButton {
+}
+
+.addOrigin,
+.addDestination,
+.addAltitude,
+.addSpeed {
+  width: 40%;
 }

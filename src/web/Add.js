@@ -6,7 +6,7 @@ import { addAircraftRouteFly, requestFleet, requestPoints, flyAircraft } from '.
 import { setLocalStorage, getLocalStorage, getIdFromText } from '../utils'
 import './Add.css' 
 
-// const storedAircraft = getLocalStorage( 'aircraft' )
+const storedAircraft = getLocalStorage( 'aircraft' )
 
 const stale = () => false // TBD what determines when to refetch flight  - always for now
 
@@ -22,7 +22,7 @@ class Add extends Component {
 
         this.state = {
             enabled: false,
-            addedName: null,
+            addedName: storedAircraft,
         }
 	}
 
@@ -132,14 +132,14 @@ console.log( 'LANCE check', originId, destinationId )
                 <h1 className="addTitle">Add Aircraft and Route to Fly</h1>
                 <input type="text" onKeyUp={check} onBlur={check} className="addName" ref={this.nameRef} placeholder="Aircraft identifier, name, tail-number, etc..." />
                     <div className="addLocations addRowFields">
-                        <input type="text" placeholder="from..." className="addOrigin" onKeyUp={check} ref={this.originRef} />
+                        <input type="text" placeholder="Location (airport like KSJC, KSFO, KSAC, etc.)..." className="addOrigin" onKeyUp={check} ref={this.originRef} />
                         <div className="addArrow">&#x2192;</div>
-                        <input type="text" placeholder="to..." className="addDestination" onKeyUp={check} ref={this.destinationRef} />
+                        <input type="text" placeholder="Destination (airport like KSJC, KSFO, KSAC, etc.)..." className="addDestination" onKeyUp={check} ref={this.destinationRef} />
                     </div>
                 <div className="addRowFields">
-                    <input type="number" placeholder="altitude..." className="addAltitude" onKeyUp={check} ref={this.altitudeRef} />
+                    <input type="number" placeholder="Altitude to fly to destination..." className="addAltitude" onKeyUp={check} ref={this.altitudeRef} />
                     <div className="addArrow"></div>
-                    <input type="number" placeholder="speed..." className="addSpeed" onKeyUp={check} ref={this.speedRef} />
+                    <input type="number" placeholder="Speed to fly to destination..." className="addSpeed" onKeyUp={check} ref={this.speedRef} />
                 </div>
                 <button className="addButton" disabled={!enabled} onClick={add}>Add</button>
 
