@@ -7,12 +7,6 @@
   border-bottom-color: lightgray;
   border-bottom-style: solid;
   border-bottom-width: 1px;
-  /*
-  padding-top : 10px;
-  border-top-color: lightgray;
-  border-top-style: solid;
-  border-top-width: 1px;
-  */
   align-items: flex-end;
   height:  100%;
 }

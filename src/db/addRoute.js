@@ -4,20 +4,6 @@ import {
 	addPointToRouteQuery,
 } from './queries'
 
-/*
-export function addRoute( payload ) {
-	const addRoutePromise = new Promise( function( resolve, reject ) {
-		addRouteQuery( payload, function ( error, rows ) {
-			if ( error ) {
-				return reject( error ) // throw
-			}
-			resolve()
-		})
-	})
-	return addRoutePromise
-}
-*/
-
 export function addRoute( { origin, destination, altitude, speed } ) {
 	return new Promise( function( resolve, reject ) {
 		addRouteToRoutesQuery( altitude, speed, function ( error ) {

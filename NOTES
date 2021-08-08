@@ -33,6 +33,8 @@ open, welcome, want changes to database schema, structures, process arch, etc
 
 Microservices
 
+conflict msnsger/watcher/sctivastor - constant process as well as some specific integrations
+
 lander, launcher, and flyer might be helping the sim aircraft more than the real aircraft where those services will be more about monitoring than controlling
 
 UI for DB and aircraft

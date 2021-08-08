@@ -4,29 +4,18 @@ import { connect } from 'react-redux'
 import { requestRoutes } from '../actions'
 import AddRoute from './AddRoute'
 import Route from './Route'
-// import { getCodeFromPath } from '../utils'
-import {
-    // routesFromState,
-} from '../selectors'
 import './Routes.css'
-
-const stale = () => false // TBD what determines when to refetch flight  - always for now
 
 class Routes extends Component {
     componentDidMount() {
         const { props } = this
         const { routes, requestRoutes } = props
 
-        if( Object.keys( routes ).length <= 0 || stale() ) {
+        if( Object.keys( routes ).length <= 0 ) {
             requestRoutes()
         }
     }
 
-    // renderRoute = ( k, i ) => {
-    //     const { props } = this
-    //     const { routes: origins } = props
-    //     const originRoutes = origins[ k ]
-    //     const route = originRoutes[ i ]
     renderRoute = ( k, route ) => {
         const { 
             id,
@@ -53,9 +42,6 @@ class Routes extends Component {
         const { routes: origins } = props
         const originRoutes = origins[ k ]
 
-                // { Object.keys( routes ).map( k => routes[ k ] ).map( a => ( !!a.atd && !a.ata ) ? renderRouteFlying( a ) : renderRouteParked( a ) ) }
-                // { Object.keys( routes ).map( k => routes[ k ] ).map( a => ( !!a.etd && !a.ata && a.destinationCode ) ? renderRouteFlying( a ) : renderRouteParked( a ) ) }
-                // { routes.map( i => renderRoute( routes[ i ] ) ) }
         return (
             <React.Fragment key={i}>
                 { originRoutes.map( r => renderRoute( k, r ) ) }
@@ -63,7 +49,6 @@ class Routes extends Component {
         )
     }
 
-                // { originKeys.map( k => routes[ k ] ).map( a => renderOriginRoutes( a ) }
     renderOrigins = () => {
         const { props, renderOriginRoutes } = this
         const { routes: origins } = props
@@ -77,8 +62,6 @@ class Routes extends Component {
     }
 
     render() {
-        // const { renderRoute, props } = this
-        // const { routes: origins } = props
         const { renderOrigins } = this
 
         return (

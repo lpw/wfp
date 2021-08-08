@@ -5,8 +5,6 @@ import { getIdFromText } from '../utils'
 import { requestPoints, addRoute } from '../actions'
 import './AddRoute.css'
 
-const stale = () => false // TBD what determines when to refetch flight  - always for now
-
 class AddRoute extends Component {
 	constructor(props) {
 		super(props)
@@ -25,7 +23,7 @@ class AddRoute extends Component {
         const { props } = this
         const { points, requestPoints } = props
 
-        if( Object.keys( points ).length <= 0 || stale() ) {
+        if( Object.keys( points ).length <= 0 ) {
             requestPoints()
         }
     }

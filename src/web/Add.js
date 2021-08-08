@@ -1,14 +1,11 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
-// import TextInput from 'react-autocomplete-input';
 import { addAircraftRouteFly, requestFleet, requestPoints, flyAircraft } from '../actions'
 import { setLocalStorage, getLocalStorage, getIdFromText } from '../utils'
 import './Add.css' 
 
 const storedAircraft = getLocalStorage( 'aircraft' )
-
-const stale = () => false // TBD what determines when to refetch flight  - always for now
 
 class Add extends Component {
 	constructor(props) {
@@ -30,25 +27,14 @@ class Add extends Component {
         const { props } = this
         const { points, requestFleet, requestPoints, fleet } = props
 
-        if( Object.keys( fleet ).length <= 0 || stale() ) {
+        if( Object.keys( fleet ).length <= 0 ) {
             requestFleet()
         }
 
-        if( Object.keys( points ).length <= 0 || stale() ) {
+        if( Object.keys( points ).length <= 0 ) {
             requestPoints()
         }
     }
-
-    // componentWillReceiveProps( nextProps ) {
-    //     const { points, requestFleet, requestPoints, flyingAircraft, flyAircraft, fleet } = nextProps
-
-    //     if( !flyingAircraft ) {
-    //         const aircraft = Object.keys( fleet ).map( k => fleet[ k ] ).find( a => a.name === getLocalStorage( 'aircraft' ) )
-    //         if( aircraft ) {
-    //             flyAircraft( aircraft.id )
-    //         }
-    //     }
-    // }
 
     add = () => {
         const { props, nameRef, originRef, destinationRef, altitudeRef, speedRef } = this
@@ -96,8 +82,6 @@ class Add extends Component {
 
         const destinationPointName = destinationRef.current.value ? destinationRef.current.value : destinationRef.current.recentValue
         const destinationId = getIdFromText( destinationPointName, points )
-
-console.log( 'LANCE check', originId, destinationId )
 
         if( originId ) {
             originRef.current.value = points[ originId ].code

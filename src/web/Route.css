@@ -13,7 +13,6 @@
 .routeRowLocations {
 	width:  60%;
 	display: flex;
-	/*justify-content: space-between;*/
 }
 
 .routeRowOrigin {
@@ -66,11 +65,6 @@
 }
 
 .routeRowRightButton {
-	/*padding: 0;*/
 	width: 100px;
-	/*opacity: 0;*/
-	/*
-	opacity:  0.5;
-	*/
 }
 

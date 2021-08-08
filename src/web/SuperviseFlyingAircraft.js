@@ -13,16 +13,10 @@ import {
   Variometer
 } from 'react-flight-indicators'
 import {
-    MFleet,
-    // landFlight,
     landAircraft,
 } from '../actions'
-import {
-} from '../selectors'
 import './SuperviseFlyingAircraft.css'
 import SixPack from './SixPack'
-
-// const stale = () => true // TBD what determines when to refetch stages and status of supervise  - always for now
 
 class SuperviseFlyingAircraft extends Component {
     constructor(props) {
@@ -31,25 +25,6 @@ class SuperviseFlyingAircraft extends Component {
             showSixPack: false
         }
     }
-
-    // componentDidMount() {
-    //     const { props } = this
-    //     const {
-    //         fleet,
-    //         requestFleet,
-    //     } = props
-    //     if( fleet.length <= 0 || stale() ) {
-    //         requestFleet()
-    //     }
-    // }
-
-    // setRef = ( el, marker ) => {
-    //     console.log( 'LANCE setRef el', el )
-    //     console.log( 'LANCE setRef marker.el', marker.el )
-    //     console.log( 'LANCE setRef marker.el === el', marker.el === el )
-    //     console.log( 'LANCE setRef marker', marker )
-    //     marker.el = el
-    // }
 
     comms = () => {
         const { props } = this
@@ -64,12 +39,10 @@ class SuperviseFlyingAircraft extends Component {
     }
 
     contingency = () => {
-        // const now = Date.now() / 1000
         const { props } = this
         const { name, destinationCode, id, landAircraft } = props  // flightId
         const answer = window.confirm( `Contingency Panel for ${name}\n\nLand at ${destinationCode} immediately?` )
         if( answer ) {
-            // landFlight( flightId, now )
             landAircraft( id )
         }
     }   
@@ -134,10 +107,6 @@ class SuperviseFlyingAircraft extends Component {
         const etaMinutes = etaDate.getUTCMinutes()
         const etaString = `${('0' + etaHours).slice(-2)}:${('0' + etaMinutes).slice(-2)}Z`
 
-        // assert( originCode && destinationCode )
-console.log( 'LANCE SuperviseFlyingAircraft render originCode', originCode )
-console.log( 'LANCE SuperviseFlyingAircraft render destinationCode', destinationCode )
-
         return (
             <div className={ selectedAircraftClassNames }>
                 <div className="selectedNameAndPath">
@@ -188,18 +157,12 @@ console.log( 'LANCE SuperviseFlyingAircraft render destinationCode', destination
 }
 
 const mapStateToProps = ( state, props ) => {
-    // const { fleet } = state
-
     return {
-        // fleet,
     }
 }
 
 const mapDispatchToProps = ( dispatch, /* ownProps */ ) => {
     return {
-        // landFlight: ( flightId, ata ) => {
-        //     dispatch( landFlight( flightId, ata ) )
-        // },
         landAircraft: ( aircraftId ) => {
             dispatch( landAircraft( aircraftId ) )
         },

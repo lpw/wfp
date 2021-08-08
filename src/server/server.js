@@ -8,25 +8,19 @@ import fs from 'fs'
 import Hapi from 'hapi'
 import Inert from 'inert'
 
-// import { sim } from '../sim'
-
 import handleRender from './handleRender'
 
 import {
 	addFlight,
 	addAircraft,
-	deleteFlight,
 	deleteAircraft,
 	addRoute,
-	promiseFlights,
-	promiseFlight,
 	promiseTypes,
 	promiseUsers,
 	promiseFleet,
 	promiseFlyingFleet,
 	promiseLaunchingFleet,
 	promisePoints,
-	addFlightRoute,
 	landFlight,
 	promiseRoutes,
 	updateAircraft,
@@ -81,28 +75,6 @@ function connectHttp() {
 		// }
 	})
 }
-
-// function connectHttps() {
-// 	return new Hapi.Server({
-// 		tls,
-// 		host,
-// 		port: 443,
-// 		routes: {
-// 			cors: true
-// 		},
-// 		// security: true,
-// 		state: {
-// 			isSameSite: false,
-// 			isHttpOnly: false,
-// 			ttl: 365 * oneDayInMsec,
-// 			isSecure: false,
-// 			// encoding: 'base64json',
-// 			clearInvalid: true, // remove invalid cookies
-// 			ignoreErrors: true,
-// 			strictHeader: false // do allow violations of RFC 6265
-// 		}
-// 	})
-// }
 
 // redirect http to https
 function routeRedirect( server ) {
@@ -288,42 +260,6 @@ function routeApi( server ) {
 				}
 				case 'get': {
 					switch( op.toLowerCase() ) {
-						case 'flights': {
-							debug( 'routeApi', op )
-							return promiseFlights().then( result => {
-								const replyResult = {
-									status: 'ok', 
-									result, 
-									// header, 
-									// request: payload
-								}
-
-								// return reply.response( replyResult )
-								debug( 'routeApi promiseFlights then replyResult', replyResult )
-								return replyResult
-							}).catch( error => {
-								console.warn( 'routeApi error', error.message ) 
-								return {
-									error: `op /${op} error ${error.message}`
-								}
-							})
-						}
-						case 'users': {
-							debug( 'routeApi', op )
-							return promiseUsers().then( result => {
-								const replyResult = {
-									status: 'ok', 
-									result, 
-								}
-								return replyResult
-							}).catch( error => {
-								console.warn( 'routeApi error', error.message ) 
-								return {
-									error: `op /${op} error ${error.message}`
-								}
-							})
-							break
-						}
 						case 'fleet': {
 							debug( 'routeApi', op )
 							return promiseFleet().then( result => {
@@ -651,47 +587,6 @@ function routeArgApi( server ) {
 						}
 					}
 				}
-				case 'get': {
-					switch( op.toLowerCase() ) {
-						case 'flight': {
-							return promiseFlight( id ).then( result => {
-								const replyResult = {
-									status: 'ok', 
-									result, 
-								}
-								debug( 'routeArgApi flight promiseFlight get then replyResult', replyResult )
-								return replyResult
-							}).catch( error => {
-								console.warn( 'routeArgApi promiseFlight get error', error.message ) 
-								return {
-									error: `routeArgApi promiseFlight/${id} get error ${error.message}`
-								}
-							})
-						}
-						// case 'route': {
-						// 	return promiseRoute( id ).then( result => {
-						// 		const replyResult = {
-						// 			status: 'ok', 
-						// 			result, 
-						// 		}
-						// 		debug( 'routeArgApi route promiseRoute get then replyResult', replyResult )
-						// 		return replyResult
-						// 	}).catch( error => {
-						// 		console.warn( 'routeArgApi promiseRoute get error', error.message ) 
-						// 		return {
-						// 			error: `routeArgApi promiseRoute/${id} get error ${error.message}`
-						// 		}
-						// 	})
-						// }
-						default: {
-							console.warn( 'routeArgApi unknown op', op )
-							debug( 'routeArgApi unknown op', op )
-							return {
-								error: `method ${method} unknown op ${op}`
-							}
-						}
-					}
-				}
 				default: {
 					console.warn( 'routeArgApi unknown method', method )
 					debug( 'routeArgApi unknown method', method )
@@ -710,19 +605,6 @@ function startServer( server ) {
 		console.log( `Server running at: ${JSON.stringify( server.info, null, 4 )}` )
 	})
 }
-
-// if( !noSSL ) {
-// 	const httpsServer = connectHttps()
-
-// 	httpsServer.register( Inert ).then( () => {
-// 		routeStaticAssets( httpsServer )
-// 		routeRootAny( httpsServer )
-// 		routeIndexHtml( httpsServer )
-// 		routeApi( httpsServer )
-// 		routeArgApi( httpsServer )
-// 		startServer( httpsServer )
-// 	} )
-// }
 
 const httpServer = connectHttp()
 

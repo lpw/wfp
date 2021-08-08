@@ -2,70 +2,31 @@
 	padding: 5px 0 5px 0;
 	display: flex;
 	flex-direction: row;
-	/*justify-content: space-between;*/
 }
 
 .aircraftRowFields {
-	/*padding: 0;*/
-	/*margin: 0 2% 0 0;*/
 	width: calc( 100% - 100px );
 	display: flex;
-	/*flex-direction: row;*/
-	/*justify-content: space-between;*/
 }
 	
 .aircraftRowName {
 	width: 25%;
 }
 
-.aircraftRowArrow {
-	/*padding: 0;*/
-	/*margin: 0 2% 0 0;*/
-	/*display: flex;*/
-	/*flex-direction: row;*/
-	/*width: 50px;*/
-}
-
 .aircraftRowButtonSchedule {
 	margin: 0 2% 0 0;
 	width: 100px;
-	/*
-	opacity:  0.5;
-	pointer-events: none;
-	*/
 }
 
 .aircraftRowButtonHistory {
 	margin: 0 2% 0 0;
 	width: 100px;
-	/*
-	opacity:  0.5;
-	pointer-events: none;
-	*/
 }
 
 .aircraftRowButtonMaintenance {
 	margin: 0 2% 0 0;
 	width: 100px;
-	/*
-	opacity:  0.5;
-	pointer-events: none;
-	*/
 }
-
-/*
-.aircraftRow:hover .aircraftRowButtonHistory,
-.aircraftRow:hover .aircraftRowButtonSchedule,
-.aircraftRow:hover .aircraftRowButtonMaintenance {
-	opacity:  1;
-	pointer-events: auto;
-}
-
-.aircraftRow:hover .aircraftRowRightButton {
-	opacity:  1;
-	pointer-events: auto;
-}
-*/
 
 .aircraftRow .aircraftRowRightButton,
 .aircraftRow .aircraftRowFields {
@@ -81,25 +42,6 @@
 
 .aircraftRow:hover .aircraftRowName {
 	font-weight: bold;
-}
-
-/*.aircraftAltitudeAndSpeed,*/
-.aircraftRowRoute {
-/*	
-	width: 50%;
-	display: flex;
-	flex-direction: row;
-	white-space: nowrap;
-	margin: 0 2% 0 0;
-*/
-/*	display: flex;
-	flex-direction: row;
-	width: 40%;
-*/	/*margin: 0 5% 0 0;*/
-}
-
-.aircraftRowPath {
-	/*margin: 0 5% 0 0;*/
 }
 
 .aircraftRowOrigin {
@@ -119,17 +61,6 @@
 	margin: 0 2% 0 0;
 }
 
-/*.aircraftRowPath,
-.aircraftRowOrigin,
-.aircraftRowArrow,
-.aircraftRowDestination {
-	white-space: nowrap;
-}
-*/
-.aircraftAltitudeAndSpeed {
-	/*margin: 0 5% 0 0;*/
-}
-
 .aircraftRowAltitude {
 	margin: 0 2% 0 0;
 	width: 10%;
@@ -141,146 +72,9 @@
 }
 	
 .aircraftRowRightButton {
-	/*padding: 0;*/
 	width: 100px;
-	/*opacity: 0;*/
-	/*
-	opacity:  0.5;
-	*/
 }
 
 input {
 	padding: 0;
 }
-
-/*aircraftAltitudeAndSpeed*/
-
-/*
-.aircraftRowName {
-	padding: 0;
-	margin: 0 2% 0 0;
-	width: 10%;
-	display: flex;
-	flex-direction: row;
-}
-
-.aircraftRowButtons {
-	margin: 0 2% 0 0;
-	width: 30%;
-	display: flex;
-	flex-direction: row;
-}
-
-.aircraftRowPath {
-	padding: 0;
-	margin: 0 2% 0 0;
-	display: flex;
-	flex-direction: row;
-}
-
-.aircraftRowRoute {
-	width: 50%;
-	display: flex;
-	flex-direction: row;
-	white-space: nowrap;
-}
-	
-.aircraftRowOrigin {
-	padding: 0;
-	margin: 0 2% 0 0;
-	display: flex;
-	flex-direction: row;
-}
-
-.aircraftRowDestination {
-	padding: 0;
-	margin: 0 10% 0 0;
-	display: flex;
-	flex-direction: row;
-}
-
-input.aircraftRowDestination {
-	opacity: 0;
-}
-
-.aircraftRow:hover input.aircraftRowDestination {
-	opacity:  1;
-}
-
-.aircraftRowArrow {
-	padding: 0;
-	margin: 0 2% 0 0;
-	display: flex;
-	flex-direction: row;
-	width: 50px;
-}
-
-.aircraftRow:hover .aircraftRowArrow {
-}
-
-.aircraftRowAltitude {
-	padding: 0;
-	margin: 0 15% 0 0;
-	display: flex;
-	flex-direction: row;
-}
-
-input.aircraftRowAltitude {
-	opacity: 0;
-}
-
-.aircraftRow:hover input.aircraftRowAltitude {
-	opacity:  1;
-}
-
-.aircraftRowSpeed {
-	padding: 0;
-	margin: 0 2% 0 0;
-	display: flex;
-	flex-direction: row;
-}
-
-input.aircraftRowSpeed {
-	opacity: 0;
-}
-
-.aircraftRow:hover input.aircraftRowSpeed {
-	opacity:  1;
-}
-
-.aircraftRowButton {
-	padding: 0;
-	width: 100px;
-	opacity: 0;
-}
-
-.aircraftRowRightButton {
-	margin: 0 0% 0 0;
-}
-
-.aircraftRow:hover .aircraftRowButton {
-	opacity: 1;
-}
-
-.aircraftRowButtonSchedule,
-.aircraftRowButtonHistory,
-.aircraftRowButtonMaintenance {
-	margin: 0 2% 0 0;
-}
-
-ul.react-autocomplete-input,
-ul.react-autocomplete-input > li.active,
-ul.react-autocomplete-input > li {
-	padding: 0;
-	margin: 0;
-	width: 75%;
-	color:  red;
-	background-color: blue;
-}
-
-.aircraftBottomRow {
-  position: fixed;
-  bottom:  4px;
-}
-*/
-

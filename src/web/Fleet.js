@@ -5,29 +5,19 @@ import { requestFleet, requestRoutes, deleteAircraft } from '../actions'
 import AircraftParked from './AircraftParked'
 import AircraftFlying from './AircraftFlying'
 import AircraftAdd from './AircraftAdd'
-// import { getCodeFromPath } from '../utils'
-import {
-    // fleetFromState,
-} from '../selectors'
 import './Fleet.css'
 import './AircraftFlying.css'  // for/from Flight and Parked rows
-
-const stale = () => false // TBD what determines when to refetch flight  - always for now
 
 class Fleet extends Component {
     componentDidMount() {
         const { props } = this
         const { fleet, routes, requestFleet, requestRoutes } = props
 
-        if( Object.keys( fleet ).length <= 0 || stale() ) {
+        if( Object.keys( fleet ).length <= 0 ) {
             requestFleet()
         }
 
-        // if( Object.keys( points ).length <= 0 || stale() ) {
-        //     requestPoints()
-        // }
-
-        if( Object.keys( routes ).length <= 0 || stale() ) {
+        if( Object.keys( routes ).length <= 0 ) {
             requestRoutes()
         }
     }
@@ -72,7 +62,6 @@ class Fleet extends Component {
         const locationId = destinationId || originId || baseId
         const locationCode = destinationCode || originCode || baseCode
         const routesFrom = routes[ locationId ] || []
-        // const { altitude, speed } = routesFrom  
         return id && name && locationCode && 
             <AircraftParked
                 key={id}
@@ -113,7 +102,6 @@ class Fleet extends Component {
     renderFleet = fleet => {
         const { renderAircraftFlying, renderAircraftParked } = this
 
-                // { Object.keys( fleet ).map( k => fleet[ k ] ).map( a => ( !!a.atd && !a.ata ) ? renderAircraftFlying( a ) : renderAircraftParked( a ) ) }
         return (
             <React.Fragment>
                 { Object.keys( fleet ).map( k => fleet[ k ] ).map( a => ( !!a.etd && !a.ata && a.destinationCode ) ? renderAircraftFlying( a ) : renderAircraftParked( a ) ) }
@@ -148,9 +136,6 @@ const mapDispatchToProps = dispatch => {
         requestFleet: () => {
             dispatch( requestFleet() )
         },
-        // requestPoints: () => {
-        //     dispatch( requestPoints() )
-        // },
         requestRoutes: () => {
             dispatch( requestRoutes() )
         },

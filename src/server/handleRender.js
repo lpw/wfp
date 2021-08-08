@@ -18,11 +18,6 @@ const enhancer = composeEnhancers(
         applyMiddleware(...middleware),
 )
 
-// const cssDir = fs.readdirSync( './build/static/css/', 'utf8' )
-// const cssFileNames = cssDir.filter( n => n.endsWith('.css'))
-// const css = cssFileNames.map( cssFileName => fs.readFileSync( `./build/static/css/${cssFileName}`, 'utf8' ) ).join( '\n' )
-// let canonicalQueryParamString = ''
-
 const indexHtml = fs.readFileSync( './build/index.html', 'utf8' )
 
 const preloadedDataKey = '__PRELOADED_DATA__'
@@ -40,7 +35,6 @@ function handleRender({
     request,
     reply,
 }) {
-    // Create a new Redux store instance
     const store = createStore(rootReducer, initialState, enhancer)
 
     const hostname = request.info.hostname.toLowerCase()
@@ -57,17 +51,10 @@ function handleRender({
                 const preloadedState = store.getState()
                 const { tests } = preloadedState
 
-                // debug( 'handleRender preloadedState', preloadedState )
-                // debug( 'handleRender header', preloadedState.header )
-                // preloadedState.items = []
-                
                 // is there some better way to detect when the fetchItems action has finished processing into state?
-                // if( lastAction.type === RISKS_RECEIVED ) { // } || lastAction.type === RECEIVE_ITEMS_FAILED ) {
+                // if( lastAction.type === XXX_RECEIVED ) { // } || lastAction.type === RECEIVE_ITEMS_FAILED ) {
                 if( Object.keys( tests ).length > 0 ) { // } || lastAction.type === RECEIVE_ITEMS_FAILED ) {
                     const { info: { host: h }, url: { pathname: p }, query: q } = request
-                    // const { host: h } = info
-                    // const h = `https://${host}` port (not hostname), but not including origin or protocol
-                    // const { pathname: p } = url // or could use request.path which also does not have query params
                     const url = { h, p, q }
 
                     const html = renderToString(
@@ -110,7 +97,6 @@ function handleRender({
     return responsePromise
 }
 
-// module.exports = handleRender
 export default handleRender
 
 

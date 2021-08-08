@@ -1,17 +1,12 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { deleteAircraft, addFlight } from '../actions'
-import {
-    // aircraftParkedFromState,
-} from '../selectors'
 // import './AircraftParked.css' using AircraftFlight, which is imported from fleet
 
 class AircraftParked extends Component {
     constructor(props) {
         super(props);
 
-        // this.speedRef = React.createRef()
-        // this.altitudeRef = React.createRef()
         this.destinationRef = React.createRef()
 
         this.state = { disabled: true }
@@ -20,10 +15,6 @@ class AircraftParked extends Component {
     check = () => {
         const { props, destinationRef } = this
         const { routesFrom } = props  
-
-        // const speed = speedRef.current.value
-        // const altitude = altitudeRef.current.value
-        // const destination = getIdFromText( destinationRef.current.value, points )
 
         const { value } = destinationRef.current || {}
         const route = routesFrom.find( r => r.id === +value )
@@ -38,14 +29,8 @@ class AircraftParked extends Component {
         const { props, destinationRef } = this
         const { id, addFlight } = props  
 
-        // const speed = speedRef.current.value
-        // const altitude = altitudeRef.current.value
-        // const destination = getIdFromText( destinationRef.current.value, points )
-
         const { value } = destinationRef.current || {}
         const routeId = +value
-        // const route = routesFrom.find( r => r.id === +value )
-        // const { destination, altitude, speed } = route || {}
 
         if( routeId ) {
             addFlight( id, routeId )
@@ -59,11 +44,19 @@ class AircraftParked extends Component {
             launch,
             check,
          } = this
-        const { id, name, locationCode, routesFrom, maintenance, schedule, history } = props
+
+        const {
+            id,
+            name,
+            locationCode,
+            routesFrom,
+            maintenance,
+            schedule,
+            history
+        } = props
+
         const { disabled } = state 
-                    // <input type="text" onKeyUp={check} onBlur={check} className="aircraftRowDestination" ref={this.destinationRef} placeholder="Destination..." />
-                    // <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowButton aircraftRowAltitude" ref={this.altitudeRef} placeholder="Altitude..." />
-                    // <input type="number" onKeyUp={check} onBlur={check} className="aircraftRowButton aircraftRowSpeed" ref={this.speedRef} placeholder="Speed..." />
+
         return (
             <div className="aircraftRow">
                  <div className="aircraftRowFields">
@@ -85,18 +78,12 @@ class AircraftParked extends Component {
 }
 
 const mapStateToProps = state => {
-    // const { userId } = state
-    // const aircraftParked = aircraftParkedFromState( state )
-
     return {
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        // addFlight: ( aircraft, origin, destination, altitude, speed ) => {
-        //     dispatch( addFlight( aircraft, origin, destination, altitude, speed ) )
-        // },
         addFlight: ( aircraft, routeId ) => {
             dispatch( addFlight( aircraft, routeId ) )
         },

@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-// import TextInput from 'react-autocomplete-input';
 import { getIdFromText } from '../utils'
 import { addAircraft, requestPoints } from '../actions'
 // import './AircraftAdd.css' using AircraftFlight, which is imported from fleet
@@ -32,7 +31,6 @@ class AircraftAdd extends Component {
 
         const name = nameRef.current.value
         const pointName = originRef.current.value ? originRef.current.value : originRef.current.recentValue
-        // const point = Object.keys( points ).find( k => points[ k ].code.toUpperCase() === pointName.toUpperCase() )
         const point = getIdFromText( pointName, points )
 
         if( name && point ) {
@@ -48,7 +46,6 @@ class AircraftAdd extends Component {
 
         const name = nameRef.current.value
         const pointName = originRef.current.value ? originRef.current.value : originRef.current.recentValue
-        // const point = Object.keys( points ).find( k => points[ k ].code.toUpperCase() === pointName.toUpperCase() )
         const point = getIdFromText( pointName, points )
 
         if( point ) {
@@ -62,20 +59,7 @@ class AircraftAdd extends Component {
 
     render() {
         const { addAircraft, checkAdd } = this
-        // const { points } = props
-        // const pointOptions = Object.keys( points ).map( k => points[ k ].code )
 
-                // <input type="text" placeholder="Location, airport code, etc" className="AddPoint" ref={this.originRef} onKeyUp={checkAdd} />
-            // <div className="AircraftAdd">
-            //     <input type="text" placeholder="Aircraft name, or tail-number, etc." className="AddName" ref={this.nameRef} onKeyUp={checkAdd} />
-            //     <button onClick={addAircraft} disabled={!this.state.addEnabled} >Add</button>
-            // </div>
-                    // <span className="aircraftRowOrigin">
-                    //     <TextInput trigger={[""]} maxOptions={200} Component="input" options={pointOptions} ref={this.originRef} changeOnSelect={checkAdd}/>
-                    // </span>
-                    // <span className="aircraftRowButtonSchedule"></span>
-                    // <span className="aircraftRowAltitude"></span>
-                    // <span className="aircraftRowSpeed"></span>
         return (
             <div className="aircraftRow">
                 <div className="aircraftRowFields">

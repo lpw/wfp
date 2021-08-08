@@ -43,8 +43,8 @@ const fleet = ( state = {}, action ) => {
 	// 	}
 
 	// 	case DELETED_AIRCRAFT: {
+	// 		if prev array-based
 	// 		const { aircraftId } = action
-
 	// 		return state.filter( f => f.id !== aircraftId )
 	// 	}
 
