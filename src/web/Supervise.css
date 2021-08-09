@@ -47,28 +47,3 @@
   width: 90px;
 }
 
-.markerAndNames {
-  width: 100px;
-  margin: 0;
-  padding: 0;
-  opacity: 0.3;
-}
-.markerAndNames.markerAndNamesSelected {
-  opacity: 1;
-}
-
-.marker {
-  background-image: url(/static/wisk-icon.png);
-  background-size: 100%;
-  background-repeat: no-repeat;
-  height: 64px;
-}
-.markerNames {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  text-align: center;
-  width: 100px;
-  font-size: large;
-}
-

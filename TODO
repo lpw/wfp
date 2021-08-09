@@ -61,6 +61,8 @@ database integrity, watcher
 
 aircraft now jumps forward (not back anymore?) sometimes (map not ready?)
 
+update route distance and bearing when entered instead of relying on flyer
+
 convert to async/await from promises
 
 mobile page for adding aircraft and flight
