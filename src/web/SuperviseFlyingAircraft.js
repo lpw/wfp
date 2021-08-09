@@ -1,17 +1,9 @@
-import assert from 'assert'
+// import assert from 'assert'
 import React, { Component } from 'react'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 import ProgressBar from "@ramonak/react-progress-bar"
 import GaugeChart from 'react-gauge-chart'
-import {
-  Airspeed,
-  Altimeter,
-  AttitudeIndicator,
-  HeadingIndicator,
-  TurnCoordinator,
-  Variometer
-} from 'react-flight-indicators'
 import {
     landAircraft,
 } from '../actions'

@@ -1,6 +1,5 @@
 import assert from 'assert'
 import React, { Component } from 'react'
-import classNames from 'classnames'
 import { connect } from 'react-redux'
 import mapboxgl from 'mapbox-gl'
 import * as turf from '@turf/turf'
@@ -14,7 +13,7 @@ import './Supervise.css'
 
 const oneHasSomeOther = ( one, other ) => one.some( id => other.includes( id ) )
 const markerHasSelectedAircraft = ( marker, selectedAircraftIds ) => oneHasSomeOther( marker.aircraftIds, selectedAircraftIds )
-const pathHasSelectedAircraft = ( path, selectedAircraftIds ) => oneHasSomeOther( path.aircraftIds, selectedAircraftIds )
+// const pathHasSelectedAircraft = ( path, selectedAircraftIds ) => oneHasSomeOther( path.aircraftIds, selectedAircraftIds )
 const removeMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftIds.filter( id => !marker.aircraftIds.includes( id ) )
 const addMarkersAircraft = ( marker, selectedAircraftIds ) => selectedAircraftIds.concat( marker.aircraftIds )
 
@@ -22,7 +21,7 @@ const getMarker = ( aircraftId, fleet ) => {
     let marker
     const aircraft = fleet[ aircraftId ]
     if( aircraft ) {
-        const { baseId, originId, lat, lon } = aircraft
+        const { lat, lon } = aircraft
         let coord 
 
         if( lat && lon ) {
@@ -137,7 +136,7 @@ class Supervise extends Component {
     }
 
     componentDidMount() {
-        const { props, updateAircraft } = this
+        const { props } = this
         const {
             markers,
             requestFleet,
@@ -205,14 +204,14 @@ class Supervise extends Component {
     updateMap = () => {
         const { _map: map, props, state } = this
         const { selectedAircraftIds } = state
-        const { markers, paths, boundingBox, flyToCoord } = props
+        const { paths, boundingBox, flyToCoord } = props
 
         if( map && map.loaded() && map.isStyleLoaded() ) {
             Object.keys( this._layers ).map( k => this._layers[ k ] ).map( l => l.hasPath = false )
             Object.keys( this._sources ).map( k => this._sources[ k ] ).map( s => s.hasPath = false )
 
             Object.keys( paths ).map( k => paths[ k ] ).map( p => {
-                const { id, originCoords, destinationCoords, selected } = p
+                const { id, originCoords, destinationCoords } = p
                 const highlighted = oneHasSomeOther( p.aircraftIds, selectedAircraftIds )
                 const coordinates = [ originCoords, destinationCoords ]
                 const sourceName = `path${id}`
@@ -338,7 +337,7 @@ class Supervise extends Component {
     }
 
     renderMarker = m => {
-        const { setRef, clickMarker, state, _map: map } = this
+        const { clickMarker, _map: map, state } = this
         const { selectedAircraftIds } = state
         const { id, aircraftIds } = m
         const aircraftId = aircraftIds[ 0 ]
@@ -359,17 +358,13 @@ class Supervise extends Component {
     }
 
     renderSelectedAircraft = id => {
-        const { props, close, goMap, state } = this
+        const { props, close, goMap } = this
         const { fleet } = props
         const aircraft = fleet[ id ]
         if( aircraft ) {
-            const now = Date.now()
             const { 
                 name,
-                baseId,
                 flightId,
-                originId,
-                destinationId,
                 charge,
                 altitude,
                 speed,
@@ -382,7 +377,6 @@ class Supervise extends Component {
                 covered,
                 elapsed,
             } = aircraft
-            const { originLat, originLon, destinationLat, destinationLon } = aircraft
             const { baseCode, originCode, destinationCode } = aircraft
             if( ( destinationCode && !ata ) ) { // || recentTelemetry ) {
                 if( !etd ) {
@@ -402,13 +396,11 @@ class Supervise extends Component {
                     originCode={originCode} 
                     destinationCode={destinationCode} 
                     charge={charge} 
-                    altitude={altitude} 
-                    speed={speed} 
                     atd={atd} 
                     eta={eta} 
+                    altitude={altitude} 
                     heading={heading} 
                     speed={speed} 
-                    altitude={altitude} 
                     distance={distance} 
                     covered={covered} 
                     elapsed={elapsed} 
@@ -416,7 +408,7 @@ class Supervise extends Component {
                     goMap={ goMap } 
                 />
             } else {
-                return <SuperviseParkedAircraft key={ id } id={id} locationCode={destinationCode || originCode || baseCode} close={ close } fleet={ fleet }/>
+                return <SuperviseParkedAircraft key={ id } id={ id } name={ name } locationCode={ destinationCode || originCode || baseCode } close={ close } />
             }
         }
     }

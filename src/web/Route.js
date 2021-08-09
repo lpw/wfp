@@ -2,7 +2,6 @@ import assert from 'assert'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { removeRoute } from '../actions'
-import { getIdFromText } from '../utils'
 import './Route.css' 
 
 class Route extends Component {

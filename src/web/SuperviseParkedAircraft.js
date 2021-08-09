@@ -2,18 +2,12 @@ import assert from 'assert'
 import React, { Component } from 'react'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
-import {
-    requestFleet,
-    requestPoints,
-} from '../actions'
 import './SuperviseParkedAircraft.css'
 
 class SuperviseParkedAircraft extends Component {
     render() {
         const { props } = this
-        const { id, fleet, locationCode, close } = props
-        const aircraft = fleet[ id ]
-        const { name } = aircraft
+        const { id, name, locationCode, close } = props
         const selectedAircraftClassNames = classNames( 'selectedAircraft', {} )
         assert( locationCode )
         return (

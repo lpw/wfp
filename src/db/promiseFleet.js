@@ -27,11 +27,8 @@ const compareTimes = ( t1, t2 ) => {
 
 // too complicated to express in sql  
 const sortFlightsAndRoutePoints = ( frp1, frp2 ) => {
-	const { etd: etd1, atd: atd1, eta: eta1, ata: ata1, seq: seq1 } = frp1
-	const { etd: etd2, atd: atd2, eta: eta2, ata: ata2, seq: seq2 } = frp2
-
-	const { flightId: flightId1 } = frp1
-	const { flightId: flightId2 } = frp2
+	const { etd: etd1, atd: atd1, ata: ata1, seq: seq1 } = frp1
+	const { etd: etd2, atd: atd2, ata: ata2, seq: seq2 } = frp2
 
 	if( atd1 && atd2 ) {
 		// both have departed
@@ -152,7 +149,7 @@ const getAircraftWithBestFlightAndRoutePoints = ( id, fleetWithFlightsAndRoutePo
 
 		for( let i = 0 ; i < flightAndRoutePoints.length ; i++ ) {
 			const aircraftWithPointId = flightAndRoutePoints[ i ]
-			const { id, lat, lon, flightId, routeId, baseId, atd, ata, etd, sequence } = aircraftWithPointId
+			const { id, lat, lon, flightId, routeId, baseId, atd, sequence } = aircraftWithPointId
 			// use base for/with no pointId in case of a flight with no roughts (shouldnn't happen normally though)
 			// also have cleaner data structure with origiin and destination instead of pointId
 			let { pointId, ...aircraft } = aircraftWithPointId  
@@ -233,9 +230,7 @@ export function promiseFleet( query = fleetQuery, filterFunc = () => true ) {
 	return Promise.all( [ fleetPromise, pointsPromise ] ).then( ( [ fleetWithFlightsAndRoutePoints, points ] ) => {
 		// resolve fleets with flights and routs along with points per huestrics of depatrure and arrival estimats and actuals (landing and taking-off)
 		const rf = fleetWithFlightsAndRoutePoints.reduce( ( sofar, aircraft ) => {
-			const { pointId, ...aWithoutPointId } = aircraft
-			const { id, lat, lon, flightId, routeId, baseId, atd, ata, etd, sequence } = aircraft
-			const existing = sofar[ id ]
+			const { id } = aircraft
 			const aircraftWithBestFlightAndRoutePoints = getAircraftWithBestFlightAndRoutePoints( id, fleetWithFlightsAndRoutePoints, points )
 			const moreFar = {
 				...sofar,

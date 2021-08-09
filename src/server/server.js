@@ -4,7 +4,6 @@
  * or can run them as two separate process later (or serverless)
  */
 import assert from 'assert'
-import fs from 'fs'
 import Hapi from 'hapi'
 import Inert from 'inert'
 
@@ -16,7 +15,6 @@ import {
 	deleteAircraft,
 	addRoute,
 	promiseTypes,
-	promiseUsers,
 	promiseFleet,
 	promiseFlyingFleet,
 	promiseLaunchingFleet,
@@ -40,7 +38,6 @@ const port = process.env.API_PORT || '3000'
 
 /// enabled normally in production
 const noRedirect = true
-const noSSL = true
 const noSSR = true
 
 const oneDayInMsec = 24 * 60 * 60 * 1000
@@ -254,7 +251,6 @@ function routeApi( server ) {
 							return {
 								error: `op /${op} unknown op`
 							}
-							break
 						}
 					}
 				}
@@ -274,7 +270,6 @@ function routeApi( server ) {
 									error: `op /${op} error ${error.message}`
 								}
 							})
-							break
 						}
 						case 'launchingfleet': {
 							debug( 'routeApi', op )
@@ -290,7 +285,6 @@ function routeApi( server ) {
 									error: `op /${op} error ${error.message}`
 								}
 							})
-							break
 						}
 						case 'flyingfleet': {
 							debug( 'routeApi', op )
@@ -306,7 +300,6 @@ function routeApi( server ) {
 									error: `op /${op} error ${error.message}`
 								}
 							})
-							break
 						}
 						case 'points': {
 							debug( 'routeApi', op )
@@ -322,7 +315,6 @@ function routeApi( server ) {
 									error: `op /${op} error ${error.message}`
 								}
 							})
-							break
 						}
 						case 'routes': {
 							debug( 'routeApi', op )
@@ -338,7 +330,6 @@ function routeApi( server ) {
 									error: `op /${op} error ${error.message}`
 								}
 							})
-							break
 						}
 						case 'types': {
 							debug( 'routeApi', op )
@@ -354,14 +345,12 @@ function routeApi( server ) {
 									error: `op /${op} error ${error.message}`
 								}
 							})
-							break
 						}
 						default: {
 							debug( 'routeApi unknown op', op, payload )
 							return {
 								error: `op /${op} unknown op`
 							}
-							break
 						}
 					}
 				}
@@ -370,7 +359,6 @@ function routeApi( server ) {
 					return {
 						error: `method /${method} unknown method`
 					}
-					break
 				}
 			}
 		}
@@ -392,7 +380,7 @@ function routeArgApi( server ) {
 				case 'post': {
 					switch( op.toLowerCase() ) {
 						case 'fleet': {
-							const { action, lat, lon, altitude, speed, heading, pitch, yaw, roll, turn, vsi, charge } = typeof payload === 'string' ? JSON.parse( payload ) : payload
+							const { action } = typeof payload === 'string' ? JSON.parse( payload ) : payload
 							switch( action.toLowerCase() ) {
 								case 'land': {
 									debug( 'routeApi', method, op, typeof payload, payload )
@@ -540,6 +528,13 @@ function routeArgApi( server ) {
 								}
 							}
 						}
+						default: {
+							debug( 'routeArgApi unrecognized op error', op )
+							console.warn( 'routeArgApi unrecognized op error', op )
+							return {
+								error: `routeArgApi post route/${id} routeArgApi unrecognized op error ${op}`
+							}
+						}
 					}
 				}
 				case 'delete': {
@@ -593,7 +588,6 @@ function routeArgApi( server ) {
 					return {
 						error: `method /${method} unknown method`
 					}
-					break
 				}
 			}
 		}

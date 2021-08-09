@@ -1,4 +1,4 @@
-import assert from 'assert'
+// import assert from 'assert'
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { getIdFromText } from '../utils'

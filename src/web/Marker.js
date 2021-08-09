@@ -4,12 +4,7 @@ import ReactDOM from 'react-dom'
 import classNames from 'classnames'
 import { connect } from 'react-redux'
 import mapboxgl from 'mapbox-gl'
-import socketIOClient from "socket.io-client"
-import {
-    requestFleet,
-} from '../actions'
 import './Marker.css'
-
 
 function ease({
   startValue = 0,
@@ -24,13 +19,13 @@ function ease({
   const valueIncrement = (endValue - startValue) / stepCount;
   const sinValueIncrement = Math.PI / stepCount;
   
-  let currentValue = startValue;
+  // let currentValue = startValue;
   let currentLinearValue = startValue;
   let currentSinValue = 0;
   
   function step() {
     currentSinValue += sinValueIncrement;
-    currentValue += valueIncrement * (Math.sin(currentSinValue) ** 2) * 2;
+    // currentValue += valueIncrement * (Math.sin(currentSinValue) ** 2) * 2;
     currentLinearValue += valueIncrement 
 
     if (currentSinValue < Math.PI) {
@@ -61,9 +56,8 @@ class Marker extends Component {
     }
 
     componentDidMount() {
-        const { move, props, mbMarkerLayer, _elContainer, _elPortal } = this
-        const { id } = props
-        this._elContainer.appendChild( this._elPortal )
+        const { move, _elContainer: elContainer, _elPortal: elPortal } = this
+        elContainer.appendChild( elPortal )
         move()
     }
 
@@ -91,7 +85,7 @@ class Marker extends Component {
     move = () => {
         const now = Date.now()
         const { _elPortal: el, _mbMarker: mbMarker, props, _previousCallTimestamp: previousCallTimestamp } = this
-        const { id, map, aircraftData } = props
+        const { map, aircraftData } = props
         const { lat, lon } = aircraftData
         const coords = [ lon, lat ]
 

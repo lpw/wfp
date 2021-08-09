@@ -1,4 +1,4 @@
-export default {
+const airports = {
 "AYGA":{"airportid":"1","name":"Goroka Airport","city":"Goroka","country":"Papua New Guinea","iata":"GKA","icao":"AYGA","latitude":"-6.081689834590001","longitude":"145.391998291","altitude":"5282","timezone":"10","dst":"U","tz":"Pacific/Port_Moresby","type":"airport","source":"OurAirports"},
 "AYMD":{"airportid":"2","name":"Madang Airport","city":"Madang","country":"Papua New Guinea","iata":"MAG","icao":"AYMD","latitude":"-5.20707988739","longitude":"145.789001465","altitude":"20","timezone":"10","dst":"U","tz":"Pacific/Port_Moresby","type":"airport","source":"OurAirports"},
 "AYMH":{"airportid":"3","name":"Mount Hagen Kagamuga Airport","city":"Mount Hagen","country":"Papua New Guinea","iata":"HGU","icao":"AYMH","latitude":"-5.826789855957031","longitude":"144.29600524902344","altitude":"5388","timezone":"10","dst":"U","tz":"Pacific/Port_Moresby","type":"airport","source":"OurAirports"},
@@ -7697,3 +7697,5 @@ export default {
 "SCAT":{"airportid":"14109","name":"Desierto de Atacama Airport","city":"Copiapo","country":"Chile","iata":"CPO","icao":"SCAT","latitude":"-27.2611999512","longitude":"-70.7791976929","altitude":"670","timezone":"","dst":"","tz":"","type":"airport","source":"OurAirports"},
 "UKDM":{"airportid":"14110","name":"Melitopol Air Base","city":"Melitopol","country":"Ukraine","iata":"","icao":"UKDM","latitude":"46.880001","longitude":"35.305","altitude":"0","timezone":"","dst":"","tz":"","type":"airport","source":"OurAirports"}
 }
+
+export default airports

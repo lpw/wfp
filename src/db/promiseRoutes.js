@@ -4,7 +4,7 @@ import {
 	// pointsQuery,
 } from './queries';
 
-const debug = require('debug')('wfp:db')
+// const debug = require('debug')('wfp:db')
 
 const sameFunc = ( a, b ) => a.destination === b.destination && a.altitude === b.altitude && a.speed === b.speed
 
@@ -73,6 +73,9 @@ export function promiseRoutes() {
 							destinationCode: pointCode,
 						}
 					}
+				} else {
+					console.warn( 'promiseRoutes::promiseRoutes unexpected sequence number', sequence )
+					return s
 				}
 			}, {} )
 

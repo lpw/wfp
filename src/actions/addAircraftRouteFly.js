@@ -1,7 +1,7 @@
-import assert from 'assert'
+// import assert from 'assert'
 import fetch from 'isomorphic-fetch'
 import { getPrefix } from '../utils'
-import { requestFleet } from './'
+// import { requestFleet } from './'
 
 export function addAircraftRouteFly( name, origin, destination, altitude, speed ) {
 	return( dispatch, getState ) => {
@@ -29,6 +29,7 @@ export function addAircraftRouteFly( name, origin, destination, altitude, speed 
 				// dispatch( addedAircraft( aircraftId, aircraftName, pointId ) )
 				// dispatch( flyAircraft( aircraftId ) )
 				// dispatch( requestFleet() )
+				// because the page redirects
 			} else {
 				console.warn( `action addAircraftRouteFly route 200 but status not ok ${response.status}` )
 				throw new Error( `action addAircraftRouteFly route 200 but status not ok ${response.status}` )

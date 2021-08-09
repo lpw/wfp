@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
-import { addAircraftRouteFly, requestFleet, requestPoints, flyAircraft } from '../actions'
+import { addAircraftRouteFly, requestFleet, requestPoints } from '../actions'
 import { setLocalStorage, getLocalStorage, getIdFromText } from '../utils'
 import './Add.css' 
 
@@ -73,7 +73,7 @@ class Add extends Component {
 
     check = () => {
         const { props, nameRef, originRef, destinationRef, altitudeRef, speedRef } = this
-        const { points, addAircraftRouteFly } = props
+        const { points } = props
 
         const name = nameRef.current.value
 
@@ -101,7 +101,7 @@ class Add extends Component {
 
     render() {
         const { props, add, check, state } = this
-        const { fleet, aircraft } = props
+        const { fleet } = props
         const { enabled, addedName } = state
         const foundNamedAircraft = Object.keys( fleet ).map( k => fleet[ k ] ).find( a => a.name === addedName )
 
@@ -157,9 +157,6 @@ const mapDispatchToProps = ( dispatch, /* ownProps */ ) => {
         requestPoints: () => {
             dispatch( requestPoints() )
         },
-        // flyAircraft: ( aircraftId ) => {
-        //     dispatch( flyAircraft( aircraftId ) )
-        // },
     }
 }
 

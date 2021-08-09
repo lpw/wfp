@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { deleteAircraft, addFlight } from '../actions'
+import { addFlight } from '../actions'
 // import './AircraftParked.css' using AircraftFlight, which is imported from fleet
 
 class AircraftParked extends Component {

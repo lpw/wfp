@@ -1,7 +1,5 @@
 import {
 	addFlightQuery,
-	addRouteQuery,
-	addPointToRouteQuery,
 	getLastInsertIdQuery,
 } from './queries';
 const debug = require('debug')('wfp:sim')

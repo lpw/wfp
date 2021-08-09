@@ -2,7 +2,7 @@ import {
 	connectionQuery,
 } from './connection';
 
-const escape = s => s.replace( /\'/g, "\\'" )
+const escape = s => s.replace( /'/g, "\\'" )
 
 export const getLastInsertIdQuery = ( f ) => connectionQuery( `SELECT LAST_INSERT_ID() as id`, f )
 

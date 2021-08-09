@@ -26,14 +26,14 @@ class Fleet extends Component {
         const { props } = this
         const { fleet } = props
         const { name } = fleet[ id ] || {}
-        const answer = window.alert( `History Panel (past flights, etc.) for ${name}` )
+        window.alert( `History Panel (past flights, etc.) for ${name}` )
     }   
 
     schedule = id => {
         const { props } = this
         const { fleet } = props
         const { name } = fleet[ id ] || {}
-        const answer = window.alert( `Schedule Panel (reserve new flights, etc.) for ${name}` )
+        window.alert( `Schedule Panel (reserve new flights, etc.) for ${name}` )
     }   
 
     maintenance = id => {
