@@ -10,7 +10,7 @@ let config = dev ? {
 		database : 'flms',
 		multipleStatements: true
 	} : {
-		host     : '35.232.198.218',
+		host     : 'gas',
 		user     : 'root',
 		database : 'flms',
 		multipleStatements: true

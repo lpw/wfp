@@ -135,10 +135,10 @@ function routeRootAny( server ) {
 }
 
 // all static assets built, deployed, and referenced under /static so route them there
-function routeStaticAssets( server ) {
+function routeStaticAssetsWithPrefix( server, prefix='' ) {
 	server.route({
 		method: 'GET',
-		path: '/static/{param*}',
+		path: `${prefix}/static/{param*}`,
 		handler: {
 			directory: {
 				path: './build/static'
@@ -152,6 +152,13 @@ function routeStaticAssets( server ) {
 			}
 		}
 	});
+}
+
+// all static assets built, deployed, and referenced under /static so route them there
+function routeStaticAssets( server ) {
+	// not sure why the latest versoin of css-loader requires the /public prefix, but adding both here just to be compatible/sure
+	routeStaticAssetsWithPrefix( server, '' )
+	routeStaticAssetsWithPrefix( server, '/public' )
 }
 
 // versioned api

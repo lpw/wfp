@@ -5,7 +5,7 @@ export const getLocalStorage = key => typeof window !== 'undefined' && window[ '
 // export const setKeyword = ( keyword = '' ) => typeof window !== 'undefined' && typeof window.history !== 'undefined' && typeof window.history.replaceState === 'function' && window.history.replaceState( {}, null, `/${keyword}` )
 
 const dev = typeof window !== 'undefined' ? window.location.hostname === 'localhost' : false	// os.hostname().includes( 'lance' )
-export const hostname = 'localhost'
+export const hostname = 'gas'
 export const getPrefix = () => dev ? 'http://localhost:3001' : `http://${hostname}`
 
 export const getIdFromText = ( text, points ) => {

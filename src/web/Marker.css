@@ -9,7 +9,7 @@
 }
 
 .marker {
-  background-image: url(static/wisk-icon.png);
+  background-image: url(/public/static/wisk-icon.png);
   background-size: 100%;
   background-repeat: no-repeat;
   height: 64px;

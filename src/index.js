@@ -59,8 +59,9 @@ ReactDOM.render(
 	document.getElementById('root')
 )
 
-const socket = socketIOClient( 'http://127.0.0.1:7400', {
-	withCredentials: true,
+// const socket = socketIOClient( 'http://127.0.0.1:7400', {
+const socket = socketIOClient( 'http://gas:7400', {
+	// withCredentials: true,
 })
 
 store.dispatch( requestPoints() )
